@@ -7,9 +7,12 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 ## [Unreleased]
 
 ### Added
-- Root project specification in `AGENTS.md` defining v0 scope, architecture baseline, TDD policy, and quality gates.
-- `README.md` scaffold aligned with the project specification.
-- Initial product naming as **Minha Garagem**.
+- Slice 1 (Vehicles) implementation with Next.js App Router, Tailwind, Server Actions, and Prisma setup.
+- Vehicle CRUD at `/vehicles` with owner-scoped model (`ownerId` stub) and newest-first listing.
+- Strict Brazilian plate validation (Legacy + Mercosul) with normalization and per-owner uniqueness checks.
+- Prisma schema/migration for `Vehicle` model and PostgreSQL baseline configuration.
+- TDD baseline with Vitest unit/component tests and Playwright e2e CRUD smoke coverage.
+- Updated `README.md` with real setup, migration, run, lint, unit, and e2e commands.
 
 ## [0.1.0] - 2026-03-13
 

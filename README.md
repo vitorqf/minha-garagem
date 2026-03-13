@@ -3,39 +3,75 @@
 Personal single-user vehicle expense tracker.
 
 ## Status
-- Phase: v0 specification and scaffolding.
+- Current increment: Slice 1 (Vehicles) implemented.
 - Source of truth: `AGENTS.md`.
 
 ## Product Goal
-Track vehicle spending with clarity and confidence.
-
-The app focuses on:
-- Registering personal vehicles.
-- Recording expenses per vehicle.
-- Monitoring totals per vehicle and per month.
-
-This is not a customer-selling SaaS in v0.
-
-## v0 Scope
-Delivery order:
+Track spending per vehicle with a clear, incremental workflow:
 1. Vehicles
 2. Expenses
 3. Summaries
 
-Core expense categories:
-- `fuel`
-- `parts`
-- `service`
+## Slice 1 Delivered
+- Dedicated `/vehicles` screen.
+- Vehicle CRUD (create, list, update, hard delete).
+- Owner-scoped data model with a stubbed owner context.
+- Validation in `pt-BR`:
+- Required: `nickname`, `brand`, `model`.
+- Optional: `plate`, `year`.
+- Strict Brazilian plate support (Legacy `AAA9999` + Mercosul `AAA9A99`).
+- Plate uniqueness per owner when provided.
+- Vehicles listed by newest first.
 
-Required expense fields:
-- `date`
-- `vehicle`
-- `category`
-- `amount`
+## Tech Baseline
+- Next.js App Router + TypeScript + Tailwind CSS.
+- Prisma ORM + PostgreSQL.
+- Server Actions for mutations.
+- Vitest + Testing Library + Playwright smoke tests.
 
-Optional expense fields:
-- `mileage`
-- `notes`
+## Prerequisites
+- Node.js 24+
+- Corepack enabled (for `pnpm`)
+- PostgreSQL running locally or remotely
+
+## Setup
+1. Enable package manager:
+```bash
+corepack enable
+corepack prepare pnpm@latest --activate
+```
+2. Install dependencies:
+```bash
+pnpm install
+```
+3. Configure environment:
+```bash
+cp .env.example .env
+```
+4. Edit `.env` with your PostgreSQL `DATABASE_URL`.
+5. Generate Prisma client and apply migrations:
+```bash
+pnpm prisma:generate
+pnpm prisma:migrate:dev --name init
+```
+6. Run development server:
+```bash
+pnpm dev
+```
+7. Open [http://localhost:3000/vehicles](http://localhost:3000/vehicles).
+
+## Quality Gates
+Run before considering an increment complete:
+```bash
+pnpm lint
+pnpm test
+pnpm test:e2e
+```
+
+## Testing Notes
+- Unit + component tests run with Vitest (`pnpm test`).
+- E2E smoke tests run with Playwright (`pnpm test:e2e`).
+- Playwright web server uses in-memory vehicle repository (`VEHICLE_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
 
 ## Out of Scope (v0)
 - Reminders and alerts
@@ -43,31 +79,5 @@ Optional expense fields:
 - Bank synchronization
 - Billing and third-party integrations
 
-## Language and Locale
-- User-facing content: Portuguese (Brazil) (`pt-BR`)
-- Code and technical documentation: English
-- Currency default: BRL
-
-## Technical Baseline
-- Next.js + TypeScript
-- PostgreSQL
-- Vercel + managed PostgreSQL
-- Responsive UI for desktop and mobile
-
-## Engineering Rules
-- TDD is mandatory (`Red -> Green -> Refactor`).
-- Definition of Done for each increment: tests passing, lint passing, and documentation updated.
-
-Required test stack:
-- Vitest
-- Testing Library
-- Playwright (smoke tests)
-
-## Documentation Workflow
-For every feature increment, update:
-- `AGENTS.md` when scope/contracts/rules change
-- `README.md` when setup/usage changes
-- `CHANGELOG.md` with visible technical or product updates
-
 ## Next Milestone
-Start Slice 1 (Vehicles) with failing tests first, then implement the minimum behavior to pass.
+Slice 2 (Expenses): implement expense CRUD per vehicle with date/category/amount requirements and period filtering.

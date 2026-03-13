@@ -6,6 +6,7 @@ const mockDeleteExpense = vi.fn();
 const mockListExpenses = vi.fn();
 const mockGetExpenseRepository = vi.fn();
 const mockRevalidatePath = vi.fn();
+const mockRequireAuthenticatedOwnerId = vi.fn();
 
 vi.mock("next/cache", () => ({
   revalidatePath: (path: string) => mockRevalidatePath(path),
@@ -22,6 +23,10 @@ vi.mock("@/features/expenses/repositories", () => ({
   getExpenseRepository: () => mockGetExpenseRepository(),
 }));
 
+vi.mock("@/features/auth/session", () => ({
+  requireAuthenticatedOwnerId: () => mockRequireAuthenticatedOwnerId(),
+}));
+
 describe("expense actions", () => {
   beforeEach(() => {
     vi.resetModules();
@@ -31,7 +36,9 @@ describe("expense actions", () => {
     mockListExpenses.mockReset();
     mockGetExpenseRepository.mockReset();
     mockRevalidatePath.mockReset();
+    mockRequireAuthenticatedOwnerId.mockReset();
     mockGetExpenseRepository.mockReturnValue({});
+    mockRequireAuthenticatedOwnerId.mockResolvedValue("owner-1");
   });
 
   it("maps service errors to pt-BR form state", async () => {

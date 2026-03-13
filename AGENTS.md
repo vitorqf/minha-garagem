@@ -22,8 +22,9 @@
 - Keep documentation updated continuously with each feature increment.
 
 ## v0 Scope and Sequencing
-- Required delivery sequence: `Vehicles -> Expenses -> Summaries`.
+- Required delivery sequence: `Authentication -> Vehicles -> Expenses -> Summaries`.
 - v0 includes:
+- Single-owner authentication (credentials).
 - Vehicle registry.
 - Expense tracking by vehicle.
 - Per-vehicle totals and monthly summary.
@@ -36,6 +37,15 @@
 - Compliance-ready legal/security programs beyond basic protection.
 
 ## Core Domain Contracts (Initial)
+
+### `OwnerUser`
+- Purpose: represent the single authenticated workspace owner.
+- Minimum fields:
+- `id` (stable identifier used as `ownerId` in domain records).
+- `email` (unique login identifier).
+- `passwordHash`.
+- `createdAt`.
+- `updatedAt`.
 
 ### `Vehicle`
 - Purpose: represent one tracked vehicle.
@@ -67,6 +77,11 @@
 - `categoryBreakdown` (fuel/parts/service totals).
 
 ## API Capability Targets (Behavioral)
+- Authentication API:
+- Sign up owner (`email`, `password`, `confirmPassword`) when no owner exists.
+- Login with credentials.
+- Logout.
+- Resolve current authenticated owner session.
 - Vehicle API:
 - Create, read, update, delete vehicles.
 - Expense API:
@@ -83,8 +98,16 @@
 - UI baseline: responsive support for desktop and mobile.
 
 ## Authentication and Privacy Baseline
-- Auth model for v0: single workspace owner login.
+- Auth model for v0: single workspace owner credentials login (email + password).
+- Account creation rule: only one owner account is allowed.
+- Signup rule: `/signup` is available only while no owner account exists; afterwards redirect to `/login`.
+- Route protection: unauthenticated access to `/vehicles`, `/expenses`, `/summaries`, and `/` redirects to `/login`.
 - Data access model: only owner-scoped data.
+- Password policy baseline: minimum 8 characters.
+- Auth non-goals in v0:
+- No forgot-password email flow.
+- No social login providers.
+- No multi-user workspace support.
 - Privacy/security baseline:
 - Use basic protection controls suitable for an MVP.
 - Do not claim advanced regulatory compliance in v0.
@@ -111,6 +134,13 @@
 
 ## v0 Feature Acceptance Criteria (TDD-First)
 
+### Slice 0: Authentication
+- Start with failing tests for signup/login validation and owner-session guard behavior.
+- Confirm signup enforces single-owner rule and blocks additional registrations.
+- Confirm login/logout flow works with session-based owner identity.
+- Confirm authenticated owner id is propagated to vehicles/expenses/summaries flows (no stub owner context).
+- Confirm protected routes redirect unauthenticated users to `/login`.
+
 ### Slice 1: Vehicles
 - Start with failing tests for vehicle CRUD and validation rules.
 - Implement only the code needed to pass tests.
@@ -129,10 +159,10 @@
 
 ## Specification Validation Checklist
 - [x] Product framed as personal single-user tracker (not sales SaaS).
-- [x] Scope sequencing fixed as `Vehicles -> Expenses -> Summaries`.
+- [x] Scope sequencing fixed as `Authentication -> Vehicles -> Expenses -> Summaries`.
 - [x] Non-goals explicitly listed (reminders, OCR, bank sync, billing/integrations).
-- [x] Core contracts documented: `Vehicle`, `Expense`, `VehicleSummary`.
-- [x] API behavioral targets documented for vehicle/expense/summary flows.
+- [x] Core contracts documented: `OwnerUser`, `Vehicle`, `Expense`, `VehicleSummary`.
+- [x] API behavioral targets documented for auth/vehicle/expense/summary flows.
 - [x] Language policy explicit: user content `pt-BR`; docs/code in English.
 - [x] Locale defaults explicit: BRL + `pt-BR`.
 - [x] Technical baseline explicit: Next.js + TypeScript + PostgreSQL.
@@ -146,5 +176,6 @@
 
 ## Assumptions Locked
 - Root `AGENTS.md` is canonical.
-- v0 authentication is single-owner.
+- v0 authentication is single-owner credentials with one-account-only signup.
+- Existing development data can be reset when introducing authentication.
 - Iterative delivery and documentation continuity are mandatory.

@@ -7,6 +7,17 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 ## [Unreleased]
 
 ### Added
+- Slice 0 (Authentication) implementation with Auth.js Credentials (`next-auth`) and hashed password storage (`bcryptjs`).
+- Owner `User` model (`id`, `email`, `passwordHash`, `createdAt`, `updatedAt`) plus Prisma migration `20260313181000_authentication_slice0`.
+- Authentication routes and flows in `pt-BR`: `/login`, `/signup`, `/api/auth/[...nextauth]`, and navigation logout action.
+- Single-owner signup guard: owner registration allowed only while no user exists; further signup attempts are blocked and redirected to login UX.
+- Protected-route enforcement for `/`, `/vehicles`, `/expenses`, and `/summaries` with unauthenticated redirect to `/login`.
+- Session owner propagation into vehicles/expenses/summaries pages and server actions (replacing hardcoded owner stub usage).
+- Auth test coverage across validation, service, callbacks/session extraction, action state mapping, and form components.
+- Playwright auth smoke coverage for unauthenticated redirect behavior plus signup/login/logout flows.
+- Shared Playwright auth helper and test-run auth env defaults (`USER_REPOSITORY=memory`, `AUTH_SECRET`, `AUTH_TRUST_HOST`).
+- `.env.example` auth baseline variables (`AUTH_SECRET`, `AUTH_TRUST_HOST`).
+- Documentation update for authentication-first sequence in `AGENTS.md` and setup/usage changes in `README.md`.
 - Slice 1 (Vehicles) implementation with Next.js App Router, Tailwind, Server Actions, and Prisma setup.
 - Vehicle CRUD at `/vehicles` with owner-scoped model (`ownerId` stub) and newest-first listing.
 - Strict Brazilian plate validation (Legacy + Mercosul) with normalization and per-owner uniqueness checks.
@@ -33,6 +44,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - README CI/CD documentation including required status checks and manual GitHub/Vercel configuration steps.
 
 ### Fixed
+- Login/signup e2e selector ambiguity by using exact label matching for `Senha` and `Confirmar senha`.
 - `pnpm build` TypeScript blockers in validation layers by normalizing Zod flattened field errors into typed lookup helpers (vehicles, expenses, summaries).
 - Vehicle repository year normalization for mixed raw input types (`number | string | null`) to keep in-memory and Prisma repositories type-safe and consistent.
 - Playwright smoke test stability by using unique per-run test data in vehicles/expenses/summaries flows and row-scoped selectors to avoid strict-locator collisions.

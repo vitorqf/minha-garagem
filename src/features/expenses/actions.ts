@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { STUB_OWNER_ID } from "@/features/vehicles/constants";
+import { requireAuthenticatedOwnerId } from "@/features/auth/session";
 import { EXPENSE_COPY } from "@/features/expenses/constants";
 import { getExpenseRepository } from "@/features/expenses/repositories";
 import {
@@ -39,9 +39,10 @@ export async function createExpenseAction(
   formData: FormData,
 ): Promise<ExpenseFormState> {
   void previousState;
+  const ownerId = await requireAuthenticatedOwnerId();
   const repository = getExpenseRepository();
   const input = parseExpenseFormData(formData);
-  const result = await createExpense(repository, STUB_OWNER_ID, input);
+  const result = await createExpense(repository, ownerId, input);
 
   if (!result.ok) {
     return toFormFailureState(result.message, result.errors);
@@ -62,6 +63,7 @@ export async function updateExpenseAction(
   formData: FormData,
 ): Promise<ExpenseFormState> {
   void previousState;
+  const ownerId = await requireAuthenticatedOwnerId();
   const id = String(formData.get("id") ?? "").trim();
   if (!id) {
     return toFormFailureState(EXPENSE_COPY.notFound, { form: EXPENSE_COPY.notFound });
@@ -69,7 +71,7 @@ export async function updateExpenseAction(
 
   const repository = getExpenseRepository();
   const input = parseExpenseFormData(formData);
-  const result = await updateExpense(repository, STUB_OWNER_ID, id, input);
+  const result = await updateExpense(repository, ownerId, id, input);
 
   if (!result.ok) {
     return toFormFailureState(result.message, result.errors);
@@ -86,13 +88,14 @@ export async function updateExpenseAction(
 }
 
 export async function deleteExpenseAction(formData: FormData): Promise<void> {
+  const ownerId = await requireAuthenticatedOwnerId();
   const id = String(formData.get("id") ?? "").trim();
   if (!id) {
     return;
   }
 
   const repository = getExpenseRepository();
-  const result = await deleteExpense(repository, STUB_OWNER_ID, id);
+  const result = await deleteExpense(repository, ownerId, id);
 
   if (result.ok) {
     revalidatePath("/expenses");

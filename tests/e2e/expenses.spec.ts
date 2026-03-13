@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { ensureOwnerLoggedIn } from "./auth-helpers";
 
 test("expense CRUD and filtering by vehicle/date", async ({ page }) => {
   const suffix = Date.now().toString();
@@ -6,6 +7,7 @@ test("expense CRUD and filtering by vehicle/date", async ({ page }) => {
   const vehicleLabel = `${nickname} (Toyota Corolla)`;
   const note = `Abastecimento inicial ${suffix}`;
 
+  await ensureOwnerLoggedIn(page);
   await page.goto("/vehicles");
 
   await page.getByLabel("Apelido").fill(nickname);

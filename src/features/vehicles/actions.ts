@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 
-import { STUB_OWNER_ID, VEHICLE_COPY } from "@/features/vehicles/constants";
+import { requireAuthenticatedOwnerId } from "@/features/auth/session";
+import { VEHICLE_COPY } from "@/features/vehicles/constants";
 import { getExpenseRepository } from "@/features/expenses/repositories";
 import { getVehicleRepository } from "@/features/vehicles/repositories";
 import {
@@ -32,9 +33,10 @@ export async function createVehicleAction(
   formData: FormData,
 ): Promise<VehicleFormState> {
   void previousState;
+  const ownerId = await requireAuthenticatedOwnerId();
   const repository = getVehicleRepository();
   const input = parseVehicleFormData(formData);
-  const result = await createVehicle(repository, STUB_OWNER_ID, input);
+  const result = await createVehicle(repository, ownerId, input);
 
   if (!result.ok) {
     return toFailureState(result.message, result.errors);
@@ -54,6 +56,7 @@ export async function updateVehicleAction(
   formData: FormData,
 ): Promise<VehicleFormState> {
   void previousState;
+  const ownerId = await requireAuthenticatedOwnerId();
   const id = String(formData.get("id") ?? "").trim();
   if (!id) {
     return toFailureState(VEHICLE_COPY.notFound, { form: VEHICLE_COPY.notFound });
@@ -61,7 +64,7 @@ export async function updateVehicleAction(
 
   const repository = getVehicleRepository();
   const input = parseVehicleFormData(formData);
-  const result = await updateVehicle(repository, STUB_OWNER_ID, id, input);
+  const result = await updateVehicle(repository, ownerId, id, input);
 
   if (!result.ok) {
     return toFailureState(result.message, result.errors);
@@ -81,6 +84,7 @@ export async function deleteVehicleAction(
   formData: FormData,
 ): Promise<VehicleFormState> {
   void previousState;
+  const ownerId = await requireAuthenticatedOwnerId();
   const id = String(formData.get("id") ?? "").trim();
   if (!id) {
     return toFailureState(VEHICLE_COPY.notFound, { form: VEHICLE_COPY.notFound });
@@ -88,7 +92,7 @@ export async function deleteVehicleAction(
 
   const repository = getVehicleRepository();
   const expenseRepository = getExpenseRepository();
-  const deletion = await deleteVehicle(repository, STUB_OWNER_ID, id, {
+  const deletion = await deleteVehicle(repository, ownerId, id, {
     hasRelatedExpenses: expenseRepository.hasVehicleExpenses.bind(expenseRepository),
   });
 

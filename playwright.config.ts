@@ -16,6 +16,9 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     env: {
       VEHICLE_REPOSITORY: "memory",
+      USER_REPOSITORY: "memory",
+      AUTH_SECRET: "e2e-auth-secret-should-be-at-least-32-chars",
+      AUTH_TRUST_HOST: "true",
       NEXT_TELEMETRY_DISABLED: "1",
     },
   },

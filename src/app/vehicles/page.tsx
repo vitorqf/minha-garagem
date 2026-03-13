@@ -3,7 +3,7 @@ import {
   deleteVehicleAction,
   updateVehicleAction,
 } from "@/features/vehicles/actions";
-import { STUB_OWNER_ID } from "@/features/vehicles/constants";
+import { requireAuthenticatedOwnerId } from "@/features/auth/session";
 import { VehiclesPageClient } from "@/features/vehicles/components/vehicles-page-client";
 import { getVehicleRepository } from "@/features/vehicles/repositories";
 import { listVehicles } from "@/features/vehicles/vehicle-service";
@@ -25,8 +25,9 @@ function toVehicleViewModel(input: Awaited<ReturnType<typeof listVehicles>>): Ve
 }
 
 export default async function VehiclesPage() {
+  const ownerId = await requireAuthenticatedOwnerId();
   const repository = getVehicleRepository();
-  const vehicles = await listVehicles(repository, STUB_OWNER_ID);
+  const vehicles = await listVehicles(repository, ownerId);
 
   return (
     <VehiclesPageClient

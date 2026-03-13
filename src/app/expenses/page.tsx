@@ -4,12 +4,12 @@ import {
   deleteExpenseAction,
   updateExpenseAction,
 } from "@/features/expenses/actions";
+import { requireAuthenticatedOwnerId } from "@/features/auth/session";
 import { ExpensesPageClient } from "@/features/expenses/components/expenses-page-client";
 import { formatBrlFromCents, getDefaultExpenseRange } from "@/features/expenses/format";
 import { getExpenseRepository } from "@/features/expenses/repositories";
 import { listExpenses } from "@/features/expenses/service";
 import type { ExpenseFilterInput, ExpenseViewModel, VehicleOption } from "@/features/expenses/types";
-import { STUB_OWNER_ID } from "@/features/vehicles/constants";
 import { getVehicleRepository } from "@/features/vehicles/repositories";
 import { listVehicles } from "@/features/vehicles/vehicle-service";
 
@@ -73,6 +73,7 @@ function toExpenseViewModels(
 }
 
 export default async function ExpensesPage({ searchParams }: PageProps) {
+  const ownerId = await requireAuthenticatedOwnerId();
   const query = await searchParams;
   const filters = buildFilters(query);
 
@@ -80,8 +81,8 @@ export default async function ExpensesPage({ searchParams }: PageProps) {
   const expenseRepository = getExpenseRepository();
 
   const [vehicles, expenses] = await Promise.all([
-    listVehicles(vehicleRepository, STUB_OWNER_ID),
-    listExpenses(expenseRepository, STUB_OWNER_ID, filters),
+    listVehicles(vehicleRepository, ownerId),
+    listExpenses(expenseRepository, ownerId, filters),
   ]);
 
   const vehicleOptions = toVehicleOptions(vehicles);

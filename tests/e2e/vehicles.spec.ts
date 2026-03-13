@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { ensureOwnerLoggedIn } from "./auth-helpers";
 
 test("vehicle CRUD flow and invalid plate feedback", async ({ page }) => {
   const suffix = Date.now().toString();
@@ -6,6 +7,7 @@ test("vehicle CRUD flow and invalid plate feedback", async ({ page }) => {
   const updatedNickname = `Carro Principal Atualizado ${suffix}`;
   const invalidNickname = `Carro Inválido ${suffix}`;
 
+  await ensureOwnerLoggedIn(page);
   await page.goto("/vehicles");
 
   await expect(page.getByRole("heading", { name: "Minha Garagem" })).toBeVisible();

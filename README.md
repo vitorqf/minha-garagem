@@ -3,19 +3,29 @@
 Personal single-user vehicle expense tracker.
 
 ## Status
-- Current increment: Slice 3 (Summaries) implemented.
+- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented.
 - Source of truth: `AGENTS.md`.
 
 ## Product Goal
 Track spending per vehicle with a clear, incremental workflow:
-1. Vehicles
-2. Expenses
-3. Summaries
+1. Authentication
+2. Vehicles
+3. Expenses
+4. Summaries
+
+## Slice 0 Delivered
+- Dedicated `/login` and `/signup` authentication flows in `pt-BR`.
+- Single-owner credentials model (email + password) with one-account-only signup policy.
+- Auth.js Credentials + Prisma `User` model (`id`, `email`, `passwordHash`, timestamps).
+- Protected routes: unauthenticated access to `/`, `/vehicles`, `/expenses`, `/summaries` redirects to `/login`.
+- Session owner id now drives owner-scoped data access (stub owner context removed).
+- Logout action available in the authenticated navigation.
+- TDD coverage for auth validation/service/actions/session mapping and e2e auth smoke.
 
 ## Slice 1 Delivered
 - Dedicated `/vehicles` screen.
 - Vehicle CRUD (create, list, update, hard delete).
-- Owner-scoped data model with a stubbed owner context.
+- Owner-scoped data model with authenticated owner context.
 - Validation in `pt-BR`:
 - Required: `nickname`, `brand`, `model`.
 - Optional: `plate`, `year`.
@@ -73,20 +83,26 @@ cp .env.example .env
 ```bash
 # Runtime URL (recommended: Supabase pooler URL in production/serverless)
 DATABASE_URL="postgresql://postgres.<project-ref>:<url-encoded-password>@<pooler-host>:6543/postgres?sslmode=require&pgbouncer=true&connection_limit=1"
+
+# Auth.js secret (minimum 32 characters)
+AUTH_SECRET="replace-with-a-strong-random-secret"
+
+# Trust host headers in local/dev and proxy environments
+AUTH_TRUST_HOST="true"
 ```
-5. Generate Prisma client and apply migrations:
+5. Generate Prisma client and apply all migrations:
 ```bash
 pnpm prisma:generate
-pnpm prisma:migrate:dev --name init
-pnpm prisma:migrate:dev --name expenses_slice2
+pnpm prisma:migrate:dev
 ```
 6. Run development server:
 ```bash
 pnpm dev
 ```
-7. Open [http://localhost:3000/vehicles](http://localhost:3000/vehicles).
-8. Expenses flow is available at [http://localhost:3000/expenses](http://localhost:3000/expenses).
-9. Summaries flow is available at [http://localhost:3000/summaries](http://localhost:3000/summaries).
+7. Open [http://localhost:3000/login](http://localhost:3000/login) and create/login with the owner account.
+8. Vehicles flow is available at [http://localhost:3000/vehicles](http://localhost:3000/vehicles).
+9. Expenses flow is available at [http://localhost:3000/expenses](http://localhost:3000/expenses).
+10. Summaries flow is available at [http://localhost:3000/summaries](http://localhost:3000/summaries).
 
 ## Quality Gates
 Run before considering an increment complete:
@@ -100,8 +116,8 @@ pnpm test:e2e
 ## Testing Notes
 - Unit + component tests run with Vitest (`pnpm test`).
 - E2E smoke tests run with Playwright (`pnpm test:e2e`).
-- Playwright web server uses in-memory repositories (`VEHICLE_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
-- Slice 3 followed strict TDD order: failing tests first, then implementation.
+- Playwright web server uses in-memory repositories (`VEHICLE_REPOSITORY=memory`, `USER_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
+- Auth e2e smoke validates signup/login/logout and protected-route redirects before feature flows.
 
 ## CI/CD and Security Pipeline
 - `ci / quality`: runs on pull requests and pushes to `main` with `pnpm install --frozen-lockfile`, `pnpm prisma:generate`, `pnpm lint`, `pnpm test`, and `pnpm build`.
@@ -125,4 +141,4 @@ Set these once in your GitHub/Vercel project settings:
 - Billing and third-party integrations
 
 ## Next Milestone
-Stabilize v0 and prepare the next increment after summary usage feedback.
+Stabilize authenticated v0 and prepare the next increment after real usage feedback.

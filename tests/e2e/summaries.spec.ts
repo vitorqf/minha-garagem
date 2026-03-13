@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { ensureOwnerLoggedIn } from "./auth-helpers";
 
 test("summaries show totals by vehicle, category and month including zero totals", async ({ page }) => {
   const suffix = Date.now().toString();
@@ -7,6 +8,7 @@ test("summaries show totals by vehicle, category and month including zero totals
   const carALabel = `${carANickname} (Toyota Corolla)`;
   const carBLabel = `${carBNickname} (Honda Fit)`;
 
+  await ensureOwnerLoggedIn(page);
   await page.goto("/vehicles");
 
   await page.getByLabel("Apelido").fill(carANickname);

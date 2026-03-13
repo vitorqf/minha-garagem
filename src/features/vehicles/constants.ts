@@ -1,5 +1,3 @@
-export const STUB_OWNER_ID = "owner-default";
-
 export const VEHICLE_COPY = {
   created: "Veículo cadastrado com sucesso.",
   updated: "Veículo atualizado com sucesso.",

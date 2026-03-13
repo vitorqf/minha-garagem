@@ -1,4 +1,5 @@
 import { getExpenseRepository } from "@/features/expenses/repositories";
+import { requireAuthenticatedOwnerId } from "@/features/auth/session";
 import {
   formatSummaryCurrencyFromCents,
   formatSummaryMonthLabel,
@@ -13,7 +14,6 @@ import type {
   SummaryViewModel,
 } from "@/features/summaries/types";
 import { SummariesPageClient } from "@/features/summaries/components/summaries-page-client";
-import { STUB_OWNER_ID } from "@/features/vehicles/constants";
 import { getVehicleRepository } from "@/features/vehicles/repositories";
 
 export const runtime = "nodejs";
@@ -80,6 +80,7 @@ function toSummaryViewModels(
 }
 
 export default async function SummariesPage({ searchParams }: PageProps) {
+  const ownerId = await requireAuthenticatedOwnerId();
   const query = await searchParams;
   const initialFilters = buildFilters(query);
 
@@ -91,7 +92,7 @@ export default async function SummariesPage({ searchParams }: PageProps) {
   let result = await getVehicleSummaries(
     vehicleRepository,
     expenseRepository,
-    STUB_OWNER_ID,
+    ownerId,
     initialFilters,
   );
 
@@ -105,7 +106,7 @@ export default async function SummariesPage({ searchParams }: PageProps) {
     result = await getVehicleSummaries(
       vehicleRepository,
       expenseRepository,
-      STUB_OWNER_ID,
+      ownerId,
       activeFilters,
     );
 

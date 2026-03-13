@@ -36,7 +36,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - `pnpm build` TypeScript blockers in validation layers by normalizing Zod flattened field errors into typed lookup helpers (vehicles, expenses, summaries).
 - Vehicle repository year normalization for mixed raw input types (`number | string | null`) to keep in-memory and Prisma repositories type-safe and consistent.
 - Playwright smoke test stability by using unique per-run test data in vehicles/expenses/summaries flows and row-scoped selectors to avoid strict-locator collisions.
-- Prisma datasource setup aligned with `prisma.config.ts`, using `DATABASE_URL` as the single source for Prisma runtime and CLI connectivity.
+- Prisma 7 configuration migration: datasource `url` removed from schema, `DATABASE_URL` centralized in `prisma.config.ts`, and Prisma Client initialized with PostgreSQL driver adapter (`@prisma/adapter-pg`).
 
 ## [0.1.0] - 2026-03-13
 

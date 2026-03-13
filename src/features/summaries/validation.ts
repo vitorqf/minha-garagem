@@ -49,12 +49,13 @@ export function parseSummaryPeriod(input: SummaryPeriodInput) {
 }
 
 export function toSummaryErrorMap(error: z.ZodError): Record<string, string> {
-  const fieldErrors = error.flatten().fieldErrors;
+  const fieldErrors = error.flatten().fieldErrors as Record<string, string[] | undefined>;
+  const getFieldError = (field: string) => fieldErrors[field]?.[0] ?? "";
 
   return {
-    startMonth: fieldErrors.startMonth?.[0] ?? "",
-    endMonth: fieldErrors.endMonth?.[0] ?? "",
-    vehicleId: fieldErrors.vehicleId?.[0] ?? "",
-    period: fieldErrors.period?.[0] ?? "",
+    startMonth: getFieldError("startMonth"),
+    endMonth: getFieldError("endMonth"),
+    vehicleId: getFieldError("vehicleId"),
+    period: getFieldError("period"),
   };
 }

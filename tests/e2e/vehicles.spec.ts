@@ -1,11 +1,16 @@
 import { expect, test } from "@playwright/test";
 
 test("vehicle CRUD flow and invalid plate feedback", async ({ page }) => {
+  const suffix = Date.now().toString();
+  const initialNickname = `Carro Principal ${suffix}`;
+  const updatedNickname = `Carro Principal Atualizado ${suffix}`;
+  const invalidNickname = `Carro Inválido ${suffix}`;
+
   await page.goto("/vehicles");
 
   await expect(page.getByRole("heading", { name: "Minha Garagem" })).toBeVisible();
 
-  await page.getByLabel("Apelido").fill("Carro Principal");
+  await page.getByLabel("Apelido").fill(initialNickname);
   await page.getByLabel("Marca").fill("Toyota");
   await page.getByLabel("Modelo").fill("Corolla");
   await page.getByLabel("Placa (opcional)").fill("ABC1D23");
@@ -13,17 +18,17 @@ test("vehicle CRUD flow and invalid plate feedback", async ({ page }) => {
   await page.getByRole("button", { name: "Adicionar veículo" }).click();
 
   await expect(page.getByText("Veículo cadastrado com sucesso.")).toBeVisible();
-  await expect(page.getByText("Carro Principal (Toyota Corolla)")).toBeVisible();
+  await expect(page.getByText(`${initialNickname} (Toyota Corolla)`)).toBeVisible();
 
   const firstVehicleRow = page.locator("li").first();
   await firstVehicleRow.getByRole("button", { name: "Editar" }).click();
-  await firstVehicleRow.getByLabel("Apelido").fill("Carro Principal Atualizado");
+  await firstVehicleRow.getByLabel("Apelido").fill(updatedNickname);
   await firstVehicleRow.getByRole("button", { name: "Salvar" }).click();
 
-  await expect(page.getByText("Carro Principal Atualizado (Toyota Corolla)")).toBeVisible();
+  await expect(page.getByText(`${updatedNickname} (Toyota Corolla)`)).toBeVisible();
 
   await firstVehicleRow.getByRole("button", { name: "Editar" }).click();
-  await firstVehicleRow.getByLabel("Apelido").fill("Carro Inválido");
+  await firstVehicleRow.getByLabel("Apelido").fill(invalidNickname);
   await firstVehicleRow.getByLabel("Placa (opcional)").fill("ZZ-12");
   await firstVehicleRow.getByRole("button", { name: "Salvar" }).click();
 
@@ -32,5 +37,5 @@ test("vehicle CRUD flow and invalid plate feedback", async ({ page }) => {
   await firstVehicleRow.getByRole("button", { name: "Cancelar" }).click();
   await firstVehicleRow.getByRole("button", { name: "Excluir" }).click();
 
-  await expect(page.getByText("Carro Principal Atualizado (Toyota Corolla)")).not.toBeVisible();
+  await expect(page.getByText(`${updatedNickname} (Toyota Corolla)`)).not.toBeVisible();
 });

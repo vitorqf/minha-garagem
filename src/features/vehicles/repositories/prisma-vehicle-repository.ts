@@ -5,6 +5,19 @@ import type {
 } from "@/features/vehicles/repositories/vehicle-repository";
 import type { Vehicle, VehicleInput } from "@/features/vehicles/types";
 
+function normalizeYear(value: VehicleInput["year"]): number | null {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  if (typeof value === "number") {
+    return value;
+  }
+
+  const parsed = Number(value);
+  return Number.isInteger(parsed) ? parsed : null;
+}
+
 export class PrismaVehicleRepository implements VehicleRepository {
   async listByOwner(ownerId: string): Promise<Vehicle[]> {
     return prisma.vehicle.findMany({
@@ -36,7 +49,7 @@ export class PrismaVehicleRepository implements VehicleRepository {
         brand: data.brand,
         model: data.model,
         plate: data.plate ?? null,
-        year: data.year ?? null,
+        year: normalizeYear(data.year),
       },
     });
   }
@@ -58,7 +71,7 @@ export class PrismaVehicleRepository implements VehicleRepository {
         brand: data.brand,
         model: data.model,
         plate: data.plate ?? null,
-        year: data.year ?? null,
+        year: normalizeYear(data.year),
       },
     });
   }

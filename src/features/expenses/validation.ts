@@ -131,15 +131,16 @@ export function parseExpenseFilterFormData(formData: FormData): ExpenseFilterInp
 }
 
 export function toExpenseErrorMap(error: z.ZodError): Record<string, string> {
-  const fieldErrors = error.flatten().fieldErrors;
+  const fieldErrors = error.flatten().fieldErrors as Record<string, string[] | undefined>;
+  const getFieldError = (field: string) => fieldErrors[field]?.[0] ?? "";
 
   return {
-    vehicleId: fieldErrors.vehicleId?.[0] ?? "",
-    expenseDate: fieldErrors.expenseDate?.[0] ?? "",
-    category: fieldErrors.category?.[0] ?? "",
-    amountInput: fieldErrors.amountInput?.[0] ?? "",
-    mileage: fieldErrors.mileage?.[0] ?? "",
-    notes: fieldErrors.notes?.[0] ?? "",
-    period: fieldErrors.period?.[0] ?? "",
+    vehicleId: getFieldError("vehicleId"),
+    expenseDate: getFieldError("expenseDate"),
+    category: getFieldError("category"),
+    amountInput: getFieldError("amountInput"),
+    mileage: getFieldError("mileage"),
+    notes: getFieldError("notes"),
+    period: getFieldError("period"),
   };
 }

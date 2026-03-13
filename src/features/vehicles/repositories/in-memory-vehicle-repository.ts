@@ -6,6 +6,19 @@ import type { Vehicle, VehicleInput } from "@/features/vehicles/types";
 
 const byNewest = (a: Vehicle, b: Vehicle) => b.createdAt.getTime() - a.createdAt.getTime();
 
+function normalizeYear(value: VehicleInput["year"]): number | null {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  if (typeof value === "number") {
+    return value;
+  }
+
+  const parsed = Number(value);
+  return Number.isInteger(parsed) ? parsed : null;
+}
+
 export class InMemoryVehicleRepository implements VehicleRepository {
   private readonly vehicles: Vehicle[] = [];
 
@@ -38,7 +51,7 @@ export class InMemoryVehicleRepository implements VehicleRepository {
       brand: data.brand,
       model: data.model,
       plate: data.plate ?? null,
-      year: data.year ?? null,
+      year: normalizeYear(data.year),
       createdAt: now,
       updatedAt: now,
     };
@@ -60,7 +73,7 @@ export class InMemoryVehicleRepository implements VehicleRepository {
       brand: data.brand,
       model: data.model,
       plate: data.plate ?? null,
-      year: data.year ?? null,
+      year: normalizeYear(data.year),
       updatedAt: new Date(),
     };
 

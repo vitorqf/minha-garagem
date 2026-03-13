@@ -83,13 +83,14 @@ export function parseVehicleFormData(formData: FormData): VehicleInput {
 }
 
 export function toErrorMap(error: z.ZodError): Record<string, string> {
-  const fieldErrors = error.flatten().fieldErrors;
+  const fieldErrors = error.flatten().fieldErrors as Record<string, string[] | undefined>;
+  const getFieldError = (field: string) => fieldErrors[field]?.[0] ?? "";
 
   return {
-    nickname: fieldErrors.nickname?.[0] ?? "",
-    brand: fieldErrors.brand?.[0] ?? "",
-    model: fieldErrors.model?.[0] ?? "",
-    plate: fieldErrors.plate?.[0] ?? "",
-    year: fieldErrors.year?.[0] ?? "",
+    nickname: getFieldError("nickname"),
+    brand: getFieldError("brand"),
+    model: getFieldError("model"),
+    plate: getFieldError("plate"),
+    year: getFieldError("year"),
   };
 }

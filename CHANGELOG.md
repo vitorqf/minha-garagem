@@ -25,6 +25,17 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Summary UI with explicit zero-total vehicle visibility, BRL formatting, and `pt-BR` month labels.
 - Shared top navigation for direct access between `/vehicles`, `/expenses`, and `/summaries`.
 - Slice 3 TDD coverage across validation/service/component/e2e smoke tests.
+- GitHub CI workflow (`.github/workflows/ci.yml`) with `quality` gates for install, Prisma client generation, lint, unit/component tests, and production build.
+- Main-branch-only Playwright gate (`ci / e2e-main`) with failure artifact upload (`playwright-report`, `test-results`).
+- Security workflow (`.github/workflows/security.yml`) with dependency review, high-severity dependency audit, and gitleaks secret scan.
+- CodeQL workflow (`.github/workflows/codeql.yml`) for JavaScript/TypeScript security and quality analysis.
+- Dependabot weekly update policy for npm and GitHub Actions (`.github/dependabot.yml`).
+- README CI/CD documentation including required status checks and manual GitHub/Vercel configuration steps.
+
+### Fixed
+- `pnpm build` TypeScript blockers in validation layers by normalizing Zod flattened field errors into typed lookup helpers (vehicles, expenses, summaries).
+- Vehicle repository year normalization for mixed raw input types (`number | string | null`) to keep in-memory and Prisma repositories type-safe and consistent.
+- Playwright smoke test stability by using unique per-run test data in vehicles/expenses/summaries flows and row-scoped selectors to avoid strict-locator collisions.
 
 ## [0.1.0] - 2026-03-13
 

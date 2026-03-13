@@ -89,6 +89,7 @@ Run before considering an increment complete:
 ```bash
 pnpm lint
 pnpm test
+pnpm build
 pnpm test:e2e
 ```
 
@@ -97,6 +98,21 @@ pnpm test:e2e
 - E2E smoke tests run with Playwright (`pnpm test:e2e`).
 - Playwright web server uses in-memory repositories (`VEHICLE_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
 - Slice 3 followed strict TDD order: failing tests first, then implementation.
+
+## CI/CD and Security Pipeline
+- `ci / quality`: runs on pull requests and pushes to `main` with `pnpm install --frozen-lockfile`, `pnpm prisma:generate`, `pnpm lint`, `pnpm test`, and `pnpm build`.
+- `ci / e2e-main`: runs only on pushes to `main` and blocks production branch changes when Playwright smoke tests fail.
+- `security / dependency-review`: runs on pull requests with `actions/dependency-review-action`.
+- `security / audit`: runs `pnpm audit --audit-level high`.
+- `security / secret-scan`: runs gitleaks against full git history (`fetch-depth: 0`).
+- `codeql / analyze`: runs CodeQL (`javascript-typescript`) on pull requests, pushes to `main`, and weekly schedule.
+- Dependabot (`.github/dependabot.yml`) updates npm and GitHub Actions dependencies weekly.
+
+## Manual Platform Configuration
+Set these once in your GitHub/Vercel project settings:
+1. Configure GitHub branch protection for `main` to require pull requests, require up-to-date branches, and require these checks: `ci / quality`, `security / dependency-review`, `security / audit`, `security / secret-scan`, `codeql / analyze`.
+2. Keep `ci / e2e-main` out of required pull request checks because it runs only after push to `main`.
+3. Configure Vercel Git integration: connect this repository, set production branch to `main`, keep preview deployments for pull requests, and keep production deploys on merges to `main`.
 
 ## Out of Scope (v0)
 - Reminders and alerts

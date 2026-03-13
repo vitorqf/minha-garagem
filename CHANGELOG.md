@@ -19,6 +19,12 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Vehicle deletion guard that blocks removal when related expenses exist, returning clear `pt-BR` feedback.
 - Strict TDD execution for Slice 2 (failing tests first across validation/service/actions/components/e2e).
 - Updated `README.md` with Slice 2 setup and usage details.
+- Slice 3 (Summaries) implementation with dedicated `/summaries` route and owner-scoped server-side aggregation.
+- Inclusive month-range filtering (`startMonth`, `endMonth`) with current-month defaults and optional vehicle scoping.
+- Per-vehicle aggregated totals including category breakdown (`fuel`, `parts`, `service`) and monthly totals (`YYYY-MM`).
+- Summary UI with explicit zero-total vehicle visibility, BRL formatting, and `pt-BR` month labels.
+- Shared top navigation for direct access between `/vehicles`, `/expenses`, and `/summaries`.
+- Slice 3 TDD coverage across validation/service/component/e2e smoke tests.
 
 ## [0.1.0] - 2026-03-13
 

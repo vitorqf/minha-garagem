@@ -33,9 +33,6 @@ jobs:
         with:
           fail-on-severity: high
           fail-on-scopes: runtime
-          allow-ghsas: |
-            GHSA-q5qw-h33p-qvwr
-            GHSA-wc8c-qw6v-h7f6
           show-openssf-scorecard: false
 
   audit:
@@ -63,7 +60,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Dependency audit
-        run: pnpm audit --audit-level high --prod --ignore GHSA-q5qw-h33p-qvwr --ignore GHSA-wc8c-qw6v-h7f6
+        run: pnpm audit --audit-level high --prod
 
   secret-scan:
     name: secret-scan

@@ -38,7 +38,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Playwright smoke test stability by using unique per-run test data in vehicles/expenses/summaries flows and row-scoped selectors to avoid strict-locator collisions.
 - Prisma 7 configuration migration: datasource `url` removed from schema, `DATABASE_URL` centralized in `prisma.config.ts`, and Prisma Client initialized with PostgreSQL driver adapter (`@prisma/adapter-pg`).
 - Vercel build stability with Prisma 7 by generating Prisma Client automatically on `pnpm build` via `prebuild`.
-- Security workflow hardening by scoping dependency-review to runtime severity and suppressing two known Prisma-toolchain transitive advisories in `pnpm audit` until upstream patches are available.
+- Security workflow hardening by scoping dependency-review to runtime severity and upgrading Prisma-toolchain transitive packages (`hono`, `@hono/node-server`) to patched versions through pnpm overrides.
 
 ## [0.1.0] - 2026-03-13
 

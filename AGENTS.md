@@ -157,6 +157,81 @@
 - Confirm totals match registered expenses by category and month.
 - Confirm output is clear for quick spending analysis.
 
+## v1 Proposal (Planned, Not Implemented Yet)
+- Status: proposal approved for planning only; code is not implemented at this stage.
+
+### Summary
+- v1 focus: on-demand CSV export from existing filtered screens (`/expenses` and `/summaries`).
+- Objective: owner can download operational reports in pt-BR Excel-friendly CSV format.
+- Delivery model: 3 milestones (`Foundation -> Expenses Export -> Summaries Export`).
+
+### Public API and Contract Targets
+- New authenticated endpoints:
+- `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>`.
+- `GET /api/reports/summaries.csv?startMonth=YYYY-MM&endMonth=YYYY-MM&vehicleId=<optional>`.
+- Auth behavior:
+- Unauthenticated request returns `401` JSON with pt-BR message.
+- Validation behavior:
+- Invalid filters return `400` JSON with pt-BR message and field error map.
+- Success behavior:
+- `200` with `Content-Type: text/csv; charset=utf-8`.
+- `Content-Disposition: attachment; filename="<report>-<period>.csv"`.
+- CSV payload starts with UTF-8 BOM for Excel compatibility.
+- CSV format contract:
+- Delimiter `;`.
+- Headers in pt-BR.
+- Currency in BRL-friendly representation (for example `150,25`).
+- Dates in `DD/MM/YYYY`.
+- Empty datasets export header row without hard error.
+
+### v1 Domain/Type Additions (Planned)
+- `ReportExpenseExportFilter` aligned with existing expense filters.
+- `ReportSummaryExportFilter` aligned with existing summary filters.
+- `ExpenseCsvRow` and `SummaryCsvRow` as deterministic export view contracts.
+- No database schema changes and no persisted `Report` entity in v1.
+
+### Milestone Plan
+1. Milestone 1 (Foundation / Week 1)
+- Add `reports` domain module with CSV serializer, pt-BR format helpers, filename strategy, and export service contracts.
+- Reuse existing expenses/summaries validation and owner-scoped service/repository flows.
+
+2. Milestone 2 (Expenses Export / Week 2)
+- Implement `GET /api/reports/expenses.csv`.
+- Add `Exportar CSV` action in `/expenses` filter section using current active filters.
+- Expected columns: `ID`, `Data`, `Veículo`, `Categoria`, `Valor (R$)`, `Quilometragem (km)`, `Observações`.
+
+3. Milestone 3 (Summaries Export + Finalization / Week 3)
+- Implement `GET /api/reports/summaries.csv`.
+- Add `Exportar CSV` action in `/summaries` filter section using active resolved filters.
+- Expected columns: `Veículo`, `Total (R$)`, `Combustível (R$)`, `Peças (R$)`, `Serviços (R$)`, plus dynamic month columns.
+- Final documentation update when implementation starts/completes: `AGENTS.md`, `README.md`, `CHANGELOG.md`.
+
+### v1 Planned Test Targets
+- Unit:
+- CSV serialization (delimiter, quoting, BOM, newline behavior).
+- pt-BR formatting helpers (currency/date/month labels).
+- Filename generation by report type and period.
+- Service:
+- Owner scoping for both export datasets.
+- Correct filter application for vehicle/date and vehicle/month ranges.
+- Empty dataset behavior (header-only CSV).
+- Route/API:
+- `401` unauthenticated.
+- `400` invalid filters.
+- `200` with expected CSV headers/body.
+- Component:
+- Export actions visible in both screens and carrying expected query params from active filters.
+- E2E smoke:
+- Login, seed data, trigger both exports from UI entry points, validate downloadable response headers/content shape.
+- Unauthenticated direct API access is rejected.
+
+### v1 Assumptions Locked (For Implementation Start)
+- CSV-only in v1 (no PDF).
+- On-demand generation only (no saved snapshots/history).
+- Export entry points remain on existing screens (no dedicated `/reports` page).
+- Single-owner auth model remains unchanged.
+- Expense categories remain fixed (`fuel | parts | service`) for this v1 slice.
+
 ## Specification Validation Checklist
 - [x] Product framed as personal single-user tracker (not sales SaaS).
 - [x] Scope sequencing fixed as `Authentication -> Vehicles -> Expenses -> Summaries`.

@@ -13,6 +13,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: read
 
@@ -27,11 +30,17 @@ jobs:
     steps:
       - name: Dependency review
         uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          fail-on-scopes: runtime
+          show-openssf-scorecard: false
 
   audit:
     name: audit
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/minha_garagem_ci?schema=public
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,7 +60,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Dependency audit
-        run: pnpm audit --audit-level high
+        run: pnpm audit --audit-level high --prod
 
   secret-scan:
     name: secret-scan

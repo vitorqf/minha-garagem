@@ -122,4 +122,30 @@ describe("vehicle service", () => {
     const remaining = await listVehicles(repository, "owner-a");
     expect(remaining).toHaveLength(0);
   });
+
+  it("blocks delete when vehicle has related expenses", async () => {
+    const repository = new InMemoryVehicleRepository();
+
+    const created = await createVehicle(repository, "owner-a", {
+      nickname: "Carro",
+      brand: "Ford",
+      model: "Ka",
+      plate: "ABC1234",
+      year: 2016,
+    });
+
+    expect(created.ok).toBe(true);
+    if (!created.ok) {
+      return;
+    }
+
+    const deleted = await deleteVehicle(repository, "owner-a", created.data.id, {
+      hasRelatedExpenses: async () => true,
+    });
+
+    expect(deleted.ok).toBe(false);
+    if (!deleted.ok) {
+      expect(deleted.message).toContain("despesas vinculadas");
+    }
+  });
 });

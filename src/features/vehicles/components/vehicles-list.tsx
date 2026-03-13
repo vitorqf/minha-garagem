@@ -11,7 +11,10 @@ type VehicleMutationAction = (
   formData: FormData,
 ) => Promise<VehicleFormState>;
 
-type VehicleDeleteAction = (formData: FormData) => Promise<void>;
+type VehicleDeleteAction = (
+  state: VehicleFormState,
+  formData: FormData,
+) => Promise<VehicleFormState>;
 
 type VehiclesListProps = {
   vehicles: VehicleViewModel[];
@@ -61,6 +64,10 @@ function EditableVehicleRow({
     },
     initialVehicleFormState,
   );
+  const [deleteState, deleteFormAction] = useActionState(
+    deleteVehicleAction,
+    initialVehicleFormState,
+  );
 
   return (
     <li className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
@@ -84,7 +91,7 @@ function EditableVehicleRow({
             >
               Editar
             </button>
-            <form action={deleteVehicleAction}>
+            <form action={deleteFormAction}>
               <input type="hidden" name="id" value={vehicle.id} />
               <SubmitButton
                 label="Excluir"
@@ -137,6 +144,11 @@ function EditableVehicleRow({
           </div>
         </form>
       )}
+      {deleteState.message ? (
+        <p className={`mt-2 text-sm ${deleteState.status === "success" ? "text-emerald-700" : "text-red-700"}`}>
+          {deleteState.message}
+        </p>
+      ) : null}
     </li>
   );
 }

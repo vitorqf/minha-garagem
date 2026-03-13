@@ -123,7 +123,21 @@ export async function deleteVehicle(
   repository: VehicleRepository,
   ownerId: string,
   id: string,
+  options?: {
+    hasRelatedExpenses?: (ownerId: string, vehicleId: string) => Promise<boolean>;
+  },
 ): Promise<ServiceResult<boolean>> {
+  if (options?.hasRelatedExpenses) {
+    const hasRelatedExpenses = await options.hasRelatedExpenses(ownerId, id);
+    if (hasRelatedExpenses) {
+      return {
+        ok: false,
+        message: VEHICLE_COPY.vehicleHasExpenses,
+        errors: { form: VEHICLE_COPY.vehicleHasExpenses },
+      };
+    }
+  }
+
   const deleted = await repository.delete(id, ownerId);
 
   if (!deleted) {

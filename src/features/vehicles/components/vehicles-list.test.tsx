@@ -5,7 +5,7 @@ import { VehiclesList } from "@/features/vehicles/components/vehicles-list";
 import { initialVehicleFormState, type VehicleFormState } from "@/features/vehicles/types";
 
 const noopUpdateAction = async (): Promise<VehicleFormState> => initialVehicleFormState;
-const noopDeleteAction = async (): Promise<void> => {};
+const noopDeleteAction = async (): Promise<VehicleFormState> => initialVehicleFormState;
 
 describe("VehiclesList", () => {
   it("renders newest vehicles first", () => {

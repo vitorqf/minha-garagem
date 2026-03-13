@@ -12,7 +12,13 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Strict Brazilian plate validation (Legacy + Mercosul) with normalization and per-owner uniqueness checks.
 - Prisma schema/migration for `Vehicle` model and PostgreSQL baseline configuration.
 - TDD baseline with Vitest unit/component tests and Playwright e2e CRUD smoke coverage.
-- Updated `README.md` with real setup, migration, run, lint, unit, and e2e commands.
+- Slice 2 (Expenses) implementation with dedicated `/expenses` route, server actions, filtering, and BRL formatting.
+- Expense schema and migration with owner scope, vehicle relation (`ON DELETE RESTRICT`), fixed categories, and indexed period queries.
+- Expense CRUD with required `date/vehicle/category/amount`, optional `mileage/notes`, and integer-cents storage model.
+- Date-range and vehicle filtering (`startDate`, `endDate`, optional `vehicleId`) with newest-first ordering.
+- Vehicle deletion guard that blocks removal when related expenses exist, returning clear `pt-BR` feedback.
+- Strict TDD execution for Slice 2 (failing tests first across validation/service/actions/components/e2e).
+- Updated `README.md` with Slice 2 setup and usage details.
 
 ## [0.1.0] - 2026-03-13
 

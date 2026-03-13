@@ -17,7 +17,32 @@ model Vehicle {
   year      Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  expenses  Expense[]
 
   @@unique([ownerId, plate])
   @@index([ownerId, createdAt])
+}
+
+enum ExpenseCategory {
+  fuel
+  parts
+  service
+}
+
+model Expense {
+  id         String          @id @default(cuid())
+  ownerId    String
+  vehicleId  String
+  expenseDate DateTime
+  category   ExpenseCategory
+  amountCents Int
+  mileage    Int?
+  notes      String?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Restrict)
+
+  @@index([ownerId, expenseDate])
+  @@index([ownerId, vehicleId, expenseDate])
 }

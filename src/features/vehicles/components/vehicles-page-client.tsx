@@ -12,7 +12,10 @@ type VehicleMutationAction = (
   formData: FormData,
 ) => Promise<VehicleFormState>;
 
-type VehicleDeleteAction = (formData: FormData) => Promise<void>;
+type VehicleDeleteAction = (
+  state: VehicleFormState,
+  formData: FormData,
+) => Promise<VehicleFormState>;
 
 type VehiclesPageClientProps = {
   vehicles: VehicleViewModel[];

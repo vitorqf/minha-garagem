@@ -3,7 +3,7 @@
 Personal single-user vehicle expense tracker.
 
 ## Status
-- Current increment: Slice 1 (Vehicles) implemented.
+- Current increment: Slice 2 (Expenses) implemented.
 - Source of truth: `AGENTS.md`.
 
 ## Product Goal
@@ -22,6 +22,17 @@ Track spending per vehicle with a clear, incremental workflow:
 - Strict Brazilian plate support (Legacy `AAA9999` + Mercosul `AAA9A99`).
 - Plate uniqueness per owner when provided.
 - Vehicles listed by newest first.
+
+## Slice 2 Delivered
+- Dedicated `/expenses` screen.
+- Expense CRUD (create, list, update, hard delete) scoped to owner and vehicle.
+- Fixed categories: `fuel`, `parts`, `service`.
+- Required expense fields: `expenseDate`, `vehicleId`, `category`, `amount`.
+- Optional fields: `mileage`, `notes` (max 500 chars).
+- Amount input accepted as BRL decimal and stored as integer cents.
+- Default filters: all vehicles, last 30 days, newest date first.
+- Filtering by vehicle and date range (`startDate` + `endDate`).
+- Vehicle deletion now blocked when related expenses exist.
 
 ## Tech Baseline
 - Next.js App Router + TypeScript + Tailwind CSS.
@@ -53,12 +64,14 @@ cp .env.example .env
 ```bash
 pnpm prisma:generate
 pnpm prisma:migrate:dev --name init
+pnpm prisma:migrate:dev --name expenses_slice2
 ```
 6. Run development server:
 ```bash
 pnpm dev
 ```
 7. Open [http://localhost:3000/vehicles](http://localhost:3000/vehicles).
+8. Expenses flow is available at [http://localhost:3000/expenses](http://localhost:3000/expenses).
 
 ## Quality Gates
 Run before considering an increment complete:
@@ -71,7 +84,8 @@ pnpm test:e2e
 ## Testing Notes
 - Unit + component tests run with Vitest (`pnpm test`).
 - E2E smoke tests run with Playwright (`pnpm test:e2e`).
-- Playwright web server uses in-memory vehicle repository (`VEHICLE_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
+- Playwright web server uses in-memory repositories (`VEHICLE_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
+- Slice 2 followed strict TDD order: failing tests first, then implementation.
 
 ## Out of Scope (v0)
 - Reminders and alerts
@@ -80,4 +94,4 @@ pnpm test:e2e
 - Billing and third-party integrations
 
 ## Next Milestone
-Slice 2 (Expenses): implement expense CRUD per vehicle with date/category/amount requirements and period filtering.
+Slice 3 (Summaries): aggregate totals by vehicle and by month with category breakdown.

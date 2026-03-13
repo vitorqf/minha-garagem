@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { STUB_OWNER_ID, VEHICLE_COPY } from "@/features/vehicles/constants";
+import { getExpenseRepository } from "@/features/expenses/repositories";
 import { getVehicleRepository } from "@/features/vehicles/repositories";
 import {
   createVehicle,
@@ -75,16 +76,32 @@ export async function updateVehicleAction(
   };
 }
 
-export async function deleteVehicleAction(formData: FormData): Promise<void> {
+export async function deleteVehicleAction(
+  previousState: VehicleFormState = initialVehicleFormState,
+  formData: FormData,
+): Promise<VehicleFormState> {
+  void previousState;
   const id = String(formData.get("id") ?? "").trim();
   if (!id) {
-    return;
+    return toFailureState(VEHICLE_COPY.notFound, { form: VEHICLE_COPY.notFound });
   }
 
   const repository = getVehicleRepository();
-  const result = await deleteVehicle(repository, STUB_OWNER_ID, id);
+  const expenseRepository = getExpenseRepository();
+  const deletion = await deleteVehicle(repository, STUB_OWNER_ID, id, {
+    hasRelatedExpenses: expenseRepository.hasVehicleExpenses.bind(expenseRepository),
+  });
 
-  if (result.ok) {
-    revalidatePath("/vehicles");
+  if (!deletion.ok) {
+    return toFailureState(deletion.message, deletion.errors);
   }
+
+  revalidatePath("/vehicles");
+  revalidatePath("/expenses");
+
+  return {
+    status: "success",
+    message: deletion.message,
+    errors: {},
+  };
 }

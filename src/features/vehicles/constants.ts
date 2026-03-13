@@ -8,6 +8,7 @@ export const VEHICLE_COPY = {
   genericError: "Não foi possível salvar o veículo. Tente novamente.",
   duplicatePlate: "Já existe um veículo com esta placa.",
   invalidPlate: "Placa inválida. Use um formato brasileiro válido.",
+  vehicleHasExpenses: "Não é possível remover o veículo porque ele possui despesas vinculadas.",
   requiredNickname: "Apelido é obrigatório.",
   requiredBrand: "Marca é obrigatória.",
   requiredModel: "Modelo é obrigatório.",

@@ -23,6 +23,7 @@ jobs:
       VEHICLE_REPOSITORY: memory
       EXPENSE_REPOSITORY: memory
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/minha_garagem_ci?schema=public
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/minha_garagem_ci?schema=public
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - name: Checkout
@@ -65,6 +66,7 @@ jobs:
       VEHICLE_REPOSITORY: memory
       EXPENSE_REPOSITORY: memory
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/minha_garagem_ci?schema=public
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/minha_garagem_ci?schema=public
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - name: Checkout

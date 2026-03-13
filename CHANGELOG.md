@@ -36,6 +36,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - `pnpm build` TypeScript blockers in validation layers by normalizing Zod flattened field errors into typed lookup helpers (vehicles, expenses, summaries).
 - Vehicle repository year normalization for mixed raw input types (`number | string | null`) to keep in-memory and Prisma repositories type-safe and consistent.
 - Playwright smoke test stability by using unique per-run test data in vehicles/expenses/summaries flows and row-scoped selectors to avoid strict-locator collisions.
+- Prisma datasource setup for Supabase-style deployment by introducing `directUrl` (`DIRECT_URL`) alongside `DATABASE_URL`, enabling pooled runtime connections with direct migration connectivity.
 
 ## [0.1.0] - 2026-03-13
 

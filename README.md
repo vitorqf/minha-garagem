@@ -69,13 +69,10 @@ pnpm install
 ```bash
 cp .env.example .env
 ```
-4. Edit `.env` with both Prisma URLs:
+4. Edit `.env` with your Prisma datasource URL:
 ```bash
-# Runtime URL (recommended: Supabase pooler URL)
+# Runtime URL (recommended: Supabase pooler URL in production/serverless)
 DATABASE_URL="postgresql://postgres.<project-ref>:<url-encoded-password>@<pooler-host>:6543/postgres?sslmode=require&pgbouncer=true&connection_limit=1"
-
-# Direct URL (recommended: Supabase direct host)
-DIRECT_URL="postgresql://postgres:<url-encoded-password>@db.<project-ref>.supabase.co:5432/postgres?sslmode=require"
 ```
 5. Generate Prisma client and apply migrations:
 ```bash

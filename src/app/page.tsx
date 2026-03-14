@@ -8,5 +8,5 @@ export default async function Home() {
     redirect("/login");
   }
 
-  redirect("/vehicles");
+  redirect("/summaries");
 }

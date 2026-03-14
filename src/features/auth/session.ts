@@ -22,6 +22,6 @@ export async function requireAuthenticatedOwnerId(): Promise<string> {
 export async function redirectIfAuthenticated(): Promise<void> {
   const ownerId = await getCurrentOwnerId();
   if (ownerId) {
-    redirect("/vehicles");
+    redirect("/summaries");
   }
 }

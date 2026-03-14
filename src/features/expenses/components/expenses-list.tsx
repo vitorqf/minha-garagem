@@ -2,7 +2,14 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { ChevronLeft, ChevronRight, MoreVertical } from "lucide-react";
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ExpenseFormFields } from "@/features/expenses/components/expense-form-fields";
 import {
   initialExpenseFormState,
@@ -32,121 +39,25 @@ function SubmitButton({
 }: {
   label: string;
   pendingLabel: string;
-  className: string;
+  className?: string;
 }) {
   const { pending } = useFormStatus();
 
   return (
-    <button type="submit" disabled={pending} className={className}>
+    <Button type="submit" disabled={pending} className={className}>
       {pending ? pendingLabel : label}
-    </button>
+    </Button>
   );
 }
 
-function EditableExpenseRow({
-  expense,
-  vehicles,
-  updateExpenseAction,
-  deleteExpenseAction,
-}: {
-  expense: ExpenseViewModel;
-  vehicles: VehicleOption[];
-  updateExpenseAction: ExpenseMutationAction;
-  deleteExpenseAction: ExpenseDeleteAction;
-}) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [updateState, updateFormAction] = useActionState(
-    async (previousState: ExpenseFormState, formData: FormData) => {
-      const result = await updateExpenseAction(previousState, formData);
-      if (result.status === "success") {
-        setIsEditing(false);
-      }
-      return result;
-    },
-    initialExpenseFormState,
-  );
-
-  return (
-    <li data-testid="expense-row" className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-      {!isEditing ? (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <p data-testid="expense-row-title" className="text-base font-semibold text-zinc-900">
-              {expense.expenseDate} · {expense.vehicleLabel}
-            </p>
-            <p className="text-sm text-zinc-600">
-              {expense.amountLabel} · {expense.category}
-              {expense.mileage ? ` · ${expense.mileage} km` : ""}
-            </p>
-            {expense.notes ? <p className="text-sm text-zinc-600">{expense.notes}</p> : null}
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-800"
-            >
-              Editar
-            </button>
-
-            <form action={deleteExpenseAction}>
-              <input type="hidden" name="id" value={expense.id} />
-              <SubmitButton
-                label="Excluir"
-                pendingLabel="Excluindo..."
-                className="rounded-lg bg-red-700 px-3 py-2 text-sm font-medium text-white"
-              />
-            </form>
-          </div>
-        </div>
-      ) : (
-        <form action={updateFormAction} className="space-y-3">
-          <input type="hidden" name="id" value={expense.id} />
-          <div className="grid gap-3 sm:grid-cols-2">
-            <ExpenseFormFields
-              idPrefix={`edit-${expense.id}`}
-              vehicles={vehicles}
-              values={{
-                vehicleId: expense.vehicleId,
-                expenseDate: expense.expenseDate,
-                category: expense.category,
-                amountInput: (expense.amountCents / 100).toFixed(2).replace(".", ","),
-                mileage: expense.mileage,
-                notes: expense.notes,
-              }}
-              errors={updateState.errors}
-            />
-          </div>
-
-          {updateState.message ? (
-            <p
-              className={`text-sm ${
-                updateState.status === "success" ? "text-emerald-700" : "text-red-700"
-              }`}
-            >
-              {updateState.message}
-            </p>
-          ) : null}
-
-          <div className="flex gap-2">
-            <SubmitButton
-              label="Salvar"
-              pendingLabel="Salvando..."
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
-            />
-            <button
-              type="button"
-              onClick={() => setIsEditing(false)}
-              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-800"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
-      )}
-    </li>
-  );
+function formatDate(input: string) {
+  const date = new Date(`${input}T00:00:00Z`);
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "UTC",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
 }
 
 export function ExpensesList({
@@ -155,6 +66,19 @@ export function ExpensesList({
   updateExpenseAction,
   deleteExpenseAction,
 }: ExpensesListProps) {
+  const [editingExpense, setEditingExpense] = useState<ExpenseViewModel | null>(null);
+  const [deletingExpense, setDeletingExpense] = useState<ExpenseViewModel | null>(null);
+  const [updateState, updateFormAction] = useActionState(
+    async (previousState: ExpenseFormState, formData: FormData) => {
+      const result = await updateExpenseAction(previousState, formData);
+      if (result.status === "success") {
+        setEditingExpense(null);
+      }
+      return result;
+    },
+    initialExpenseFormState,
+  );
+
   const sortedExpenses = useMemo(
     () =>
       [...expenses].sort((a, b) => {
@@ -169,23 +93,140 @@ export function ExpensesList({
 
   if (sortedExpenses.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-6 text-center">
-        <p className="text-sm text-zinc-600">Nenhuma despesa encontrada no período selecionado.</p>
+      <div className="rounded-3xl border-2 border-dashed border-[#CCD7E8] bg-[#F8FBFF] p-8 text-center">
+        <p className="text-base text-[#5E7391]">Nenhuma despesa encontrada no período selecionado.</p>
       </div>
     );
   }
 
   return (
-    <ul className="space-y-3">
-      {sortedExpenses.map((expense) => (
-        <EditableExpenseRow
-          key={expense.id}
-          expense={expense}
-          vehicles={vehicles}
-          updateExpenseAction={updateExpenseAction}
-          deleteExpenseAction={deleteExpenseAction}
-        />
-      ))}
-    </ul>
+    <div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Data</TableHead>
+            <TableHead>Veículo</TableHead>
+            <TableHead>Categoria</TableHead>
+            <TableHead>Valor (R$)</TableHead>
+            <TableHead>KM</TableHead>
+            <TableHead>Observações</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sortedExpenses.map((expense) => (
+            <TableRow key={expense.id} data-testid="expense-row">
+              <TableCell data-testid="expense-row-title" className="text-lg font-medium text-[#324864]">
+                {formatDate(expense.expenseDate)}
+              </TableCell>
+              <TableCell className="text-lg font-bold text-[#132039]">{expense.vehicleLabel}</TableCell>
+              <TableCell>
+                <Badge variant={expense.category}>{expense.category === "fuel" ? "Combustível" : expense.category === "parts" ? "Peças" : "Serviço"}</Badge>
+              </TableCell>
+              <TableCell className="text-2xl font-extrabold text-[#131F37]">{expense.amountLabel}</TableCell>
+              <TableCell>{expense.mileage ? expense.mileage.toLocaleString("pt-BR") : "—"}</TableCell>
+              <TableCell className="max-w-80 truncate">{expense.notes ?? "—"}</TableCell>
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-grid size-9 place-items-center rounded-full text-[#8EA1BC] hover:bg-[#EEF3FA]"
+                      aria-label={`Ações da despesa ${expense.id}`}
+                    >
+                      <MoreVertical className="size-5" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onSelect={() => setEditingExpense(expense)}>
+                      Editar
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => setDeletingExpense(expense)}>
+                      Excluir
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      <div className="flex items-center justify-between border-t border-[#E4EAF4] px-4 py-3 text-base text-[#5D7290]">
+        <p>Mostrando 1-{Math.min(sortedExpenses.length, 12)} de {sortedExpenses.length} gastos</p>
+        <div className="flex items-center gap-2">
+          <button type="button" disabled className="grid size-8 place-items-center rounded-full text-[#9DB0C9]">
+            <ChevronLeft className="size-5" />
+          </button>
+          <button type="button" aria-current="page" className="grid size-8 place-items-center rounded-full bg-[#2F84EB] text-sm font-bold text-white">
+            1
+          </button>
+          <button type="button" disabled className="grid size-8 place-items-center rounded-full text-[#9DB0C9]">
+            <ChevronRight className="size-5" />
+          </button>
+        </div>
+      </div>
+
+      <Dialog open={Boolean(editingExpense)} onOpenChange={(open) => !open && setEditingExpense(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-5xl">Editar Gasto</DialogTitle>
+            <DialogDescription>Atualize os dados da despesa selecionada.</DialogDescription>
+          </DialogHeader>
+
+          {editingExpense ? (
+            <form action={updateFormAction} className="space-y-4">
+              <input type="hidden" name="id" value={editingExpense.id} />
+              <div className="grid gap-3 sm:grid-cols-2">
+                <ExpenseFormFields
+                  idPrefix={`edit-${editingExpense.id}`}
+                  vehicles={vehicles}
+                  values={{
+                    vehicleId: editingExpense.vehicleId,
+                    expenseDate: editingExpense.expenseDate,
+                    category: editingExpense.category,
+                    amountInput: (editingExpense.amountCents / 100).toFixed(2).replace(".", ","),
+                    mileage: editingExpense.mileage,
+                    notes: editingExpense.notes,
+                  }}
+                  errors={updateState.errors}
+                />
+              </div>
+
+              <DialogFooter className="justify-between sm:justify-between">
+                <Button type="button" variant="outline" className="h-12 min-w-44 text-lg" onClick={() => setEditingExpense(null)}>
+                  Cancelar
+                </Button>
+                <SubmitButton
+                  label="Salvar Gasto"
+                  pendingLabel="Salvando..."
+                  className="h-12 min-w-44 text-lg font-bold"
+                />
+              </DialogFooter>
+            </form>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={Boolean(deletingExpense)} onOpenChange={(open) => !open && setDeletingExpense(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir despesa</AlertDialogTitle>
+            <AlertDialogDescription>
+              Essa ação remove a despesa selecionada permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {deletingExpense ? (
+            <form action={deleteExpenseAction} className="space-y-2">
+              <input type="hidden" name="id" value={deletingExpense.id} />
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction type="submit">Excluir</AlertDialogAction>
+              </AlertDialogFooter>
+            </form>
+          ) : null}
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }

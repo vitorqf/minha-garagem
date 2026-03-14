@@ -7,6 +7,12 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 ## [Unreleased]
 
 ### Added
+- v1 Increment 3 (`Complete Visual Reimplementation Before Summaries CSV`) delivery with high-fidelity responsive redesign for auth, shell, vehicles, expenses, summaries, and modal workflows.
+- New reusable UI foundation with Radix/shadcn-style primitives (`Dialog`, `DropdownMenu`, `AlertDialog`, `Select`, `Sheet`, `Button`, `Input`, `Badge`, `Card`) and shared design tokens in `globals.css`.
+- New authenticated `AppShell` with desktop sidebar, mobile drawer, contextual header CTA, and placeholder topbar controls aligned with the approved mocks.
+- Vehicle cards now include local static cover placeholders, plate badges, action menus, and modal edit/delete interactions.
+- Summaries dashboard now includes KPI cards, category distribution block, per-vehicle ranking cards, and recent expenses table loaded from real owner-scoped data.
+- Expanded component and Playwright coverage for redesigned modal/menu navigation flows and `/summaries` authenticated landing behavior.
 - v1 Increment 2 (`Multi-User Authentication - Independent Accounts`) implementation with open multi-account signup and isolated owner-scoped data access.
 - Signup flow update: unauthenticated users can always access `/signup`; account creation now enforces only unique-email constraints.
 - Playwright multi-user coverage validating:
@@ -59,6 +65,12 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - CodeQL workflow (`.github/workflows/codeql.yml`) for JavaScript/TypeScript security and quality analysis.
 - Dependabot weekly update policy for npm and GitHub Actions (`.github/dependabot.yml`).
 - README CI/CD documentation including required status checks and manual GitHub/Vercel configuration steps.
+
+### Changed
+- Successful login redirect target changed from `/vehicles` to `/summaries`.
+- Authenticated access to `/` now redirects to `/summaries`.
+- Vehicles and expenses creation/editing UX moved from inline forms to modal-first interactions while preserving existing backend/domain rules.
+- Out-of-scope controls are intentionally visual placeholders in this increment (`Buscar`, notification bell, pagination visuals, summaries export button marked as coming soon).
 
 ### Fixed
 - Server-side expense authorization hardened: create/update now verifies vehicle ownership before persisting, preventing cross-account vehicle binding.

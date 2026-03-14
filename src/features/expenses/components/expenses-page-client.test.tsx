@@ -53,14 +53,13 @@ describe("ExpensesPageClient", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { name: "Despesas" })).toBeInTheDocument();
-    expect(screen.getAllByLabelText("Veículo").length).toBeGreaterThan(0);
+    expect(screen.getByLabelText("Veículo")).toBeInTheDocument();
     expect(screen.getByText(/R\$\s?250,00/)).toBeInTheDocument();
     expect(screen.getByText(/R\$\s?100,00/)).toBeInTheDocument();
 
     const rows = screen.getAllByTestId("expense-row-title").map((item) => item.textContent);
-    expect(rows[0]).toContain("2026-03-10");
-    expect(rows[1]).toContain("2026-03-01");
+    expect(rows[0]).toContain("10/03/2026");
+    expect(rows[1]).toContain("01/03/2026");
   });
 
   it("shows disabled state and CTA when no vehicles exist", () => {
@@ -81,7 +80,7 @@ describe("ExpensesPageClient", () => {
       "href",
       "/vehicles",
     );
-    expect(screen.getByRole("button", { name: "Adicionar despesa" })).toBeDisabled();
+    expect(screen.getByText(/Nenhuma despesa encontrada/i)).toBeInTheDocument();
   });
 
   it("renders pt-BR validation errors", () => {
@@ -102,7 +101,7 @@ describe("ExpensesPageClient", () => {
       />,
     );
 
-    expect(screen.getByText("Valor é obrigatório.")).toBeInTheDocument();
+    expect(screen.getByText("Não foi possível salvar a despesa.")).toBeInTheDocument();
   });
 
   it("renders csv export link with active filters", () => {

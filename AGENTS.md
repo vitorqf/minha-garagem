@@ -158,12 +158,12 @@
 - Confirm output is clear for quick spending analysis.
 
 ## v1 Proposal (In Progress)
-- Status: v1 Increment 2 implemented (`Multi-User Authentication - Independent Accounts`).
+- Status: v1 Increment 3 implemented (`Complete Visual Reimplementation Before Summaries CSV`).
 
 ### Summary
-- v1 focus: CSV exports plus multi-account authentication with strict data isolation.
-- Objective: each authenticated account manages only its own vehicles/expenses/summaries.
-- Delivery model: 4 milestones (`Foundation -> Expenses Export -> Multi-User Auth -> Summaries Export`).
+- v1 focus: CSV exports plus multi-account authentication with strict data isolation and a high-fidelity responsive UI redesign.
+- Objective: each authenticated account manages only its own vehicles/expenses/summaries with improved usability and visual consistency.
+- Delivery model: 5 milestones (`Foundation -> Expenses Export -> Multi-User Auth -> Visual Reimplementation -> Summaries Export`).
 - Increment 1 delivered:
 - Shared `reports` domain module with CSV serializer, formatting helpers, and expenses export service contracts.
 - `GET /api/reports/expenses.csv` endpoint with owner-scoped data retrieval.
@@ -173,15 +173,23 @@
 - Single-owner signup guards removed from signup service/page.
 - Server-side expense create/update now enforces vehicle ownership by authenticated account.
 - Cross-user isolation validated in e2e across vehicles, expenses, summaries, and expenses CSV export.
+- Increment 3 delivered:
+- Complete visual reimplementation for `/login`, `/signup`, authenticated shell, `/vehicles`, `/expenses`, `/summaries`, and create/edit modals.
+- New reusable UI primitives (`Dialog`, `DropdownMenu`, `AlertDialog`, `Select`, `Sheet`, `Button`, `Input`, `Badge`, `Card`) with shared theme tokens.
+- Successful login and authenticated access to `/` now redirect to `/summaries`.
+- Non-scope controls remain visual placeholders (`Buscar`, notification bell, pagination/search placeholders, summaries export placeholder).
 - Remaining v1 scope:
 - `GET /api/reports/summaries.csv`.
-- `Exportar CSV` action in `/summaries`.
+- Replace summaries export placeholder with functional `Exportar CSV` action in `/summaries`.
 
 ### Public API and Contract Targets
 - Implemented authenticated endpoint:
 - `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>`.
 - Planned next endpoint:
 - `GET /api/reports/summaries.csv?startMonth=YYYY-MM&endMonth=YYYY-MM&vehicleId=<optional>`.
+- Behavioral routing updates:
+- Successful login redirects to `/summaries` (previously `/vehicles`).
+- Authenticated access to `/` redirects to `/summaries`.
 - Signup behavior:
 - Multi-account signup enabled for unauthenticated users.
 - Unique email is enforced.
@@ -201,15 +209,18 @@
 - Empty datasets export header row without hard error.
 - Expenses filename contract:
 - `despesas-YYYY-MM-DD-a-YYYY-MM-DD.csv`.
+- Schema/API stability:
+- No public HTTP contract changes beyond redirect destination behavior.
+- No Prisma schema changes and no persisted `Report` entity in this visual increment.
 
 ### v1 Domain/Type Additions
 - Implemented:
 - `ReportExpenseExportFilter`.
 - `ExpenseCsvRow`.
-- Planned for summaries increment:
+- Internal summaries view-model expansion to support KPI cards and recent-expenses rendering without changing persistence contracts.
+- Planned for summaries export increment:
 - `ReportSummaryExportFilter`.
 - `SummaryCsvRow`.
-- No database schema changes and no persisted `Report` entity in v1.
 
 ### Milestone Status
 1. Milestone 1 (Foundation / Week 1)
@@ -228,10 +239,16 @@
 - Single-owner signup restrictions removed.
 - Expense create/update ownership checks enforced server-side.
 
-4. Milestone 4 (Summaries Export + Finalization / Week 4)
+4. Milestone 4 (Visual Reimplementation / Week 4)
+- Status: completed.
+- Full responsive UI redesign implemented across auth, shell, vehicles, expenses, and summaries.
+- Existing domain rules and backend contracts preserved.
+- Modal-first CRUD interactions and dashboard layout delivered with placeholder-only out-of-scope controls.
+
+5. Milestone 5 (Summaries Export + Finalization / Week 5)
 - Status: pending.
 - Planned: `GET /api/reports/summaries.csv`.
-- Planned: `Exportar CSV` in `/summaries` using active resolved filters.
+- Planned: functional `Exportar CSV` in `/summaries` using active resolved filters.
 - Planned columns: `Veículo`, `Total (R$)`, `Combustível (R$)`, `Peças (R$)`, `Serviços (R$)`, plus dynamic month columns.
 
 ### v1 Test Targets and Coverage
@@ -246,7 +263,11 @@
 - Auth service coverage for multi-account signup + duplicate email rejection.
 - Expense service coverage for owner vehicle ownership enforcement on create/update.
 - Playwright coverage for multi-account signup/login and cross-user data isolation.
-- Pending in Increment 3:
+- Implemented in Increment 3:
+- Component coverage update for redesigned auth, vehicles, expenses, and summaries UIs.
+- Playwright smoke update for modal/menu flows and authenticated landing on `/summaries`.
+- Summary rendering coverage now includes KPI cards, per-category breakdown, vehicle ranking, and recent expenses block.
+- Pending in Increment 4:
 - Equivalent service/route/component/e2e coverage for summaries CSV export.
 
 ### v1 Assumptions Locked
@@ -256,6 +277,7 @@
 - Multi-user means independent accounts only (no shared collaborative workspace).
 - No roles/permissions matrix in v1.
 - Expense categories remain fixed (`fuel | parts | service`) for this v1 slice.
+- Placeholder-only controls are acceptable in v1 visual increment when explicitly marked as out-of-scope.
 
 ## Specification Validation Checklist
 - [x] Product framed as personal independent-account tracker (not sales SaaS).

@@ -37,6 +37,22 @@ type ExpensesPageClientProps = {
   initialCreateState?: ExpenseFormState;
 };
 
+function buildExpenseExportHref(defaultFilters: {
+  startDate: string;
+  endDate: string;
+  vehicleId?: string;
+}): string {
+  const searchParams = new URLSearchParams();
+  searchParams.set("startDate", defaultFilters.startDate);
+  searchParams.set("endDate", defaultFilters.endDate);
+
+  if (defaultFilters.vehicleId) {
+    searchParams.set("vehicleId", defaultFilters.vehicleId);
+  }
+
+  return `/api/reports/expenses.csv?${searchParams.toString()}`;
+}
+
 function CreateSubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
 
@@ -68,6 +84,7 @@ export function ExpensesPageClient({
   );
   const createFormRef = useRef<HTMLFormElement>(null);
   const canCreateExpenses = vehicles.length > 0;
+  const exportHref = buildExpenseExportHref(defaultFilters);
 
   useEffect(() => {
     if (createState.status === "success") {
@@ -142,6 +159,15 @@ export function ExpensesPageClient({
             </button>
           </div>
         </form>
+
+        <div className="mt-3 flex justify-end">
+          <a
+            href={exportHref}
+            className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-800 transition-colors hover:bg-zinc-100"
+          >
+            Exportar CSV
+          </a>
+        </div>
       </section>
 
       <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">

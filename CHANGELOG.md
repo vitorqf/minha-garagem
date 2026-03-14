@@ -7,6 +7,17 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 ## [Unreleased]
 
 ### Added
+- v1 Increment 1 (`Foundation + Expenses CSV Export`) delivery with end-to-end CSV download flow from `/expenses`.
+- New reports feature module with reusable CSV serializer (UTF-8 BOM, `;` delimiter, deterministic line endings, escaping), export formatting helpers, and expenses export service contracts.
+- New authenticated API endpoint `GET /api/reports/expenses.csv` with owner-scoped data export and filename strategy `despesas-YYYY-MM-DD-a-YYYY-MM-DD.csv`.
+- Expenses CSV response contract: `text/csv; charset=utf-8`, pt-BR headers, `DD/MM/YYYY` dates, numeric BRL-like values (`150,25`), and header-only output for empty datasets.
+- `/expenses` filters section now includes `Exportar CSV` action using active query filters.
+- Test coverage for reports foundation and expenses export:
+- Unit tests for CSV serialization and formatting helpers.
+- Service tests for owner scoping/filter application/empty dataset behavior.
+- Route tests for `401`, `400`, and `200` CSV responses.
+- Component test for export link query propagation.
+- Playwright e2e smoke for expenses CSV download filename/content shape.
 - Slice 0 (Authentication) implementation with Auth.js Credentials (`next-auth`) and hashed password storage (`bcryptjs`).
 - Owner `User` model (`id`, `email`, `passwordHash`, `createdAt`, `updatedAt`) plus Prisma migration `20260313181000_authentication_slice0`.
 - Authentication routes and flows in `pt-BR`: `/login`, `/signup`, `/api/auth/[...nextauth]`, and navigation logout action.
@@ -44,6 +55,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - README CI/CD documentation including required status checks and manual GitHub/Vercel configuration steps.
 
 ### Fixed
+- In-memory repository consistency across Next.js module contexts by persisting memory repositories in `globalThis`, preventing CSV export route/state divergence during Playwright smoke tests.
 - Login/signup e2e selector ambiguity by using exact label matching for `Senha` and `Confirmar senha`.
 - `pnpm build` TypeScript blockers in validation layers by normalizing Zod flattened field errors into typed lookup helpers (vehicles, expenses, summaries).
 - Vehicle repository year normalization for mixed raw input types (`number | string | null`) to keep in-memory and Prisma repositories type-safe and consistent.

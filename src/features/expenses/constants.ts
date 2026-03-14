@@ -13,6 +13,7 @@ export const EXPENSE_COPY = {
   updated: "Despesa atualizada com sucesso.",
   deleted: "Despesa removida com sucesso.",
   notFound: "Despesa não encontrada.",
+  vehicleNotFound: "Veículo não encontrado.",
   vehicleHasExpenses: "Não é possível remover o veículo porque ele possui despesas vinculadas.",
 } as const;
 

@@ -7,6 +7,12 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 ## [Unreleased]
 
 ### Added
+- v1 Increment 2 (`Multi-User Authentication - Independent Accounts`) implementation with open multi-account signup and isolated owner-scoped data access.
+- Signup flow update: unauthenticated users can always access `/signup`; account creation now enforces only unique-email constraints.
+- Playwright multi-user coverage validating:
+- Multiple independent account signup/login flows.
+- Cross-user data isolation in vehicles, expenses, summaries, and expenses CSV export.
+- Expense service authorization tests ensuring create/update reject vehicle ids not owned by the authenticated user.
 - v1 Increment 1 (`Foundation + Expenses CSV Export`) delivery with end-to-end CSV download flow from `/expenses`.
 - New reports feature module with reusable CSV serializer (UTF-8 BOM, `;` delimiter, deterministic line endings, escaping), export formatting helpers, and expenses export service contracts.
 - New authenticated API endpoint `GET /api/reports/expenses.csv` with owner-scoped data export and filename strategy `despesas-YYYY-MM-DD-a-YYYY-MM-DD.csv`.
@@ -55,6 +61,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - README CI/CD documentation including required status checks and manual GitHub/Vercel configuration steps.
 
 ### Fixed
+- Server-side expense authorization hardened: create/update now verifies vehicle ownership before persisting, preventing cross-account vehicle binding.
 - In-memory repository consistency across Next.js module contexts by persisting memory repositories in `globalThis`, preventing CSV export route/state divergence during Playwright smoke tests.
 - Login/signup e2e selector ambiguity by using exact label matching for `Senha` and `Confirmar senha`.
 - `pnpm build` TypeScript blockers in validation layers by normalizing Zod flattened field errors into typed lookup helpers (vehicles, expenses, summaries).

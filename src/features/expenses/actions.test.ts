@@ -5,6 +5,7 @@ const mockUpdateExpense = vi.fn();
 const mockDeleteExpense = vi.fn();
 const mockListExpenses = vi.fn();
 const mockGetExpenseRepository = vi.fn();
+const mockGetVehicleRepository = vi.fn();
 const mockRevalidatePath = vi.fn();
 const mockRequireAuthenticatedOwnerId = vi.fn();
 
@@ -23,6 +24,10 @@ vi.mock("@/features/expenses/repositories", () => ({
   getExpenseRepository: () => mockGetExpenseRepository(),
 }));
 
+vi.mock("@/features/vehicles/repositories", () => ({
+  getVehicleRepository: () => mockGetVehicleRepository(),
+}));
+
 vi.mock("@/features/auth/session", () => ({
   requireAuthenticatedOwnerId: () => mockRequireAuthenticatedOwnerId(),
 }));
@@ -35,9 +40,11 @@ describe("expense actions", () => {
     mockDeleteExpense.mockReset();
     mockListExpenses.mockReset();
     mockGetExpenseRepository.mockReset();
+    mockGetVehicleRepository.mockReset();
     mockRevalidatePath.mockReset();
     mockRequireAuthenticatedOwnerId.mockReset();
     mockGetExpenseRepository.mockReturnValue({});
+    mockGetVehicleRepository.mockReturnValue({});
     mockRequireAuthenticatedOwnerId.mockResolvedValue("owner-1");
   });
 

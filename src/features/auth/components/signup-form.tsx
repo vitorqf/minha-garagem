@@ -21,7 +21,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} className="h-12 w-full rounded-2xl text-xl font-bold">
+    <Button type="submit" disabled={pending} className="h-12 w-full rounded-2xl text-base font-bold">
       {pending ? "Criando conta..." : "Entrar"}
     </Button>
   );
@@ -111,7 +111,7 @@ export function SignupForm({ signupAction, initialState = initialSignupFormState
 
       <SubmitButton />
 
-      <p className="border-t border-[#E4EBF6] pt-5 text-center text-[22px] text-[#7288A8]">
+      <p className="border-t border-[#E4EBF6] pt-5 text-center text-base text-[#7288A8]">
         Já tem uma conta?{" "}
         <Link href="/login" className="font-bold text-[#2F84EB]">
           Entre aqui

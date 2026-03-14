@@ -116,14 +116,14 @@ export function ExpensesList({
         <TableBody>
           {sortedExpenses.map((expense) => (
             <TableRow key={expense.id} data-testid="expense-row">
-              <TableCell data-testid="expense-row-title" className="text-lg font-medium text-[#324864]">
+              <TableCell data-testid="expense-row-title" className="text-base font-medium text-[#324864]">
                 {formatDate(expense.expenseDate)}
               </TableCell>
-              <TableCell className="text-lg font-bold text-[#132039]">{expense.vehicleLabel}</TableCell>
+              <TableCell className="text-base font-bold text-[#132039]">{expense.vehicleLabel}</TableCell>
               <TableCell>
                 <Badge variant={expense.category}>{expense.category === "fuel" ? "Combustível" : expense.category === "parts" ? "Peças" : "Serviço"}</Badge>
               </TableCell>
-              <TableCell className="text-2xl font-extrabold text-[#131F37]">{expense.amountLabel}</TableCell>
+              <TableCell className="text-xl font-extrabold text-[#131F37]">{expense.amountLabel}</TableCell>
               <TableCell>{expense.mileage ? expense.mileage.toLocaleString("pt-BR") : "—"}</TableCell>
               <TableCell className="max-w-80 truncate">{expense.notes ?? "—"}</TableCell>
               <TableCell className="text-right">
@@ -152,7 +152,7 @@ export function ExpensesList({
         </TableBody>
       </Table>
 
-      <div className="flex items-center justify-between border-t border-[#E4EAF4] px-4 py-3 text-base text-[#5D7290]">
+      <div className="flex items-center justify-between border-t border-[#E4EAF4] px-4 py-3 text-sm text-[#5D7290]">
         <p>Mostrando 1-{Math.min(sortedExpenses.length, 12)} de {sortedExpenses.length} gastos</p>
         <div className="flex items-center gap-2">
           <button type="button" disabled className="grid size-8 place-items-center rounded-full text-[#9DB0C9]">
@@ -170,7 +170,7 @@ export function ExpensesList({
       <Dialog open={Boolean(editingExpense)} onOpenChange={(open) => !open && setEditingExpense(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-5xl">Editar Gasto</DialogTitle>
+            <DialogTitle className="text-2xl">Editar Gasto</DialogTitle>
             <DialogDescription>Atualize os dados da despesa selecionada.</DialogDescription>
           </DialogHeader>
 
@@ -194,13 +194,13 @@ export function ExpensesList({
               </div>
 
               <DialogFooter className="justify-between sm:justify-between">
-                <Button type="button" variant="outline" className="h-12 min-w-44 text-lg" onClick={() => setEditingExpense(null)}>
+                <Button type="button" variant="outline" className="h-12 min-w-44 text-base" onClick={() => setEditingExpense(null)}>
                   Cancelar
                 </Button>
                 <SubmitButton
                   label="Salvar Gasto"
                   pendingLabel="Salvando..."
-                  className="h-12 min-w-44 text-lg font-bold"
+                  className="h-12 min-w-44 text-base font-bold"
                 />
               </DialogFooter>
             </form>

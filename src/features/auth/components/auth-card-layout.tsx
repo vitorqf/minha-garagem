@@ -24,8 +24,8 @@ export function AuthCardLayout({ title, description, children }: AuthCardLayoutP
         </div>
 
         <div className="px-6 pt-12 pb-7 sm:px-8">
-          <h1 className="text-5xl font-extrabold tracking-tight text-[#0F1A32]">{title}</h1>
-          <p className="mt-2 text-2xl text-[#6D82A1]">{description}</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#0F1A32]">{title}</h1>
+          <p className="mt-2 text-lg text-[#6D82A1]">{description}</p>
           <div className="mt-7">{children}</div>
         </div>
       </section>

@@ -22,7 +22,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} className="h-12 w-full rounded-2xl text-xl font-bold">
+    <Button type="submit" disabled={pending} className="h-12 w-full rounded-2xl text-base font-bold">
       {pending ? "Entrando..." : "Entrar"}
     </Button>
   );
@@ -72,7 +72,7 @@ export function LoginForm({ loginAction, initialState = initialLoginFormState, n
       </div>
 
       <div className="flex items-center justify-between">
-        <label className="inline-flex items-center gap-2 text-base text-[#4F6482]">
+        <label className="inline-flex items-center gap-2 text-sm text-[#4F6482]">
           <input
             type="checkbox"
             name="rememberMe"
@@ -83,7 +83,7 @@ export function LoginForm({ loginAction, initialState = initialLoginFormState, n
         <a
           href="#"
           aria-disabled="true"
-          className="pointer-events-none text-xl font-semibold text-[#2F84EB] opacity-80"
+          className="pointer-events-none text-base font-semibold text-[#2F84EB] opacity-80"
         >
           Esqueci minha senha
         </a>
@@ -97,7 +97,7 @@ export function LoginForm({ loginAction, initialState = initialLoginFormState, n
 
       <SubmitButton />
 
-      <p className="border-t border-[#E4EBF6] pt-5 text-center text-[22px] text-[#7288A8]">
+      <p className="border-t border-[#E4EBF6] pt-5 text-center text-base text-[#7288A8]">
         Não tem uma conta?{" "}
         <Link href="/signup" className="font-bold text-[#2F84EB]">
           Cadastre-se agora

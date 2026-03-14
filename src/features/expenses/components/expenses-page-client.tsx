@@ -70,7 +70,7 @@ function CreateSubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending || disabled} className="h-12 min-w-44 text-lg font-bold">
+    <Button type="submit" disabled={pending || disabled} className="h-12 min-w-44 text-base font-bold">
       {pending ? "Salvando..." : "Salvar Gasto"}
     </Button>
   );
@@ -129,7 +129,7 @@ export function ExpensesPageClient({
                   id="filters-vehicleId"
                   name="vehicleId"
                   defaultValue={defaultFilters.vehicleId ?? ""}
-                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-base text-[#1E3658]"
+                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-sm text-[#1E3658]"
                 >
                   <option value="">Todos os Veículos</option>
                   {vehicles.map((vehicle) => (
@@ -150,7 +150,7 @@ export function ExpensesPageClient({
                   name="startDate"
                   type="date"
                   defaultValue={defaultFilters.startDate}
-                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-base text-[#1E3658]"
+                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-sm text-[#1E3658]"
                 />
               </div>
 
@@ -162,13 +162,13 @@ export function ExpensesPageClient({
                 name="endDate"
                 type="date"
                 defaultValue={defaultFilters.endDate}
-                className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] px-3 py-2 text-base text-[#1E3658]"
+                className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] px-3 py-2 text-sm text-[#1E3658]"
               />
 
               <button
                 type="button"
                 disabled
-                className="inline-flex h-12 items-center gap-2 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] px-4 py-2 text-base font-medium text-[#5D7290]"
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] px-4 py-2 text-sm font-medium text-[#5D7290]"
                 aria-label="Categoria (em breve)"
               >
                 <Filter className="size-4" />
@@ -181,9 +181,9 @@ export function ExpensesPageClient({
             </form>
 
             <div className="flex flex-col items-end gap-2">
-              <p className="text-xl text-[#5E7391]">
+              <p className="text-base text-[#5E7391]">
                 Total no período:{" "}
-                <strong className="text-4xl font-extrabold text-[#101C33]">{formatCurrencyFromCents(totalPeriod)}</strong>
+                <strong className="text-2xl font-extrabold text-[#101C33]">{formatCurrencyFromCents(totalPeriod)}</strong>
               </p>
               <a
                 href={exportHref}
@@ -233,7 +233,7 @@ export function ExpensesPageClient({
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-5xl">Adicionar Gasto</DialogTitle>
+            <DialogTitle className="text-2xl">Adicionar Gasto</DialogTitle>
             <DialogDescription>Preencha os dados abaixo para registrar a despesa.</DialogDescription>
           </DialogHeader>
 
@@ -248,7 +248,7 @@ export function ExpensesPageClient({
             </div>
 
             <DialogFooter className="justify-between sm:justify-between">
-              <Button type="button" variant="outline" className="h-12 min-w-44 text-lg" onClick={() => setIsCreateOpen(false)}>
+              <Button type="button" variant="outline" className="h-12 min-w-44 text-base" onClick={() => setIsCreateOpen(false)}>
                 Cancelar
               </Button>
               <CreateSubmitButton disabled={!canCreateExpenses} />

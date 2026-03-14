@@ -132,10 +132,10 @@ export function VehiclesList({
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p data-testid="vehicle-title" className="text-3xl font-extrabold text-[#121E36]">
+                    <p data-testid="vehicle-title" className="text-xl font-extrabold text-[#121E36]">
                       {vehicle.nickname}
                     </p>
-                    <p className="mt-1 text-xl text-[#6B7E99]">
+                    <p className="mt-1 text-base text-[#6B7E99]">
                       {vehicle.brand} {vehicle.model}
                       {vehicle.year ? ` • ${vehicle.year}` : ""}
                     </p>
@@ -175,8 +175,8 @@ export function VehiclesList({
             <CirclePlus className="size-8" />
           </div>
           <div>
-            <p className="text-3xl font-bold text-[#111D36]">Adicionar Novo</p>
-            <p className="mt-2 text-lg text-[#6D82A1]">Cadastre um novo veículo em sua garagem</p>
+            <p className="text-xl font-bold text-[#111D36]">Adicionar Novo</p>
+            <p className="mt-2 text-base text-[#6D82A1]">Cadastre um novo veículo em sua garagem</p>
           </div>
         </button>
       </div>
@@ -184,7 +184,7 @@ export function VehiclesList({
       <Dialog open={Boolean(editingVehicle)} onOpenChange={(open) => !open && setEditingVehicle(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-5xl">Editar Veículo</DialogTitle>
+            <DialogTitle className="text-2xl">Editar Veículo</DialogTitle>
             <DialogDescription>Atualize as informações do veículo selecionado.</DialogDescription>
           </DialogHeader>
           {editingVehicle ? (
@@ -203,13 +203,13 @@ export function VehiclesList({
               />
 
               <DialogFooter className="justify-between sm:justify-between">
-                <Button type="button" variant="outline" className="h-12 min-w-44 text-lg" onClick={() => setEditingVehicle(null)}>
+                <Button type="button" variant="outline" className="h-12 min-w-44 text-base" onClick={() => setEditingVehicle(null)}>
                   Cancelar
                 </Button>
                 <SubmitButton
                   label="Salvar"
                   pendingLabel="Salvando..."
-                  className="h-12 min-w-44 text-lg font-bold"
+                  className="h-12 min-w-44 text-base font-bold"
                 />
               </DialogFooter>
             </form>

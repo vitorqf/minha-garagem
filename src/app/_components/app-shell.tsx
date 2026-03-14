@@ -15,7 +15,12 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -90,20 +95,25 @@ function SideNav({
   logoutAction: AppShellProps["logoutAction"];
 }) {
   return (
-    <aside className="flex h-screen w-[290px] shrink-0 flex-col border-r border-[#D6DFEC] bg-[#F6F8FC]">
+    <aside className="flex h-screen w-72.5 shrink-0 flex-col border-r border-[#D6DFEC] bg-white">
       <div className="px-6 pt-7">
         <Link href="/summaries" className="flex items-center gap-3">
           <div className="grid size-10 place-items-center rounded-full bg-[#2F84EB] text-white">
             <Car className="size-5" />
           </div>
           <div>
-            <p className="text-[40px]/none font-extrabold text-[#111D36]">Minha Garagem</p>
+            <p className="text-lg font-extrabold leading-none text-[#111D36]">
+              Minha Garagem
+            </p>
             <p className="text-sm text-[#7B8EAA]">Gestão de Frota</p>
           </div>
         </Link>
       </div>
 
-      <nav className="mt-8 flex-1 space-y-2 px-5" aria-label="Navegação principal">
+      <nav
+        className="mt-8 flex-1 space-y-2 px-5"
+        aria-label="Navegação principal"
+      >
         {NAV_ITEMS.map((item) => {
           const isActive = pathname.startsWith(item.href);
           const Icon = item.icon;
@@ -113,11 +123,11 @@ function SideNav({
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-2xl px-4 py-3 text-2xl font-semibold text-[#3D4E67] transition-colors",
+                "flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-[#475569] transition-colors",
                 isActive ? "bg-[#DCEBFF] text-[#1D73D2]" : "hover:bg-[#EDF3FC]",
               )}
             >
-              <Icon className="size-6" />
+              <Icon className="size-5" />
               {item.label}
             </Link>
           );
@@ -129,10 +139,10 @@ function SideNav({
           <div className="flex items-center gap-3">
             <InitialsAvatar userEmail={userEmail} />
             <div>
-              <p className="text-2xl font-bold text-[#111D36]">
+              <p className="text-lg font-bold text-[#475569]">
                 {userEmail?.split("@")[0] ?? "Conta"}
               </p>
-              <p className="text-lg text-[#6D82A1]">Plano Premium</p>
+              <p className="text-sm text-[#6D82A1]">Plano Premium</p>
             </div>
           </div>
           <Settings className="size-5 text-[#8DA0BC]" aria-hidden />
@@ -156,32 +166,47 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
     <div className="min-h-screen bg-[#F1F4F9] text-[#101C33]">
       <div className="flex">
         <div className="hidden xl:block">
-          <SideNav pathname={pathname} userEmail={userEmail} logoutAction={logoutAction} />
+          <SideNav
+            pathname={pathname}
+            userEmail={userEmail}
+            logoutAction={logoutAction}
+          />
         </div>
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-          <header className="border-b border-[#D6DFEC] bg-[#F7F9FD]">
+          <header className="border-b border-[#D6DFEC] bg-white">
             <div className="flex h-20 items-center justify-between gap-3 px-4 sm:px-6">
               <div className="flex items-center gap-3">
                 <Sheet>
                   <SheetTrigger asChild>
-                    <Button variant="outline" size="icon" className="xl:hidden" aria-label="Abrir menu">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="xl:hidden"
+                      aria-label="Abrir menu"
+                    >
                       <Menu className="size-5" />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-[290px] p-0">
+                  <SheetContent side="left" className="w-72.5 p-0">
                     <SheetTitle className="sr-only">Menu principal</SheetTitle>
-                    <SideNav pathname={pathname} userEmail={userEmail} logoutAction={logoutAction} />
+                    <SideNav
+                      pathname={pathname}
+                      userEmail={userEmail}
+                      logoutAction={logoutAction}
+                    />
                   </SheetContent>
                 </Sheet>
 
-                <h1 className="text-4xl font-extrabold tracking-tight text-[#111D36]">{pageMeta.title}</h1>
+                <h1 className="text-xl font-extrabold tracking-tight text-[#111D36] sm:text-2xl">
+                  {pageMeta.title}
+                </h1>
               </div>
 
               <div className="flex min-w-0 items-center gap-3">
                 {pageMeta.searchPlaceholder ? (
                   <div className="relative hidden w-full min-w-64 max-w-md md:block">
-                    <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#8FA1BC]" />
+                    <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#64748B]" />
                     <Input
                       aria-label="Busca (em breve)"
                       placeholder={pageMeta.searchPlaceholder}
@@ -195,7 +220,7 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
                   type="button"
                   disabled
                   aria-label="Notificações (em breve)"
-                  className="grid size-11 place-items-center rounded-full text-[#6E83A2] transition-colors hover:bg-[#E9EFF8] disabled:opacity-70"
+                  className="grid size-11 min-w-11 place-items-center rounded-full text-[#64748B] transition-colors hover:bg-[#E9EFF8] disabled:opacity-70"
                 >
                   <Bell className="size-5" />
                 </button>

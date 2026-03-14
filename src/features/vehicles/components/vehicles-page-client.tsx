@@ -39,7 +39,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} className="h-12 min-w-44 text-lg font-bold">
+    <Button type="submit" disabled={pending} className="h-12 min-w-44 text-base font-bold">
       {pending ? "Salvando..." : "Cadastrar Veículo"}
     </Button>
   );
@@ -96,7 +96,7 @@ export function VehiclesPageClient({
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-5xl">Cadastrar Veículo</DialogTitle>
+            <DialogTitle className="text-2xl">Cadastrar Veículo</DialogTitle>
             <DialogDescription>
               Preencha os dados abaixo para adicionar um novo veículo à Minha Garagem.
             </DialogDescription>
@@ -110,7 +110,7 @@ export function VehiclesPageClient({
             </div>
 
             <DialogFooter className="justify-between sm:justify-between">
-              <Button type="button" variant="outline" className="h-12 min-w-44 text-lg" onClick={() => setIsCreateOpen(false)}>
+              <Button type="button" variant="outline" className="h-12 min-w-44 text-base" onClick={() => setIsCreateOpen(false)}>
                 Cancelar
               </Button>
               <SubmitButton />

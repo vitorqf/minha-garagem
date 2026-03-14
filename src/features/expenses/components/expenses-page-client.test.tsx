@@ -104,4 +104,27 @@ describe("ExpensesPageClient", () => {
 
     expect(screen.getByText("Valor é obrigatório.")).toBeInTheDocument();
   });
+
+  it("renders csv export link with active filters", () => {
+    render(
+      <ExpensesPageClient
+        vehicles={[{ id: "vehicle-1", label: "Carro Principal (Toyota Corolla)" }]}
+        expenses={[]}
+        defaultFilters={{
+          vehicleId: "vehicle-1",
+          startDate: "2026-03-01",
+          endDate: "2026-03-31",
+        }}
+        createExpenseAction={noopFormAction}
+        updateExpenseAction={noopFormAction}
+        applyExpenseFiltersAction={noopFilterAction}
+        deleteExpenseAction={noopDeleteAction}
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: "Exportar CSV" })).toHaveAttribute(
+      "href",
+      "/api/reports/expenses.csv?startDate=2026-03-01&endDate=2026-03-31&vehicleId=vehicle-1",
+    );
+  });
 });

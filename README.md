@@ -3,7 +3,7 @@
 Personal single-user vehicle expense tracker.
 
 ## Status
-- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented.
+- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) implemented.
 - Source of truth: `AGENTS.md`.
 
 ## Product Goal
@@ -53,6 +53,21 @@ Track spending per vehicle with a clear, incremental workflow:
 - Monthly totals keyed by year-month with `pt-BR` month labels.
 - Vehicles with zero expenses in selected period are still listed with explicit `R$ 0,00`.
 - Shared top navigation across `/vehicles`, `/expenses`, and `/summaries`.
+
+## v1 Increment 1 Delivered (Foundation + Expenses CSV Export)
+- New authenticated endpoint: `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>`.
+- `/expenses` now includes an `Exportar CSV` action in the filters section, bound to active filter query params.
+- CSV response contract:
+- `Content-Type: text/csv; charset=utf-8`.
+- `Content-Disposition: attachment; filename=\"despesas-YYYY-MM-DD-a-YYYY-MM-DD.csv\"`.
+- UTF-8 BOM for Excel compatibility.
+- Semicolon (`;`) delimiter and `pt-BR` headers.
+- Date format `DD/MM/YYYY`.
+- Amount format `150,25` (numeric `pt-BR`, without currency symbol in data cells).
+- Empty result sets export header-only CSV.
+- Validation/auth behavior:
+- `401` JSON for unauthenticated requests.
+- `400` JSON with pt-BR `message` and field `errors` map for invalid filters.
 
 ## Tech Baseline
 - Next.js App Router + TypeScript + Tailwind CSS.
@@ -118,6 +133,7 @@ pnpm test:e2e
 - E2E smoke tests run with Playwright (`pnpm test:e2e`).
 - Playwright web server uses in-memory repositories (`VEHICLE_REPOSITORY=memory`, `USER_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
 - Auth e2e smoke validates signup/login/logout and protected-route redirects before feature flows.
+- Expenses e2e smoke now validates CSV export download (filename + content shape) from `/expenses`.
 
 ## CI/CD and Security Pipeline
 - `ci / quality`: runs on pull requests and pushes to `main` with `pnpm install --frozen-lockfile`, `pnpm prisma:generate`, `pnpm lint`, `pnpm test`, and `pnpm build`.
@@ -141,4 +157,4 @@ Set these once in your GitHub/Vercel project settings:
 - Billing and third-party integrations
 
 ## Next Milestone
-Stabilize authenticated v0 and prepare the next increment after real usage feedback.
+Implement v1 Increment 2: summaries CSV export (`/api/reports/summaries.csv` + `Exportar CSV` in `/summaries`).

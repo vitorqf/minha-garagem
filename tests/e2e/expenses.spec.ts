@@ -56,3 +56,63 @@ test("expense CRUD and filtering by vehicle/date", async ({ page }) => {
   await createdRow.getByRole("button", { name: "Excluir" }).click();
   await expect(createdRow).toHaveCount(0);
 });
+
+test("exports expenses csv using active filters", async ({ page }) => {
+  const suffix = Date.now().toString();
+  const nickname = `Carro CSV ${suffix}`;
+  const vehicleLabel = `${nickname} (Toyota Corolla)`;
+  const note = `Exportação CSV ${suffix}`;
+
+  await ensureOwnerLoggedIn(page);
+  await page.goto("/vehicles");
+
+  await page.getByLabel("Apelido").fill(nickname);
+  await page.getByLabel("Marca").fill("Toyota");
+  await page.getByLabel("Modelo").fill("Corolla");
+  await page.getByRole("button", { name: "Adicionar veículo" }).click();
+  await expect(page.getByText("Veículo cadastrado com sucesso.")).toBeVisible();
+
+  await page.goto("/expenses");
+
+  const createSection = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Nova despesa" }),
+  });
+  const createForm = createSection.locator("form").first();
+
+  await createForm.getByLabel("Veículo").selectOption({ label: vehicleLabel });
+  await createForm.getByLabel("Data").fill("2026-03-10");
+  await createForm.getByLabel("Categoria").selectOption("fuel");
+  await createForm.getByLabel("Valor (R$)").fill("150,25");
+  await createForm.getByLabel("Quilometragem").fill("12500");
+  await createForm.getByLabel("Observações").fill(note);
+  await createForm.getByRole("button", { name: "Adicionar despesa" }).click();
+  await expect(page.getByText("Despesa cadastrada com sucesso.")).toBeVisible();
+
+  const filterSection = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Filtros" }),
+  });
+  await filterSection.getByLabel("Veículo").selectOption({ label: vehicleLabel });
+  await filterSection.getByLabel("Data inicial").fill("2026-03-01");
+  await filterSection.getByLabel("Data final").fill("2026-03-31");
+  await filterSection.getByRole("button", { name: "Aplicar filtros" }).click();
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("link", { name: "Exportar CSV" }).click();
+  const download = await downloadPromise;
+
+  expect(download.suggestedFilename()).toBe("despesas-2026-03-01-a-2026-03-31.csv");
+
+  const stream = await download.createReadStream();
+  expect(stream).not.toBeNull();
+
+  let content = "";
+  for await (const chunk of stream!) {
+    content += chunk.toString();
+  }
+
+  expect(content).toContain("\uFEFFID;Data;Veículo;Categoria;Valor (R$);Quilometragem (km);Observações");
+  expect(content).toContain("10/03/2026");
+  expect(content).toContain("Combustível");
+  expect(content).toContain("150,25");
+  expect(content).toContain(note);
+});

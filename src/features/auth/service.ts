@@ -40,15 +40,6 @@ export async function registerOwner(
     };
   }
 
-  const ownerCount = await repository.count();
-  if (ownerCount > 0) {
-    return {
-      ok: false,
-      message: AUTH_COPY.signupDisabled,
-      errors: { form: AUTH_COPY.signupDisabled },
-    };
-  }
-
   const existingUser = await repository.findByEmail(parsed.data.email);
   if (existingUser) {
     return {

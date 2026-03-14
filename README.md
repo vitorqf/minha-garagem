@@ -1,9 +1,9 @@
 # Minha Garagem
 
-Personal single-user vehicle expense tracker.
+Personal multi-account vehicle expense tracker with isolated user data.
 
 ## Status
-- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) implemented.
+- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) implemented.
 - Source of truth: `AGENTS.md`.
 
 ## Product Goal
@@ -15,7 +15,7 @@ Track spending per vehicle with a clear, incremental workflow:
 
 ## Slice 0 Delivered
 - Dedicated `/login` and `/signup` authentication flows in `pt-BR`.
-- Single-owner credentials model (email + password) with one-account-only signup policy.
+- Credentials model (email + password), evolved in v1 Increment 2 to multi-account signup.
 - Auth.js Credentials + Prisma `User` model (`id`, `email`, `passwordHash`, timestamps).
 - Protected routes: unauthenticated access to `/`, `/vehicles`, `/expenses`, `/summaries` redirects to `/login`.
 - Session owner id now drives owner-scoped data access (stub owner context removed).
@@ -69,6 +69,14 @@ Track spending per vehicle with a clear, incremental workflow:
 - `401` JSON for unauthenticated requests.
 - `400` JSON with pt-BR `message` and field `errors` map for invalid filters.
 
+## v1 Increment 2 Delivered (Multi-User Authentication)
+- Signup now supports multiple independent accounts with unique email enforcement.
+- `/signup` remains available for unauthenticated users (no single-owner redirect lock).
+- Signup/login copy updated to generic account wording (no “proprietário único” assumption).
+- Expense create/update now validates vehicle ownership server-side to prevent cross-account binding by crafted requests.
+- Cross-user isolation validated in e2e:
+- User A data is not visible to User B in `/vehicles`, `/expenses`, `/summaries`, and expenses CSV export.
+
 ## Tech Baseline
 - Next.js App Router + TypeScript + Tailwind CSS.
 - Prisma ORM + PostgreSQL.
@@ -114,7 +122,7 @@ pnpm prisma:migrate:dev
 ```bash
 pnpm dev
 ```
-7. Open [http://localhost:3000/login](http://localhost:3000/login) and create/login with the owner account.
+7. Open [http://localhost:3000/login](http://localhost:3000/login) and create/login with your account.
 8. Vehicles flow is available at [http://localhost:3000/vehicles](http://localhost:3000/vehicles).
 9. Expenses flow is available at [http://localhost:3000/expenses](http://localhost:3000/expenses).
 10. Summaries flow is available at [http://localhost:3000/summaries](http://localhost:3000/summaries).
@@ -133,7 +141,9 @@ pnpm test:e2e
 - E2E smoke tests run with Playwright (`pnpm test:e2e`).
 - Playwright web server uses in-memory repositories (`VEHICLE_REPOSITORY=memory`, `USER_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
 - Auth e2e smoke validates signup/login/logout and protected-route redirects before feature flows.
+- Auth e2e smoke now also validates multi-account signup/login behavior and open signup access.
 - Expenses e2e smoke now validates CSV export download (filename + content shape) from `/expenses`.
+- Expenses e2e smoke validates cross-user isolation across list/summaries/export flows.
 
 ## CI/CD and Security Pipeline
 - `ci / quality`: runs on pull requests and pushes to `main` with `pnpm install --frozen-lockfile`, `pnpm prisma:generate`, `pnpm lint`, `pnpm test`, and `pnpm build`.
@@ -157,4 +167,4 @@ Set these once in your GitHub/Vercel project settings:
 - Billing and third-party integrations
 
 ## Next Milestone
-Implement v1 Increment 2: summaries CSV export (`/api/reports/summaries.csv` + `Exportar CSV` in `/summaries`).
+Implement v1 Increment 3: summaries CSV export (`/api/reports/summaries.csv` + `Exportar CSV` in `/summaries`).

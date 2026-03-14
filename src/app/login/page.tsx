@@ -47,7 +47,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
             <div className="space-y-3 rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-4 text-sm text-zinc-700">
               <p>{AUTH_COPY.noOwnerAccount}</p>
               <Link href="/signup" className="inline-block font-semibold text-emerald-700">
-                Criar conta do proprietário
+                Criar conta
               </Link>
             </div>
           ) : (

@@ -5,9 +5,9 @@
 - If any other `AGENTS.md` exists in auxiliary folders, this root file takes precedence.
 
 ## Product Definition
-- Product type: personal single-user vehicle expense tracker.
+- Product type: personal multi-account vehicle expense tracker with isolated user data.
 - Positioning: this is not a customer-selling SaaS at v0.
-- Primary user: garage/workshop owner tracking their own vehicles and costs.
+- Primary user: independent garage/workshop users tracking their own vehicles and costs.
 - Main objective: register vehicles and track spending by vehicle with confidence and historical clarity.
 
 ## Language and Locale Policy
@@ -24,7 +24,7 @@
 ## v0 Scope and Sequencing
 - Required delivery sequence: `Authentication -> Vehicles -> Expenses -> Summaries`.
 - v0 includes:
-- Single-owner authentication (credentials).
+- Credentials authentication (evolved to multi-account in v1 Increment 2).
 - Vehicle registry.
 - Expense tracking by vehicle.
 - Per-vehicle totals and monthly summary.
@@ -39,7 +39,7 @@
 ## Core Domain Contracts (Initial)
 
 ### `OwnerUser`
-- Purpose: represent the single authenticated workspace owner.
+- Purpose: represent one authenticated app account (owner-scoped data identity).
 - Minimum fields:
 - `id` (stable identifier used as `ownerId` in domain records).
 - `email` (unique login identifier).
@@ -78,7 +78,7 @@
 
 ## API Capability Targets (Behavioral)
 - Authentication API:
-- Sign up owner (`email`, `password`, `confirmPassword`) when no owner exists.
+- Sign up account (`email`, `password`, `confirmPassword`) with unique email.
 - Login with credentials.
 - Logout.
 - Resolve current authenticated owner session.
@@ -98,16 +98,16 @@
 - UI baseline: responsive support for desktop and mobile.
 
 ## Authentication and Privacy Baseline
-- Auth model for v0: single workspace owner credentials login (email + password).
-- Account creation rule: only one owner account is allowed.
-- Signup rule: `/signup` is available only while no owner account exists; afterwards redirect to `/login`.
+- Auth model for current v1: multi-account credentials login (email + password).
+- Account creation rule: multiple independent accounts are allowed.
+- Signup rule: `/signup` is available for unauthenticated users.
 - Route protection: unauthenticated access to `/vehicles`, `/expenses`, `/summaries`, and `/` redirects to `/login`.
-- Data access model: only owner-scoped data.
+- Data access model: owner-scoped per authenticated account.
 - Password policy baseline: minimum 8 characters.
 - Auth non-goals in v0:
 - No forgot-password email flow.
 - No social login providers.
-- No multi-user workspace support.
+- No collaborative shared-workspace model in v1 (accounts are isolated).
 - Privacy/security baseline:
 - Use basic protection controls suitable for an MVP.
 - Do not claim advanced regulatory compliance in v0.
@@ -136,7 +136,7 @@
 
 ### Slice 0: Authentication
 - Start with failing tests for signup/login validation and owner-session guard behavior.
-- Confirm signup enforces single-owner rule and blocks additional registrations.
+- Confirm signup/login core credentials flow and session guard behavior.
 - Confirm login/logout flow works with session-based owner identity.
 - Confirm authenticated owner id is propagated to vehicles/expenses/summaries flows (no stub owner context).
 - Confirm protected routes redirect unauthenticated users to `/login`.
@@ -158,16 +158,21 @@
 - Confirm output is clear for quick spending analysis.
 
 ## v1 Proposal (In Progress)
-- Status: v1 Increment 1 implemented (`Foundation + Expenses CSV Export`).
+- Status: v1 Increment 2 implemented (`Multi-User Authentication - Independent Accounts`).
 
 ### Summary
-- v1 focus: on-demand CSV export from existing filtered screens (`/expenses` and `/summaries`).
-- Objective: owner can download operational reports in pt-BR Excel-friendly CSV format.
-- Delivery model: 3 milestones (`Foundation -> Expenses Export -> Summaries Export`).
+- v1 focus: CSV exports plus multi-account authentication with strict data isolation.
+- Objective: each authenticated account manages only its own vehicles/expenses/summaries.
+- Delivery model: 4 milestones (`Foundation -> Expenses Export -> Multi-User Auth -> Summaries Export`).
 - Increment 1 delivered:
 - Shared `reports` domain module with CSV serializer, formatting helpers, and expenses export service contracts.
 - `GET /api/reports/expenses.csv` endpoint with owner-scoped data retrieval.
 - `Exportar CSV` action in `/expenses` filter section using active filters.
+- Increment 2 delivered:
+- Signup now supports multiple independent accounts (unique email + open signup for unauthenticated users).
+- Single-owner signup guards removed from signup service/page.
+- Server-side expense create/update now enforces vehicle ownership by authenticated account.
+- Cross-user isolation validated in e2e across vehicles, expenses, summaries, and expenses CSV export.
 - Remaining v1 scope:
 - `GET /api/reports/summaries.csv`.
 - `Exportar CSV` action in `/summaries`.
@@ -177,6 +182,9 @@
 - `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>`.
 - Planned next endpoint:
 - `GET /api/reports/summaries.csv?startMonth=YYYY-MM&endMonth=YYYY-MM&vehicleId=<optional>`.
+- Signup behavior:
+- Multi-account signup enabled for unauthenticated users.
+- Unique email is enforced.
 - Auth behavior:
 - Unauthenticated request returns `401` JSON with pt-BR message.
 - Validation behavior:
@@ -214,7 +222,13 @@
 - `/expenses` now exposes `Exportar CSV` using active filters.
 - Delivered columns: `ID`, `Data`, `Veículo`, `Categoria`, `Valor (R$)`, `Quilometragem (km)`, `Observações`.
 
-3. Milestone 3 (Summaries Export + Finalization / Week 3)
+3. Milestone 3 (Multi-User Auth / Week 3)
+- Status: completed.
+- Multi-account signup enabled.
+- Single-owner signup restrictions removed.
+- Expense create/update ownership checks enforced server-side.
+
+4. Milestone 4 (Summaries Export + Finalization / Week 4)
 - Status: pending.
 - Planned: `GET /api/reports/summaries.csv`.
 - Planned: `Exportar CSV` in `/summaries` using active resolved filters.
@@ -228,18 +242,23 @@
 - Route/API coverage for `401`, `400`, and `200` CSV responses.
 - Component coverage for `/expenses` export action query propagation.
 - Playwright smoke coverage for expenses CSV download filename/content shape.
-- Pending in Increment 2:
+- Implemented in Increment 2:
+- Auth service coverage for multi-account signup + duplicate email rejection.
+- Expense service coverage for owner vehicle ownership enforcement on create/update.
+- Playwright coverage for multi-account signup/login and cross-user data isolation.
+- Pending in Increment 3:
 - Equivalent service/route/component/e2e coverage for summaries CSV export.
 
 ### v1 Assumptions Locked
 - CSV-only in v1 (no PDF).
 - On-demand generation only (no saved snapshots/history).
 - Export entry points remain on existing screens (no dedicated `/reports` page).
-- Single-owner auth model remains unchanged.
+- Multi-user means independent accounts only (no shared collaborative workspace).
+- No roles/permissions matrix in v1.
 - Expense categories remain fixed (`fuel | parts | service`) for this v1 slice.
 
 ## Specification Validation Checklist
-- [x] Product framed as personal single-user tracker (not sales SaaS).
+- [x] Product framed as personal independent-account tracker (not sales SaaS).
 - [x] Scope sequencing fixed as `Authentication -> Vehicles -> Expenses -> Summaries`.
 - [x] Non-goals explicitly listed (reminders, OCR, bank sync, billing/integrations).
 - [x] Core contracts documented: `OwnerUser`, `Vehicle`, `Expense`, `VehicleSummary`.
@@ -257,6 +276,6 @@
 
 ## Assumptions Locked
 - Root `AGENTS.md` is canonical.
-- v0 authentication is single-owner credentials with one-account-only signup.
+- v1 authentication is multi-account credentials with isolated owner-scoped data.
 - Existing development data can be reset when introducing authentication.
 - Iterative delivery and documentation continuity are mandatory.

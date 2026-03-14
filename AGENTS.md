@@ -157,6 +157,87 @@
 - Confirm totals match registered expenses by category and month.
 - Confirm output is clear for quick spending analysis.
 
+## v1 Proposal (In Progress)
+- Status: v1 Increment 1 implemented (`Foundation + Expenses CSV Export`).
+
+### Summary
+- v1 focus: on-demand CSV export from existing filtered screens (`/expenses` and `/summaries`).
+- Objective: owner can download operational reports in pt-BR Excel-friendly CSV format.
+- Delivery model: 3 milestones (`Foundation -> Expenses Export -> Summaries Export`).
+- Increment 1 delivered:
+- Shared `reports` domain module with CSV serializer, formatting helpers, and expenses export service contracts.
+- `GET /api/reports/expenses.csv` endpoint with owner-scoped data retrieval.
+- `Exportar CSV` action in `/expenses` filter section using active filters.
+- Remaining v1 scope:
+- `GET /api/reports/summaries.csv`.
+- `Exportar CSV` action in `/summaries`.
+
+### Public API and Contract Targets
+- Implemented authenticated endpoint:
+- `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>`.
+- Planned next endpoint:
+- `GET /api/reports/summaries.csv?startMonth=YYYY-MM&endMonth=YYYY-MM&vehicleId=<optional>`.
+- Auth behavior:
+- Unauthenticated request returns `401` JSON with pt-BR message.
+- Validation behavior:
+- Invalid filters return `400` JSON with pt-BR message and field error map.
+- Success behavior:
+- `200` with `Content-Type: text/csv; charset=utf-8`.
+- `Content-Disposition: attachment; filename="<report>-<period>.csv"`.
+- CSV payload starts with UTF-8 BOM for Excel compatibility.
+- CSV format contract:
+- Delimiter `;`.
+- Headers in pt-BR.
+- Currency in BRL-friendly numeric representation (for example `150,25`, without `R$` symbol in data cells).
+- Dates in `DD/MM/YYYY`.
+- Empty datasets export header row without hard error.
+- Expenses filename contract:
+- `despesas-YYYY-MM-DD-a-YYYY-MM-DD.csv`.
+
+### v1 Domain/Type Additions
+- Implemented:
+- `ReportExpenseExportFilter`.
+- `ExpenseCsvRow`.
+- Planned for summaries increment:
+- `ReportSummaryExportFilter`.
+- `SummaryCsvRow`.
+- No database schema changes and no persisted `Report` entity in v1.
+
+### Milestone Status
+1. Milestone 1 (Foundation / Week 1)
+- Status: completed.
+- `reports` domain module now provides reusable CSV serialization and pt-BR export formatting.
+
+2. Milestone 2 (Expenses Export / Week 2)
+- Status: completed.
+- `GET /api/reports/expenses.csv` implemented.
+- `/expenses` now exposes `Exportar CSV` using active filters.
+- Delivered columns: `ID`, `Data`, `Veículo`, `Categoria`, `Valor (R$)`, `Quilometragem (km)`, `Observações`.
+
+3. Milestone 3 (Summaries Export + Finalization / Week 3)
+- Status: pending.
+- Planned: `GET /api/reports/summaries.csv`.
+- Planned: `Exportar CSV` in `/summaries` using active resolved filters.
+- Planned columns: `Veículo`, `Total (R$)`, `Combustível (R$)`, `Peças (R$)`, `Serviços (R$)`, plus dynamic month columns.
+
+### v1 Test Targets and Coverage
+- Implemented in Increment 1:
+- Unit coverage for CSV serialization (delimiter, quoting, BOM, newline behavior).
+- Unit coverage for report formatting helpers (currency/date/filename).
+- Service coverage for owner scoping, expense filter application, and empty dataset behavior.
+- Route/API coverage for `401`, `400`, and `200` CSV responses.
+- Component coverage for `/expenses` export action query propagation.
+- Playwright smoke coverage for expenses CSV download filename/content shape.
+- Pending in Increment 2:
+- Equivalent service/route/component/e2e coverage for summaries CSV export.
+
+### v1 Assumptions Locked
+- CSV-only in v1 (no PDF).
+- On-demand generation only (no saved snapshots/history).
+- Export entry points remain on existing screens (no dedicated `/reports` page).
+- Single-owner auth model remains unchanged.
+- Expense categories remain fixed (`fuel | parts | service`) for this v1 slice.
+
 ## Specification Validation Checklist
 - [x] Product framed as personal single-user tracker (not sales SaaS).
 - [x] Scope sequencing fixed as `Authentication -> Vehicles -> Expenses -> Summaries`.

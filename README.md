@@ -3,7 +3,7 @@
 Personal multi-account vehicle expense tracker with isolated user data.
 
 ## Status
-- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) implemented.
+- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) + v1 Increment 3 (Complete Visual Reimplementation) implemented.
 - Source of truth: `AGENTS.md`.
 
 ## Product Goal
@@ -18,6 +18,7 @@ Track spending per vehicle with a clear, incremental workflow:
 - Credentials model (email + password), evolved in v1 Increment 2 to multi-account signup.
 - Auth.js Credentials + Prisma `User` model (`id`, `email`, `passwordHash`, timestamps).
 - Protected routes: unauthenticated access to `/`, `/vehicles`, `/expenses`, `/summaries` redirects to `/login`.
+- Successful login and authenticated access to `/` now redirect to `/summaries`.
 - Session owner id now drives owner-scoped data access (stub owner context removed).
 - Logout action available in the authenticated navigation.
 - TDD coverage for auth validation/service/actions/session mapping and e2e auth smoke.
@@ -41,7 +42,7 @@ Track spending per vehicle with a clear, incremental workflow:
 - Optional fields: `mileage`, `notes` (max 500 chars).
 - Amount input accepted as BRL decimal and stored as integer cents.
 - Default filters: all vehicles, last 30 days, newest date first.
-- Filtering by vehicle and date range (`startDate` + `endDate`).
+- Filtering by vehicle, category, and date range (`vehicleId`, `category`, `startDate`, `endDate`).
 - Vehicle deletion now blocked when related expenses exist.
 
 ## Slice 3 Delivered
@@ -55,7 +56,7 @@ Track spending per vehicle with a clear, incremental workflow:
 - Shared top navigation across `/vehicles`, `/expenses`, and `/summaries`.
 
 ## v1 Increment 1 Delivered (Foundation + Expenses CSV Export)
-- New authenticated endpoint: `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>`.
+- New authenticated endpoint: `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>&category=<optional>`.
 - `/expenses` now includes an `Exportar CSV` action in the filters section, bound to active filter query params.
 - CSV response contract:
 - `Content-Type: text/csv; charset=utf-8`.
@@ -77,10 +78,21 @@ Track spending per vehicle with a clear, incremental workflow:
 - Cross-user isolation validated in e2e:
 - User A data is not visible to User B in `/vehicles`, `/expenses`, `/summaries`, and expenses CSV export.
 
+## v1 Increment 3 Delivered (Complete Visual Reimplementation)
+- Full responsive redesign of `/login`, `/signup`, authenticated shell, `/vehicles`, `/expenses`, and `/summaries`.
+- New reusable app shell with desktop sidebar, mobile drawer, topbar search placeholder, notification placeholder, and contextual CTA.
+- Vehicles flow updated to card gallery with cover placeholders, plate badge, row menus, modal create/edit, and delete confirmation dialog.
+- Expenses flow updated to mock-aligned filters + table layout with row action menus, modal create/edit, and delete confirmation dialog.
+- Summaries flow updated to dashboard layout (KPI cards, category distribution, ranking by vehicle, recent expenses list with real data).
+- Out-of-scope controls remain visual placeholders (`Buscar`, paginação visual, export de resumos "em breve", notification bell).
+- New UI foundation with shadcn-style primitives, shared design tokens in `globals.css`, and expressive typography via `next/font`.
+- Existing backend/domain contracts preserved (no API or Prisma schema changes for this redesign).
+
 ## Tech Baseline
 - Next.js App Router + TypeScript + Tailwind CSS.
 - Prisma ORM + PostgreSQL.
 - Server Actions for mutations.
+- Radix/shadcn-style UI primitives + `lucide-react`.
 - Vitest + Testing Library + Playwright smoke tests.
 
 ## Prerequisites
@@ -142,7 +154,9 @@ pnpm test:e2e
 - Playwright web server uses in-memory repositories (`VEHICLE_REPOSITORY=memory`, `USER_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
 - Auth e2e smoke validates signup/login/logout and protected-route redirects before feature flows.
 - Auth e2e smoke now also validates multi-account signup/login behavior and open signup access.
+- Auth e2e smoke validates authenticated landing at `/summaries` after login.
 - Expenses e2e smoke now validates CSV export download (filename + content shape) from `/expenses`.
+- E2E smoke covers redesigned modal/menu flows across vehicles, expenses, and summaries.
 - Expenses e2e smoke validates cross-user isolation across list/summaries/export flows.
 
 ## CI/CD and Security Pipeline
@@ -167,4 +181,4 @@ Set these once in your GitHub/Vercel project settings:
 - Billing and third-party integrations
 
 ## Next Milestone
-Implement v1 Increment 3: summaries CSV export (`/api/reports/summaries.csv` + `Exportar CSV` in `/summaries`).
+Implement v1 Increment 4: summaries CSV export (`/api/reports/summaries.csv` + functional `Exportar CSV` in `/summaries`).

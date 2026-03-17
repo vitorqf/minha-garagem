@@ -1,5 +1,38 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { ensureOwnerLoggedIn } from "./auth-helpers";
+
+async function createVehicle(page: Page, nickname: string, brand: string, model: string) {
+  await page.goto("/vehicles");
+  await page.getByRole("button", { name: /\+?\s*Cadastrar Veículo/i }).click();
+  await page.getByLabel("Apelido").fill(nickname);
+  await page.getByLabel("Marca").fill(brand);
+  await page.getByLabel("Modelo").fill(model);
+  await page.getByRole("dialog").getByRole("button", { name: "Cadastrar Veículo" }).click();
+  await expect(page.getByText("Veículo cadastrado com sucesso.")).toBeVisible();
+}
+
+async function createExpense(
+  page: Page,
+  vehicleLabel: string,
+  date: string,
+  categoryLabel: "Combustível" | "Peças" | "Serviço",
+  amount: string,
+) {
+  const categoryMap = {
+    Combustível: "fuel",
+    Peças: "parts",
+    Serviço: "service",
+  } as const;
+
+  await page.goto("/expenses");
+  await page.getByRole("button", { name: /\+?\s*Adicionar Gasto/i }).click();
+  await page.getByLabel("Selecionar Veículo").selectOption({ label: vehicleLabel });
+  await page.getByLabel("Data", { exact: true }).fill(date);
+  await page.locator(`input[name="category"][value="${categoryMap[categoryLabel]}"]`).check({ force: true });
+  await page.getByLabel("Valor (R$)").fill(amount);
+  await page.getByRole("button", { name: "Salvar Gasto" }).click();
+  await expect(page.getByText("Despesa cadastrada com sucesso.")).toBeVisible();
+}
 
 test("summaries show totals by vehicle, category and month including zero totals", async ({ page }) => {
   const suffix = Date.now().toString();
@@ -9,40 +42,12 @@ test("summaries show totals by vehicle, category and month including zero totals
   const carBLabel = `${carBNickname} (Honda Fit)`;
 
   await ensureOwnerLoggedIn(page);
-  await page.goto("/vehicles");
 
-  await page.getByLabel("Apelido").fill(carANickname);
-  await page.getByLabel("Marca").fill("Toyota");
-  await page.getByLabel("Modelo").fill("Corolla");
-  await page.getByRole("button", { name: "Adicionar veículo" }).click();
-  await expect(page.getByText("Veículo cadastrado com sucesso.")).toBeVisible();
+  await createVehicle(page, carANickname, "Toyota", "Corolla");
+  await createVehicle(page, carBNickname, "Honda", "Fit");
 
-  await page.getByLabel("Apelido").fill(carBNickname);
-  await page.getByLabel("Marca").fill("Honda");
-  await page.getByLabel("Modelo").fill("Fit");
-  await page.getByRole("button", { name: "Adicionar veículo" }).click();
-  await expect(page.getByText("Veículo cadastrado com sucesso.")).toBeVisible();
-
-  await page.goto("/expenses");
-
-  const createSection = page.locator("section").filter({
-    has: page.getByRole("heading", { name: "Nova despesa" }),
-  });
-  const createForm = createSection.locator("form").first();
-
-  await createForm.getByLabel("Veículo").selectOption({ label: carALabel });
-  await createForm.getByLabel("Data").fill("2026-01-15");
-  await createForm.getByLabel("Categoria").selectOption("fuel");
-  await createForm.getByLabel("Valor (R$)").fill("100,00");
-  await createForm.getByRole("button", { name: "Adicionar despesa" }).click();
-  await expect(page.getByText("Despesa cadastrada com sucesso.")).toBeVisible();
-
-  await createForm.getByLabel("Veículo").selectOption({ label: carALabel });
-  await createForm.getByLabel("Data").fill("2026-02-20");
-  await createForm.getByLabel("Categoria").selectOption("service");
-  await createForm.getByLabel("Valor (R$)").fill("250,00");
-  await createForm.getByRole("button", { name: "Adicionar despesa" }).click();
-  await expect(page.getByText("Despesa cadastrada com sucesso.")).toBeVisible();
+  await createExpense(page, carALabel, "2026-01-15", "Combustível", "100,00");
+  await createExpense(page, carALabel, "2026-02-20", "Serviço", "250,00");
 
   await page.goto("/summaries");
 

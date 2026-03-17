@@ -115,6 +115,7 @@ export async function applyExpenseFiltersAction(
   const filterInput = parseExpenseFilterFormData(formData);
   const parsed = parseExpenseFilter({
     vehicleId: filterInput.vehicleId,
+    category: filterInput.category,
     startDate: filterInput.startDate,
     endDate: filterInput.endDate,
   });
@@ -124,12 +125,14 @@ export async function applyExpenseFiltersAction(
       status: "error",
       message: EXPENSE_COPY.invalidPeriod,
       errors: {
+        category: toExpenseErrorMap(parsed.error).category,
         startDate: toExpenseErrorMap(parsed.error).startDate,
         endDate: toExpenseErrorMap(parsed.error).endDate,
         period: toExpenseErrorMap(parsed.error).period,
       },
       filters: {
         vehicleId: filterInput.vehicleId,
+        category: filterInput.category,
         startDate: filterInput.startDate,
         endDate: filterInput.endDate,
       },
@@ -140,6 +143,7 @@ export async function applyExpenseFiltersAction(
     status: "success",
     filters: {
       vehicleId: parsed.data.vehicleId || "",
+      category: parsed.data.category || "",
       startDate: parsed.data.startDate,
       endDate: parsed.data.endDate,
     },

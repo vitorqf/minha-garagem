@@ -262,6 +262,7 @@ describe("expense service", () => {
 
     const result = await listExpenses(repository, "owner-1", {
       vehicleId: "vehicle-1",
+      category: "",
       startDate: "2026-03-01",
       endDate: "2026-03-31",
     });
@@ -274,6 +275,32 @@ describe("expense service", () => {
     expect(repository.listByFilter).toHaveBeenCalledWith({
       ownerId: "owner-1",
       vehicleId: "vehicle-1",
+      startDate: "2026-03-01",
+      endDate: "2026-03-31",
+    });
+  });
+
+  it("passes category filter to repository list", async () => {
+    const repository: ExpenseRepository = {
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      listByFilter: vi.fn().mockResolvedValue([]),
+      hasVehicleExpenses: vi.fn(),
+    };
+
+    const result = await listExpenses(repository, "owner-1", {
+      vehicleId: "",
+      category: "service",
+      startDate: "2026-03-01",
+      endDate: "2026-03-31",
+    });
+
+    expect(result.ok).toBe(true);
+    expect(repository.listByFilter).toHaveBeenCalledWith({
+      ownerId: "owner-1",
+      vehicleId: undefined,
+      category: "service",
       startDate: "2026-03-01",
       endDate: "2026-03-31",
     });

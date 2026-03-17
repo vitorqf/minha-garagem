@@ -1,15 +1,21 @@
+import { EXPENSE_CATEGORY_LABELS } from "@/features/expenses/constants";
 import { getExpenseRepository } from "@/features/expenses/repositories";
+import { listExpenses } from "@/features/expenses/service";
 import { requireAuthenticatedOwnerId } from "@/features/auth/session";
 import {
   formatSummaryCurrencyFromCents,
   formatSummaryMonthLabel,
   getDefaultSummaryPeriod,
+  toEndDateFromMonth,
+  toStartDateFromMonth,
 } from "@/features/summaries/format";
 import { getVehicleSummaries } from "@/features/summaries/service";
 import type {
   SummaryData,
+  SummaryKpiViewModel,
   SummaryMonthColumn,
   SummaryPeriodInput,
+  SummaryRecentExpenseViewModel,
   SummaryVehicleOption,
   SummaryViewModel,
 } from "@/features/summaries/types";
@@ -64,18 +70,87 @@ function toSummaryViewModels(
   return summaries.map((summary) => ({
     vehicleId: summary.vehicleId,
     vehicleLabel: labels.get(summary.vehicleId) ?? summary.vehicleId,
+    totalSpentCents: summary.totalSpentCents,
     totalSpentLabel: formatSummaryCurrencyFromCents(summary.totalSpentCents),
+    categoryBreakdownCents: {
+      fuel: summary.categoryBreakdown.fuel,
+      parts: summary.categoryBreakdown.parts,
+      service: summary.categoryBreakdown.service,
+    },
     categoryBreakdown: {
       fuel: formatSummaryCurrencyFromCents(summary.categoryBreakdown.fuel),
       parts: formatSummaryCurrencyFromCents(summary.categoryBreakdown.parts),
       service: formatSummaryCurrencyFromCents(summary.categoryBreakdown.service),
     },
+    monthlyTotalsCents: Object.fromEntries(
+      months.map((month) => [month, summary.monthlyTotals[month] ?? 0]),
+    ),
     monthlyTotals: Object.fromEntries(
       months.map((month) => [
         month,
         formatSummaryCurrencyFromCents(summary.monthlyTotals[month] ?? 0),
       ]),
     ),
+  }));
+}
+
+function shiftYearMonth(yearMonth: string, deltaMonths: number): string {
+  const [yearRaw, monthRaw] = yearMonth.split("-");
+  const baseDate = new Date(Date.UTC(Number(yearRaw), Number(monthRaw) - 1, 1));
+  baseDate.setUTCMonth(baseDate.getUTCMonth() + deltaMonths);
+
+  return `${baseDate.getUTCFullYear()}-${String(baseDate.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+function buildSummaryKpis(
+  currentTotalCents: number,
+  previousTotalCents: number | null,
+  monthCount: number,
+): SummaryKpiViewModel {
+  const monthlyAverageCents = monthCount > 0 ? Math.round(currentTotalCents / monthCount) : 0;
+
+  let variationLabel = "—";
+  let variationDirection: SummaryKpiViewModel["variationDirection"] = "neutral";
+
+  if (previousTotalCents && previousTotalCents > 0) {
+    const variationPercent = ((currentTotalCents - previousTotalCents) / previousTotalCents) * 100;
+    const signedValue = `${variationPercent >= 0 ? "+" : ""}${variationPercent.toFixed(1)}%`;
+    variationLabel = signedValue.replace(".", ",");
+    variationDirection = variationPercent >= 0 ? "positive" : "negative";
+  }
+
+  return {
+    totalSpentLabel: formatSummaryCurrencyFromCents(currentTotalCents),
+    monthlyAverageLabel: formatSummaryCurrencyFromCents(monthlyAverageCents),
+    variationLabel,
+    variationDirection,
+  };
+}
+
+const recentExpenseDateFormatter = new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+function toRecentExpenseViewModels(
+  expenses: Awaited<ReturnType<typeof listExpenses>>,
+  vehicles: SummaryVehicleOption[],
+): SummaryRecentExpenseViewModel[] {
+  if (!expenses.ok) {
+    return [];
+  }
+
+  const vehicleLabels = new Map(vehicles.map((vehicle) => [vehicle.id, vehicle.label]));
+
+  return expenses.data.slice(0, 5).map((expense) => ({
+    id: expense.id,
+    dateLabel: recentExpenseDateFormatter.format(expense.expenseDate).replace(".", ""),
+    vehicleLabel: vehicleLabels.get(expense.vehicleId) ?? expense.vehicleId,
+    categoryLabel: EXPENSE_CATEGORY_LABELS[expense.category] ?? expense.category,
+    notesLabel: expense.notes ?? "Sem observações",
+    amountLabel: formatSummaryCurrencyFromCents(expense.amountCents),
   }));
 }
 
@@ -122,6 +197,34 @@ export default async function SummariesPage({ searchParams }: PageProps) {
     vehicleOptions,
     result.data.months,
   );
+  const currentTotalCents = summaryViewModels.reduce(
+    (acc, summary) => acc + summary.totalSpentCents,
+    0,
+  );
+  const monthCount = result.data.months.length;
+  const previousPeriod = {
+    startMonth: shiftYearMonth(activeFilters.startMonth, -monthCount),
+    endMonth: shiftYearMonth(activeFilters.endMonth, -monthCount),
+    vehicleId: activeFilters.vehicleId ?? "",
+  };
+  const previousResult = await getVehicleSummaries(
+    vehicleRepository,
+    expenseRepository,
+    ownerId,
+    previousPeriod,
+  );
+  const previousTotalCents = previousResult.ok
+    ? previousResult.data.summaries.reduce((acc, summary) => acc + summary.totalSpentCents, 0)
+    : null;
+  const kpis = buildSummaryKpis(currentTotalCents, previousTotalCents, monthCount);
+  const recentExpenses = toRecentExpenseViewModels(
+    await listExpenses(expenseRepository, ownerId, {
+      startDate: toStartDateFromMonth(activeFilters.startMonth),
+      endDate: toEndDateFromMonth(activeFilters.endMonth),
+      vehicleId: activeFilters.vehicleId,
+    }),
+    vehicleOptions,
+  );
 
   return (
     <SummariesPageClient
@@ -129,6 +232,8 @@ export default async function SummariesPage({ searchParams }: PageProps) {
       vehicles={vehicleOptions}
       monthColumns={monthColumns}
       summaries={summaryViewModels}
+      kpis={kpis}
+      recentExpenses={recentExpenses}
       filterError={filterError}
     />
   );

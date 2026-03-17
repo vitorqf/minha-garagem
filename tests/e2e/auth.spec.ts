@@ -50,10 +50,10 @@ test("supports multiple independent user accounts and keeps signup open", async 
   await expect(page).toHaveURL("/signup");
   await expect(page.getByRole("heading", { name: "Criar conta" })).toBeVisible();
   await expect(
-    page.getByText("Crie sua conta para acessar a Minha Garagem e gerenciar seus dados."),
+    page.getByText("Preencha os dados abaixo para começar"),
   ).toBeVisible();
 
   await signupWithCredentials(page, userB);
   await loginWithCredentials(page, userB);
-  await expect(page).toHaveURL("/vehicles");
+  await expect(page).toHaveURL("/summaries");
 });

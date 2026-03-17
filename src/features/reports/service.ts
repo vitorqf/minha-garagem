@@ -44,6 +44,7 @@ export async function buildExpenseCsvExport(
 
   const appliedFilter = {
     vehicleId: parsedFilter.data.vehicleId || "",
+    category: parsedFilter.data.category || "",
     startDate: parsedFilter.data.startDate,
     endDate: parsedFilter.data.endDate,
   };

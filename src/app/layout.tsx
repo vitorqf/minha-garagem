@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Mono, Manrope } from "next/font/google";
 import "./globals.css";
-import { AppNavigation } from "@/app/_components/app-navigation";
+import { AppShell } from "@/app/_components/app-shell";
+import { auth } from "@/auth";
 import { logoutAction } from "@/features/auth/actions";
 import { getCurrentOwnerId } from "@/features/auth/session";
 
-const geistSans = Geist({
+const manrope = Manrope({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
+const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -26,14 +29,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const ownerId = await getCurrentOwnerId();
+  const session = ownerId ? await auth() : null;
+  const userEmail = session?.user?.email ?? undefined;
 
   return (
     <html lang="pt-BR">
-      <body className={`${geistSans.variable} ${geistMono.variable} bg-zinc-50 text-zinc-900 antialiased`}>
-        <div className="min-h-screen">
-          {ownerId ? <AppNavigation logoutAction={logoutAction} /> : null}
-          {children}
-        </div>
+      <body className={`${manrope.variable} ${ibmPlexMono.variable} antialiased`}>
+        {ownerId ? (
+          <AppShell logoutAction={logoutAction} userEmail={userEmail}>
+            {children}
+          </AppShell>
+        ) : (
+          children
+        )}
       </body>
     </html>
   );

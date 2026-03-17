@@ -14,6 +14,10 @@ describe("LoginForm", () => {
 
     expect(screen.getByLabelText("E-mail")).toBeInTheDocument();
     expect(screen.getByLabelText("Senha")).toBeInTheDocument();
+    // expect(screen.getByRole("checkbox", { name: "Lembrar de mim" })).toBeInTheDocument();
+    // expect(
+    //   screen.getByRole("link", { name: "Esqueci minha senha" }),
+    // ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Entrar" })).toBeInTheDocument();
   });
 
@@ -32,7 +36,9 @@ describe("LoginForm", () => {
       />,
     );
 
-    expect(screen.getByText("Conta criada com sucesso. Faça login para continuar.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Conta criada com sucesso. Faça login para continuar."),
+    ).toBeInTheDocument();
     expect(screen.getByText("E-mail ou senha inválidos.")).toBeInTheDocument();
     expect(screen.getByText("E-mail inválido.")).toBeInTheDocument();
   });

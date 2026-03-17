@@ -24,6 +24,7 @@ function parseFilterFromRequest(request: Request): ReportExpenseExportFilter {
 
   return {
     vehicleId: searchParams.get("vehicleId") ?? "",
+    category: searchParams.get("category") ?? "",
     startDate: searchParams.get("startDate") ?? "",
     endDate: searchParams.get("endDate") ?? "",
   };

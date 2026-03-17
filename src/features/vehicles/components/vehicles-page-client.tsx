@@ -1,11 +1,26 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import { initialVehicleFormState, type VehicleFormState, type VehicleViewModel } from "@/features/vehicles/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  initialVehicleFormState,
+  type VehicleFormState,
+  type VehicleViewModel,
+} from "@/features/vehicles/types";
 import { VehicleFormFields } from "@/features/vehicles/components/vehicle-form-fields";
 import { VehiclesList } from "@/features/vehicles/components/vehicles-list";
+
+const OPEN_CREATE_EVENT = "open-create-vehicle";
 
 type VehicleMutationAction = (
   state: VehicleFormState,
@@ -28,13 +43,13 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <Button
       type="submit"
       disabled={pending}
-      className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+      className="h-12 min-w-44 text-base font-bold"
     >
-      {pending ? "Salvando..." : "Adicionar veículo"}
-    </button>
+      {pending ? "Salvando..." : "Cadastrar Veículo"}
+    </Button>
   );
 }
 
@@ -44,57 +59,82 @@ export function VehiclesPageClient({
   updateVehicleAction,
   deleteVehicleAction,
 }: VehiclesPageClientProps) {
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const createFormRef = useRef<HTMLFormElement>(null);
   const [createState, createFormAction] = useActionState(
-    createVehicleAction,
+    async (previousState: VehicleFormState, formData: FormData) => {
+      const result = await createVehicleAction(previousState, formData);
+      if (result.status === "success") {
+        createFormRef.current?.reset();
+        setIsCreateOpen(false);
+      }
+
+      return result;
+    },
     initialVehicleFormState,
   );
-  const createFormRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (createState.status === "success") {
-      createFormRef.current?.reset();
-    }
-  }, [createState.status]);
+    const openModal = () => setIsCreateOpen(true);
+    window.addEventListener(OPEN_CREATE_EVENT, openModal);
+    return () => window.removeEventListener(OPEN_CREATE_EVENT, openModal);
+  }, []);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
-      <header className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900">Minha Garagem</h1>
-        <p className="text-sm text-zinc-600">
-          Cadastre seus veículos e mantenha tudo pronto para o controle de gastos.
+    <>
+      {createState.message ? (
+        <p
+          className={`mb-4 rounded-xl border px-4 py-2 text-sm ${
+            createState.status === "success"
+              ? "border-[#BFE8CF] bg-[#F1FCF5] text-[#17854B]"
+              : "border-[#F2C4C0] bg-[#FFF3F2] text-[#C24740]"
+          }`}
+        >
+          {createState.message}
         </p>
-      </header>
+      ) : null}
 
-      <section className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold text-zinc-900">Novo veículo</h2>
+      <VehiclesList
+        vehicles={vehicles}
+        updateVehicleAction={updateVehicleAction}
+        deleteVehicleAction={deleteVehicleAction}
+        onCreateRequest={() => setIsCreateOpen(true)}
+      />
 
-        <form ref={createFormRef} action={createFormAction} className="space-y-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <VehicleFormFields idPrefix="create-vehicle" errors={createState.errors} />
-          </div>
+      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Cadastrar Veículo</DialogTitle>
+            <DialogDescription>
+              Preencha os dados abaixo para adicionar um novo veículo à Minha
+              Garagem.
+            </DialogDescription>
+          </DialogHeader>
 
-          {createState.message ? (
-            <p
-              className={`text-sm ${
-                createState.status === "success" ? "text-emerald-700" : "text-red-700"
-              }`}
-            >
-              {createState.message}
-            </p>
-          ) : null}
+          <form
+            ref={createFormRef}
+            action={createFormAction}
+            className="space-y-4"
+          >
+            <VehicleFormFields
+              idPrefix="create-vehicle"
+              errors={createState.errors}
+            />
 
-          <SubmitButton />
-        </form>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-zinc-900">Veículos cadastrados</h2>
-        <VehiclesList
-          vehicles={vehicles}
-          updateVehicleAction={updateVehicleAction}
-          deleteVehicleAction={deleteVehicleAction}
-        />
-      </section>
-    </main>
+            <DialogFooter className="justify-between sm:justify-between">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-12 min-w-44 text-base"
+                onClick={() => setIsCreateOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <SubmitButton />
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

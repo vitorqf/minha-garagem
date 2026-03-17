@@ -72,6 +72,7 @@ describe("reports service", () => {
       startDate: "2026-03-01",
       endDate: "2026-03-31",
       vehicleId: ownerVehicle.id,
+      category: "fuel",
     });
 
     expect(result.ok).toBe(true);
@@ -83,6 +84,7 @@ describe("reports service", () => {
       startDate: "2026-03-01",
       endDate: "2026-03-31",
       vehicleId: ownerVehicle.id,
+      category: "fuel",
     });
 
     expect(result.data.rows).toHaveLength(1);
@@ -105,6 +107,7 @@ describe("reports service", () => {
       startDate: "2026-03-31",
       endDate: "2026-03-01",
       vehicleId: "",
+      category: "",
     });
 
     expect(result.ok).toBe(false);
@@ -133,6 +136,7 @@ describe("reports service", () => {
       startDate: "2026-03-01",
       endDate: "2026-03-31",
       vehicleId: "",
+      category: "",
     });
 
     expect(result.ok).toBe(true);

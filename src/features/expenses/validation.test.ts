@@ -51,6 +51,7 @@ describe("expense validation", () => {
   it("validates period range with inclusive start and end", () => {
     const invalidRange = parseExpenseFilter({
       vehicleId: "",
+      category: "",
       startDate: "2026-03-31",
       endDate: "2026-03-01",
     });
@@ -59,11 +60,35 @@ describe("expense validation", () => {
 
     const validRange = parseExpenseFilter({
       vehicleId: "",
+      category: "fuel",
       startDate: "2026-03-01",
       endDate: "2026-03-31",
     });
 
     expect(validRange.success).toBe(true);
+  });
+
+  it("accepts supported category and rejects unsupported category in filters", () => {
+    const validCategory = parseExpenseFilter({
+      vehicleId: "",
+      category: "parts",
+      startDate: "2026-03-01",
+      endDate: "2026-03-31",
+    });
+
+    expect(validCategory.success).toBe(true);
+
+    const invalidCategory = parseExpenseFilter({
+      vehicleId: "",
+      category: "insurance",
+      startDate: "2026-03-01",
+      endDate: "2026-03-31",
+    });
+
+    expect(invalidCategory.success).toBe(false);
+    if (!invalidCategory.success) {
+      expect(invalidCategory.error.flatten().fieldErrors.category?.[0]).toContain("Categoria");
+    }
   });
 
   it("enforces mileage positive integer and notes max 500 chars", () => {

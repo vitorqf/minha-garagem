@@ -69,6 +69,7 @@ export class PrismaExpenseRepository implements ExpenseRepository {
       where: {
         ownerId: filter.ownerId,
         vehicleId: filter.vehicleId || undefined,
+        category: filter.category || undefined,
         expenseDate: {
           gte: new Date(`${filter.startDate}T00:00:00.000Z`),
           lte: new Date(`${filter.endDate}T23:59:59.999Z`),

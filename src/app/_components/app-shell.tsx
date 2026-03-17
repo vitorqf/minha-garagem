@@ -95,7 +95,7 @@ function SideNav({
   logoutAction: AppShellProps["logoutAction"];
 }) {
   return (
-    <aside className="flex h-screen w-72.5 shrink-0 flex-col border-r border-[#D6DFEC] bg-white">
+    <aside className="flex h-screen w-72.5 shrink-0 flex-col border-r border-[#D6DFEC] bg-white xl:sticky xl:top-0">
       <div className="px-6 pt-7">
         <Link href="/summaries" className="flex items-center gap-3">
           <div className="grid size-10 place-items-center rounded-full bg-[#2F84EB] text-white">

@@ -86,6 +86,10 @@ export class InMemoryExpenseRepository implements ExpenseRepository {
           return false;
         }
 
+        if (filter.category && item.category !== filter.category) {
+          return false;
+        }
+
         const expenseTime = item.expenseDate.getTime();
         return expenseTime >= start && expenseTime <= end;
       })

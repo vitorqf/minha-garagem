@@ -95,6 +95,14 @@ export const expenseInputSchema = z.object({
 export const expenseFilterSchema = z
   .object({
     vehicleId: z.string().trim().optional().or(z.literal("")),
+    category: z
+      .string()
+      .trim()
+      .optional()
+      .or(z.literal(""))
+      .refine((value) => !value || expenseCategorySchema.safeParse(value).success, {
+        message: EXPENSE_COPY.invalidCategory,
+      }),
     startDate: dateStringSchema,
     endDate: dateStringSchema,
   })
@@ -125,6 +133,7 @@ export function parseExpenseFormData(formData: FormData): ExpenseInput {
 export function parseExpenseFilterFormData(formData: FormData): ExpenseFilterInput {
   return {
     vehicleId: String(formData.get("vehicleId") ?? ""),
+    category: String(formData.get("category") ?? ""),
     startDate: String(formData.get("startDate") ?? ""),
     endDate: String(formData.get("endDate") ?? ""),
   };

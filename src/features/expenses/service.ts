@@ -2,6 +2,7 @@ import { EXPENSE_COPY } from "@/features/expenses/constants";
 import type { ExpenseRepository } from "@/features/expenses/repositories/expense-repository";
 import type {
   Expense,
+  ExpenseCategory,
   ExpenseFilterInput,
   ExpenseInput,
   ExpenseUpdateData,
@@ -35,6 +36,14 @@ const byNewest = (a: Expense, b: Expense) => {
   }
   return b.createdAt.getTime() - a.createdAt.getTime();
 };
+
+function toExpenseCategory(value: string | undefined): ExpenseCategory | undefined {
+  if (value === "fuel" || value === "parts" || value === "service") {
+    return value;
+  }
+
+  return undefined;
+}
 
 function buildCreateData(ownerId: string, input: ExpenseInput): ExpenseServiceResult<ExpenseCreateData> {
   const parsed = parseExpenseInput(input);
@@ -189,6 +198,7 @@ export async function listExpenses(
   const expenses = await repository.listByFilter({
     ownerId,
     vehicleId: parsedFilter.data.vehicleId || undefined,
+    category: toExpenseCategory(parsedFilter.data.category),
     startDate: parsedFilter.data.startDate,
     endDate: parsedFilter.data.endDate,
   });

@@ -42,7 +42,7 @@ Track spending per vehicle with a clear, incremental workflow:
 - Optional fields: `mileage`, `notes` (max 500 chars).
 - Amount input accepted as BRL decimal and stored as integer cents.
 - Default filters: all vehicles, last 30 days, newest date first.
-- Filtering by vehicle and date range (`startDate` + `endDate`).
+- Filtering by vehicle, category, and date range (`vehicleId`, `category`, `startDate`, `endDate`).
 - Vehicle deletion now blocked when related expenses exist.
 
 ## Slice 3 Delivered
@@ -56,7 +56,7 @@ Track spending per vehicle with a clear, incremental workflow:
 - Shared top navigation across `/vehicles`, `/expenses`, and `/summaries`.
 
 ## v1 Increment 1 Delivered (Foundation + Expenses CSV Export)
-- New authenticated endpoint: `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>`.
+- New authenticated endpoint: `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>&category=<optional>`.
 - `/expenses` now includes an `Exportar CSV` action in the filters section, bound to active filter query params.
 - CSV response contract:
 - `Content-Type: text/csv; charset=utf-8`.

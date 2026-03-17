@@ -35,7 +35,7 @@ type ExpenseDeleteAction = (formData: FormData) => Promise<void>;
 type ExpensesPageClientProps = {
   vehicles: VehicleOption[];
   expenses: ExpenseViewModel[];
-  defaultFilters: { startDate: string; endDate: string; vehicleId?: string };
+  defaultFilters: { startDate: string; endDate: string; vehicleId?: string; category?: string };
   createExpenseAction: ExpenseMutationAction;
   updateExpenseAction: ExpenseMutationAction;
   applyExpenseFiltersAction: ExpenseFilterAction;
@@ -47,6 +47,7 @@ function buildExpenseExportHref(defaultFilters: {
   startDate: string;
   endDate: string;
   vehicleId?: string;
+  category?: string;
 }): string {
   const searchParams = new URLSearchParams();
   searchParams.set("startDate", defaultFilters.startDate);
@@ -54,6 +55,10 @@ function buildExpenseExportHref(defaultFilters: {
 
   if (defaultFilters.vehicleId) {
     searchParams.set("vehicleId", defaultFilters.vehicleId);
+  }
+
+  if (defaultFilters.category) {
+    searchParams.set("category", defaultFilters.category);
   }
 
   return `/api/reports/expenses.csv?${searchParams.toString()}`;
@@ -165,15 +170,23 @@ export function ExpensesPageClient({
                 className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] px-3 py-2 text-sm text-[#1E3658]"
               />
 
-              <button
-                type="button"
-                disabled
-                className="inline-flex h-12 items-center gap-2 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] px-4 py-2 text-sm font-medium text-[#5D7290]"
-                aria-label="Categoria (em breve)"
-              >
-                <Filter className="size-4" />
+              <label className="sr-only" htmlFor="filters-category">
                 Categoria
-              </button>
+              </label>
+              <div className="relative">
+                <Filter className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#7085A4]" />
+                <select
+                  id="filters-category"
+                  name="category"
+                  defaultValue={defaultFilters.category ?? ""}
+                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-sm text-[#1E3658]"
+                >
+                  <option value="">Todas as Categorias</option>
+                  <option value="fuel">Combustível</option>
+                  <option value="parts">Peças</option>
+                  <option value="service">Serviço</option>
+                </select>
+              </div>
 
               <Button type="submit" variant="outline" className="h-12 rounded-full">
                 Aplicar filtros

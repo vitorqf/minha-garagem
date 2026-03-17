@@ -24,6 +24,7 @@ export type ExpenseInput = {
 
 export type ExpenseFilterInput = {
   vehicleId?: string;
+  category?: string;
   startDate: string;
   endDate: string;
 };
@@ -56,10 +57,11 @@ export type ExpenseFilterState = {
   message?: string;
   filters: {
     vehicleId?: string;
+    category?: string;
     startDate?: string;
     endDate?: string;
   };
-  errors?: Partial<Record<"startDate" | "endDate" | "period", string>>;
+  errors?: Partial<Record<"startDate" | "endDate" | "category" | "period", string>>;
 };
 
 export const initialExpenseFormState: ExpenseFormState = {

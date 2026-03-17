@@ -184,7 +184,7 @@
 
 ### Public API and Contract Targets
 - Implemented authenticated endpoint:
-- `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>`.
+- `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>&category=<optional>`.
 - Planned next endpoint:
 - `GET /api/reports/summaries.csv?startMonth=YYYY-MM&endMonth=YYYY-MM&vehicleId=<optional>`.
 - Behavioral routing updates:

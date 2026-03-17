@@ -1,5 +1,6 @@
 import type {
   Expense,
+  ExpenseCategory,
   ExpenseCreateData,
   ExpenseUpdateData,
 } from "@/features/expenses/types";
@@ -7,6 +8,7 @@ import type {
 export type ExpenseListFilter = {
   ownerId: string;
   vehicleId?: string;
+  category?: ExpenseCategory;
   startDate: string;
   endDate: string;
 };

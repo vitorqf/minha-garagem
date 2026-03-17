@@ -25,7 +25,8 @@ test("expense create/update and filtering by vehicle/date", async ({ page }) => 
   const suffix = Date.now().toString();
   const nickname = `Carro E2E ${suffix}`;
   const vehicleLabel = `${nickname} (Toyota Corolla)`;
-  const note = `Abastecimento inicial ${suffix}`;
+  const fuelNote = `Abastecimento inicial ${suffix}`;
+  const serviceNote = `Revisão inicial ${suffix}`;
 
   await ensureOwnerLoggedIn(page);
   await createVehicle(page, nickname);
@@ -36,17 +37,29 @@ test("expense create/update and filtering by vehicle/date", async ({ page }) => 
   await page.getByLabel("Data", { exact: true }).fill("2026-03-10");
   await page.getByLabel("Valor (R$)").fill("150,25");
   await page.getByLabel("Quilometragem (KM)").fill("12500");
-  await page.getByLabel("Observações").fill(note);
+  await page.getByLabel("Observações").fill(fuelNote);
   await page.getByRole("button", { name: "Salvar Gasto" }).click();
 
   await expect(page.getByText("Despesa cadastrada com sucesso.")).toBeVisible();
   const createdRow = page.locator("tr[data-testid='expense-row']").filter({
-    hasText: note,
+    hasText: fuelNote,
   });
   await expect(createdRow).toHaveCount(1);
   await expect(createdRow).toContainText(/R\$\s?150,25/);
 
-  await page.getByRole("button", { name: /Ações da despesa/ }).first().click();
+  await openCreateExpenseModal(page);
+  await page.getByLabel("Selecionar Veículo").selectOption({ label: vehicleLabel });
+  await page.locator('input[name="category"][value="service"]').check({ force: true });
+  await page.getByLabel("Data", { exact: true }).fill("2026-03-12");
+  await page.getByLabel("Valor (R$)").fill("380,00");
+  await page.getByLabel("Observações").fill(serviceNote);
+  await page.getByRole("button", { name: "Salvar Gasto" }).click();
+  await expect(page.getByText("Despesa cadastrada com sucesso.")).toBeVisible();
+  await expect(
+    page.locator("tr[data-testid='expense-row']").filter({ hasText: serviceNote }),
+  ).toHaveCount(1);
+
+  await createdRow.getByRole("button", { name: /Ações da despesa/ }).click();
   await page.getByRole("menuitem", { name: "Editar" }).click();
   await page.getByLabel("Valor (R$)").fill("200,00");
   await page.getByRole("button", { name: "Salvar Gasto" }).click();
@@ -55,9 +68,11 @@ test("expense create/update and filtering by vehicle/date", async ({ page }) => 
 
   await page.getByLabel("Data inicial").fill("2026-03-01");
   await page.getByLabel("Data final").fill("2026-03-31");
+  await page.getByLabel("Categoria", { exact: true }).selectOption("service");
   await page.getByRole("button", { name: "Aplicar filtros" }).click();
 
-  await expect(createdRow).toContainText(/R\$\s?200,00/);
+  await expect(page.getByText(serviceNote)).toBeVisible();
+  await expect(page.getByText(fuelNote)).not.toBeVisible();
 
   await expect(page.getByRole("button", { name: /\+?\s*Adicionar Gasto/i })).toBeVisible();
 });

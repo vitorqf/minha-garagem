@@ -111,6 +111,7 @@ describe("ExpensesPageClient", () => {
         expenses={[]}
         defaultFilters={{
           vehicleId: "vehicle-1",
+          category: "parts",
           startDate: "2026-03-01",
           endDate: "2026-03-31",
         }}
@@ -123,7 +124,28 @@ describe("ExpensesPageClient", () => {
 
     expect(screen.getByRole("link", { name: "Exportar CSV" })).toHaveAttribute(
       "href",
-      "/api/reports/expenses.csv?startDate=2026-03-01&endDate=2026-03-31&vehicleId=vehicle-1",
+      "/api/reports/expenses.csv?startDate=2026-03-01&endDate=2026-03-31&vehicleId=vehicle-1&category=parts",
     );
+  });
+
+  it("renders category filter selector with selected option", () => {
+    render(
+      <ExpensesPageClient
+        vehicles={[{ id: "vehicle-1", label: "Carro Principal (Toyota Corolla)" }]}
+        expenses={[]}
+        defaultFilters={{
+          vehicleId: "",
+          category: "service",
+          startDate: "2026-03-01",
+          endDate: "2026-03-31",
+        }}
+        createExpenseAction={noopFormAction}
+        updateExpenseAction={noopFormAction}
+        applyExpenseFiltersAction={noopFilterAction}
+        deleteExpenseAction={noopDeleteAction}
+      />,
+    );
+
+    expect(screen.getByLabelText("Categoria")).toHaveValue("service");
   });
 });

@@ -73,6 +73,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Out-of-scope controls are intentionally visual placeholders in this increment (`Buscar`, notification bell, pagination visuals, summaries export button marked as coming soon).
 
 ### Fixed
+- Expenses filter now supports functional category selection in `/expenses`, including owner-scoped list filtering and active-filter propagation to expenses CSV export links/API.
 - Server-side expense authorization hardened: create/update now verifies vehicle ownership before persisting, preventing cross-account vehicle binding.
 - In-memory repository consistency across Next.js module contexts by persisting memory repositories in `globalThis`, preventing CSV export route/state divergence during Playwright smoke tests.
 - Login/signup e2e selector ambiguity by using exact label matching for `Senha` and `Confirmar senha`.

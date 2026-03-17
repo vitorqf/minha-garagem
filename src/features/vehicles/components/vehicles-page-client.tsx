@@ -12,7 +12,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { initialVehicleFormState, type VehicleFormState, type VehicleViewModel } from "@/features/vehicles/types";
+import {
+  initialVehicleFormState,
+  type VehicleFormState,
+  type VehicleViewModel,
+} from "@/features/vehicles/types";
 import { VehicleFormFields } from "@/features/vehicles/components/vehicle-form-fields";
 import { VehiclesList } from "@/features/vehicles/components/vehicles-list";
 
@@ -39,7 +43,11 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} className="h-12 min-w-44 text-base font-bold">
+    <Button
+      type="submit"
+      disabled={pending}
+      className="h-12 min-w-44 text-base font-bold"
+    >
       {pending ? "Salvando..." : "Cadastrar Veículo"}
     </Button>
   );
@@ -98,19 +106,28 @@ export function VehiclesPageClient({
           <DialogHeader>
             <DialogTitle className="text-2xl">Cadastrar Veículo</DialogTitle>
             <DialogDescription>
-              Preencha os dados abaixo para adicionar um novo veículo à Minha Garagem.
+              Preencha os dados abaixo para adicionar um novo veículo à Minha
+              Garagem.
             </DialogDescription>
           </DialogHeader>
 
-          <form ref={createFormRef} action={createFormAction} className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <VehicleFormFields idPrefix="create-vehicle" errors={createState.errors} />
-              </div>
-            </div>
+          <form
+            ref={createFormRef}
+            action={createFormAction}
+            className="space-y-4"
+          >
+            <VehicleFormFields
+              idPrefix="create-vehicle"
+              errors={createState.errors}
+            />
 
             <DialogFooter className="justify-between sm:justify-between">
-              <Button type="button" variant="outline" className="h-12 min-w-44 text-base" onClick={() => setIsCreateOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-12 min-w-44 text-base"
+                onClick={() => setIsCreateOpen(false)}
+              >
                 Cancelar
               </Button>
               <SubmitButton />

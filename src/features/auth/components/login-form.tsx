@@ -8,9 +8,15 @@ import { Eye, Lock, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { initialLoginFormState, type LoginFormState } from "@/features/auth/types";
+import {
+  initialLoginFormState,
+  type LoginFormState,
+} from "@/features/auth/types";
 
-type LoginAction = (state: LoginFormState, formData: FormData) => Promise<LoginFormState>;
+type LoginAction = (
+  state: LoginFormState,
+  formData: FormData,
+) => Promise<LoginFormState>;
 
 type LoginFormProps = {
   loginAction: LoginAction;
@@ -22,19 +28,29 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} className="h-12 w-full rounded-2xl text-base font-bold">
+    <Button
+      type="submit"
+      disabled={pending}
+      className="h-12 w-full rounded-2xl text-base font-bold"
+    >
       {pending ? "Entrando..." : "Entrar"}
     </Button>
   );
 }
 
-export function LoginForm({ loginAction, initialState = initialLoginFormState, notice }: LoginFormProps) {
+export function LoginForm({
+  loginAction,
+  initialState = initialLoginFormState,
+  notice,
+}: LoginFormProps) {
   const [state, formAction] = useActionState(loginAction, initialState);
 
   return (
     <form action={formAction} className="space-y-5">
       {notice ? (
-        <p className="rounded-xl border border-[#CFE7D8] bg-[#ECF9F0] px-3 py-2 text-sm text-[#17854B]">{notice}</p>
+        <p className="rounded-xl border border-[#CFE7D8] bg-[#ECF9F0] px-3 py-2 text-sm text-[#17854B]">
+          {notice}
+        </p>
       ) : null}
 
       <div className="space-y-2">
@@ -51,7 +67,9 @@ export function LoginForm({ loginAction, initialState = initialLoginFormState, n
             required
           />
         </div>
-        {state.errors?.email ? <p className="text-sm text-[#D94C45]">{state.errors.email}</p> : null}
+        {state.errors?.email ? (
+          <p className="text-sm text-[#D94C45]">{state.errors.email}</p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
@@ -68,7 +86,9 @@ export function LoginForm({ loginAction, initialState = initialLoginFormState, n
           />
           <Eye className="pointer-events-none absolute top-1/2 right-3 size-5 -translate-y-1/2 text-[#8CA0BC]" />
         </div>
-        {state.errors?.password ? <p className="text-sm text-[#D94C45]">{state.errors.password}</p> : null}
+        {state.errors?.password ? (
+          <p className="text-sm text-[#D94C45]">{state.errors.password}</p>
+        ) : null}
       </div>
 
       <div className="flex items-center justify-between">
@@ -80,17 +100,19 @@ export function LoginForm({ loginAction, initialState = initialLoginFormState, n
           />
           Lembrar de mim
         </label>
-        <a
+        {/* <a
           href="#"
           aria-disabled="true"
           className="pointer-events-none text-base font-semibold text-[#2F84EB] opacity-80"
         >
           Esqueci minha senha
-        </a>
+        </a> */}
       </div>
 
       {state.message ? (
-        <p className={`text-sm ${state.status === "success" ? "text-[#17854B]" : "text-[#D94C45]"}`}>
+        <p
+          className={`text-sm ${state.status === "success" ? "text-[#17854B]" : "text-[#D94C45]"}`}
+        >
           {state.message}
         </p>
       ) : null}

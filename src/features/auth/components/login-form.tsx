@@ -91,7 +91,7 @@ export function LoginForm({
         ) : null}
       </div>
 
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <label className="inline-flex items-center gap-2 text-sm text-[#4F6482]">
           <input
             type="checkbox"
@@ -100,14 +100,14 @@ export function LoginForm({
           />
           Lembrar de mim
         </label>
-        {/* <a
+        <a
           href="#"
           aria-disabled="true"
           className="pointer-events-none text-base font-semibold text-[#2F84EB] opacity-80"
         >
           Esqueci minha senha
-        </a> */}
-      </div>
+        </a>
+      </div> */}
 
       {state.message ? (
         <p

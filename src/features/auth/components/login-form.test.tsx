@@ -15,9 +15,9 @@ describe("LoginForm", () => {
     expect(screen.getByLabelText("E-mail")).toBeInTheDocument();
     expect(screen.getByLabelText("Senha")).toBeInTheDocument();
     // expect(screen.getByRole("checkbox", { name: "Lembrar de mim" })).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: "Esqueci minha senha" }),
-    ).toBeInTheDocument();
+    // expect(
+    //   screen.getByRole("link", { name: "Esqueci minha senha" }),
+    // ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Entrar" })).toBeInTheDocument();
   });
 

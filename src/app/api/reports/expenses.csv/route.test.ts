@@ -98,7 +98,7 @@ describe("GET /api/reports/expenses.csv", () => {
     const { GET } = await import("@/app/api/reports/expenses.csv/route");
     const response = await GET(
       new Request(
-        "http://localhost/api/reports/expenses.csv?startDate=2026-03-01&endDate=2026-03-31&vehicleId=vehicle-1",
+        "http://localhost/api/reports/expenses.csv?startDate=2026-03-01&endDate=2026-03-31&vehicleId=vehicle-1&category=parts",
       ),
     );
 
@@ -111,5 +111,16 @@ describe("GET /api/reports/expenses.csv", () => {
     const body = await response.text();
     expect(body).toContain("ID;Data;Veículo;Categoria;Valor (R$);Quilometragem (km);Observações");
     expect(body).toContain("expense-1;10/03/2026;Carro Principal (Toyota Corolla);Combustível;150,25;12500;Abastecimento");
+    expect(mockBuildExpenseCsvExport).toHaveBeenCalledWith(
+      {},
+      {},
+      "owner-1",
+      {
+        vehicleId: "vehicle-1",
+        category: "parts",
+        startDate: "2026-03-01",
+        endDate: "2026-03-31",
+      },
+    );
   });
 });

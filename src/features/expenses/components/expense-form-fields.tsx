@@ -1,3 +1,8 @@
+import { Fuel, HandPlatter, Wrench } from "lucide-react";
+
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import type { VehicleOption, ExpenseFormState } from "@/features/expenses/types";
 
 type ExpenseFieldValues = {
@@ -24,107 +29,113 @@ export function ExpenseFormFields({
   values,
   errors,
 }: ExpenseFormFieldsProps) {
+  const selectedCategory = values?.category ?? "fuel";
+
   return (
     <>
-      <div>
-        <label className="mb-1 block text-sm font-medium" htmlFor={`${idPrefix}-vehicleId`}>
-          Veículo
-        </label>
+      <div className="space-y-2 sm:col-span-2">
+        <Label htmlFor={`${idPrefix}-vehicleId`}>Selecionar Veículo</Label>
         <select
           id={`${idPrefix}-vehicleId`}
           name="vehicleId"
           disabled={disabled}
           defaultValue={values?.vehicleId ?? ""}
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+          className="h-12 w-full rounded-xl border border-[#D3DCEA] bg-[#F8FBFF] px-3 text-base text-[#101C33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3A8DFF]/30"
         >
-          <option value="">Selecione</option>
+          <option value="">Escolha um veículo da sua garagem</option>
           {vehicles.map((vehicle) => (
             <option key={vehicle.id} value={vehicle.id}>
               {vehicle.label}
             </option>
           ))}
         </select>
-        {errors?.vehicleId ? <p className="mt-1 text-xs text-red-700">{errors.vehicleId}</p> : null}
+        {errors?.vehicleId ? <p className="text-sm text-[#D94C45]">{errors.vehicleId}</p> : null}
       </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium" htmlFor={`${idPrefix}-expenseDate`}>
-          Data
-        </label>
-        <input
+      <div className="space-y-2 sm:col-span-2">
+        <Label>Categoria</Label>
+        <div className="grid grid-cols-3 gap-1 rounded-2xl bg-[#ECF1F8] p-1">
+          {[
+            { key: "fuel", label: "Combustível", icon: Fuel },
+            { key: "parts", label: "Peças", icon: Wrench },
+            { key: "service", label: "Serviço", icon: HandPlatter },
+          ].map((option) => {
+            const Icon = option.icon;
+            const isActive = selectedCategory === option.key;
+
+            return (
+              <label
+                key={option.key}
+                className={cn(
+                  "flex cursor-pointer items-center justify-center gap-2 rounded-xl px-2 py-2 text-sm font-semibold text-[#5D7290] transition-colors",
+                  isActive && "bg-white text-[#2F84EB] shadow-[0_1px_3px_rgba(14,23,38,0.12)]",
+                )}
+              >
+                <input
+                  type="radio"
+                  className="sr-only"
+                  name="category"
+                  value={option.key}
+                  disabled={disabled}
+                  defaultChecked={isActive}
+                />
+                <Icon className="size-4" />
+                {option.label}
+              </label>
+            );
+          })}
+        </div>
+        {errors?.category ? <p className="text-sm text-[#D94C45]">{errors.category}</p> : null}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor={`${idPrefix}-amountInput`}>Valor (R$)</Label>
+        <Input
+          id={`${idPrefix}-amountInput`}
+          name="amountInput"
+          disabled={disabled}
+          defaultValue={values?.amountInput ?? ""}
+          placeholder="R$ 0,00"
+        />
+        {errors?.amountInput ? <p className="text-sm text-[#D94C45]">{errors.amountInput}</p> : null}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor={`${idPrefix}-expenseDate`}>Data</Label>
+        <Input
           id={`${idPrefix}-expenseDate`}
           name="expenseDate"
           type="date"
           disabled={disabled}
           defaultValue={values?.expenseDate ?? ""}
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
         />
-        {errors?.expenseDate ? <p className="mt-1 text-xs text-red-700">{errors.expenseDate}</p> : null}
+        {errors?.expenseDate ? <p className="text-sm text-[#D94C45]">{errors.expenseDate}</p> : null}
       </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium" htmlFor={`${idPrefix}-category`}>
-          Categoria
-        </label>
-        <select
-          id={`${idPrefix}-category`}
-          name="category"
-          disabled={disabled}
-          defaultValue={values?.category ?? ""}
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
-        >
-          <option value="">Selecione</option>
-          <option value="fuel">Combustível</option>
-          <option value="parts">Peças</option>
-          <option value="service">Serviços</option>
-        </select>
-        {errors?.category ? <p className="mt-1 text-xs text-red-700">{errors.category}</p> : null}
-      </div>
-
-      <div>
-        <label className="mb-1 block text-sm font-medium" htmlFor={`${idPrefix}-amountInput`}>
-          Valor (R$)
-        </label>
-        <input
-          id={`${idPrefix}-amountInput`}
-          name="amountInput"
-          disabled={disabled}
-          defaultValue={values?.amountInput ?? ""}
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
-          placeholder="Ex.: 150,25"
-        />
-        {errors?.amountInput ? <p className="mt-1 text-xs text-red-700">{errors.amountInput}</p> : null}
-      </div>
-
-      <div>
-        <label className="mb-1 block text-sm font-medium" htmlFor={`${idPrefix}-mileage`}>
-          Quilometragem
-        </label>
-        <input
+      <div className="space-y-2 sm:col-span-2">
+        <Label htmlFor={`${idPrefix}-mileage`}>Quilometragem (KM)</Label>
+        <Input
           id={`${idPrefix}-mileage`}
           name="mileage"
           type="number"
           disabled={disabled}
           defaultValue={values?.mileage ?? ""}
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
-          placeholder="Opcional"
+          placeholder="Ex: 45000"
         />
-        {errors?.mileage ? <p className="mt-1 text-xs text-red-700">{errors.mileage}</p> : null}
+        {errors?.mileage ? <p className="text-sm text-[#D94C45]">{errors.mileage}</p> : null}
       </div>
 
-      <div className="sm:col-span-2">
-        <label className="mb-1 block text-sm font-medium" htmlFor={`${idPrefix}-notes`}>
-          Observações
-        </label>
+      <div className="space-y-2 sm:col-span-2">
+        <Label htmlFor={`${idPrefix}-notes`}>Observações</Label>
         <textarea
           id={`${idPrefix}-notes`}
           name="notes"
           disabled={disabled}
           defaultValue={values?.notes ?? ""}
-          className="min-h-20 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
-          placeholder="Opcional"
+          className="min-h-24 w-full rounded-xl border border-[#D3DCEA] bg-[#F8FBFF] px-3 py-2 text-base text-[#101C33] placeholder:text-[#8CA0BC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3A8DFF]/30"
+          placeholder="Detalhes adicionais sobre o gasto..."
         />
-        {errors?.notes ? <p className="mt-1 text-xs text-red-700">{errors.notes}</p> : null}
+        {errors?.notes ? <p className="text-sm text-[#D94C45]">{errors.notes}</p> : null}
       </div>
     </>
   );

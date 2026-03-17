@@ -38,7 +38,26 @@ export type SummaryMonthColumn = {
 export type SummaryViewModel = {
   vehicleId: string;
   vehicleLabel: string;
+  totalSpentCents: number;
   totalSpentLabel: string;
+  categoryBreakdownCents: Record<ExpenseCategory, number>;
   categoryBreakdown: Record<ExpenseCategory, string>;
+  monthlyTotalsCents: Record<string, number>;
   monthlyTotals: Record<string, string>;
+};
+
+export type SummaryKpiViewModel = {
+  totalSpentLabel: string;
+  monthlyAverageLabel: string;
+  variationLabel: string;
+  variationDirection: "positive" | "negative" | "neutral";
+};
+
+export type SummaryRecentExpenseViewModel = {
+  id: string;
+  dateLabel: string;
+  vehicleLabel: string;
+  categoryLabel: string;
+  notesLabel: string;
+  amountLabel: string;
 };

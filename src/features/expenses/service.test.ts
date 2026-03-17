@@ -7,6 +7,7 @@ import {
   updateExpense,
 } from "@/features/expenses/service";
 import type { ExpenseRepository } from "@/features/expenses/repositories/expense-repository";
+import type { VehicleRepository } from "@/features/vehicles/repositories/vehicle-repository";
 
 describe("expense service", () => {
   it("creates expense and converts amount to cents", async () => {
@@ -28,8 +29,26 @@ describe("expense service", () => {
       listByFilter: vi.fn(),
       hasVehicleExpenses: vi.fn(),
     };
+    const vehicleRepository: VehicleRepository = {
+      listByOwner: vi.fn(),
+      findById: vi.fn().mockResolvedValue({
+        id: "vehicle-1",
+        ownerId: "owner-1",
+        nickname: "Carro",
+        brand: "Toyota",
+        model: "Corolla",
+        plate: null,
+        year: 2020,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+      findByOwnerAndPlate: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    };
 
-    const result = await createExpense(repository, "owner-1", {
+    const result = await createExpense(repository, vehicleRepository, "owner-1", {
       vehicleId: "vehicle-1",
       expenseDate: "2026-03-01",
       category: "fuel",
@@ -58,8 +77,16 @@ describe("expense service", () => {
       listByFilter: vi.fn(),
       hasVehicleExpenses: vi.fn(),
     };
+    const vehicleRepository: VehicleRepository = {
+      listByOwner: vi.fn(),
+      findById: vi.fn(),
+      findByOwnerAndPlate: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    };
 
-    const result = await createExpense(repository, "owner-1", {
+    const result = await createExpense(repository, vehicleRepository, "owner-1", {
       vehicleId: "",
       expenseDate: "",
       category: "",
@@ -97,8 +124,26 @@ describe("expense service", () => {
       listByFilter: vi.fn(),
       hasVehicleExpenses: vi.fn(),
     };
+    const vehicleRepository: VehicleRepository = {
+      listByOwner: vi.fn(),
+      findById: vi.fn().mockResolvedValue({
+        id: "vehicle-1",
+        ownerId: "owner-1",
+        nickname: "Carro",
+        brand: "Toyota",
+        model: "Corolla",
+        plate: null,
+        year: 2020,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+      findByOwnerAndPlate: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    };
 
-    const updated = await updateExpense(repository, "owner-1", "expense-1", {
+    const updated = await updateExpense(repository, vehicleRepository, "owner-1", "expense-1", {
       vehicleId: "vehicle-1",
       expenseDate: "2026-03-01",
       category: "parts",
@@ -113,6 +158,72 @@ describe("expense service", () => {
     const deleted = await deleteExpense(repository, "owner-1", "expense-1");
     expect(deleted.ok).toBe(true);
     expect(repository.delete).toHaveBeenCalledWith("expense-1", "owner-1");
+  });
+
+  it("rejects create when vehicle does not belong to authenticated user", async () => {
+    const repository: ExpenseRepository = {
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      listByFilter: vi.fn(),
+      hasVehicleExpenses: vi.fn(),
+    };
+    const vehicleRepository: VehicleRepository = {
+      listByOwner: vi.fn(),
+      findById: vi.fn().mockResolvedValue(null),
+      findByOwnerAndPlate: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    };
+
+    const result = await createExpense(repository, vehicleRepository, "owner-1", {
+      vehicleId: "vehicle-2",
+      expenseDate: "2026-03-01",
+      category: "fuel",
+      amountInput: "100,00",
+      mileage: "",
+      notes: "",
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors?.vehicleId).toContain("Veículo");
+    }
+    expect(repository.create).not.toHaveBeenCalled();
+  });
+
+  it("rejects update when target vehicle does not belong to authenticated user", async () => {
+    const repository: ExpenseRepository = {
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      listByFilter: vi.fn(),
+      hasVehicleExpenses: vi.fn(),
+    };
+    const vehicleRepository: VehicleRepository = {
+      listByOwner: vi.fn(),
+      findById: vi.fn().mockResolvedValue(null),
+      findByOwnerAndPlate: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    };
+
+    const result = await updateExpense(repository, vehicleRepository, "owner-1", "expense-1", {
+      vehicleId: "vehicle-2",
+      expenseDate: "2026-03-01",
+      category: "fuel",
+      amountInput: "100,00",
+      mileage: "",
+      notes: "",
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors?.vehicleId).toContain("Veículo");
+    }
+    expect(repository.update).not.toHaveBeenCalled();
   });
 
   it("lists expenses by vehicle and date range (newest first)", async () => {
@@ -151,6 +262,7 @@ describe("expense service", () => {
 
     const result = await listExpenses(repository, "owner-1", {
       vehicleId: "vehicle-1",
+      category: "",
       startDate: "2026-03-01",
       endDate: "2026-03-31",
     });
@@ -163,6 +275,32 @@ describe("expense service", () => {
     expect(repository.listByFilter).toHaveBeenCalledWith({
       ownerId: "owner-1",
       vehicleId: "vehicle-1",
+      startDate: "2026-03-01",
+      endDate: "2026-03-31",
+    });
+  });
+
+  it("passes category filter to repository list", async () => {
+    const repository: ExpenseRepository = {
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      listByFilter: vi.fn().mockResolvedValue([]),
+      hasVehicleExpenses: vi.fn(),
+    };
+
+    const result = await listExpenses(repository, "owner-1", {
+      vehicleId: "",
+      category: "service",
+      startDate: "2026-03-01",
+      endDate: "2026-03-31",
+    });
+
+    expect(result.ok).toBe(true);
+    expect(repository.listByFilter).toHaveBeenCalledWith({
+      ownerId: "owner-1",
+      vehicleId: undefined,
+      category: "service",
       startDate: "2026-03-01",
       endDate: "2026-03-31",
     });

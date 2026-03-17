@@ -34,6 +34,7 @@ function buildFilters(
 
   return {
     vehicleId: toSingleValue(query?.vehicleId) ?? "",
+    category: toSingleValue(query?.category) ?? "",
     startDate: toSingleValue(query?.startDate) ?? defaults.startDate,
     endDate: toSingleValue(query?.endDate) ?? defaults.endDate,
   };

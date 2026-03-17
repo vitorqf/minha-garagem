@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
-
-const OWNER_EMAIL = "owner@minha-garagem.dev";
-const OWNER_PASSWORD = "12345678";
+import {
+  loginWithCredentials,
+  logout,
+  signupWithCredentials,
+} from "./auth-helpers";
 
 test("redirects unauthenticated users to /login", async ({ page }) => {
   await page.goto("/vehicles");
@@ -9,25 +11,49 @@ test("redirects unauthenticated users to /login", async ({ page }) => {
 });
 
 test("supports signup, login and logout flows", async ({ page }) => {
-  await page.goto("/signup");
+  const suffix = Date.now().toString();
+  const credentials = {
+    email: `owner-${suffix}@minha-garagem.dev`,
+    password: "12345678",
+  };
 
-  if (page.url().includes("/signup")) {
-    await page.getByLabel("E-mail").fill(OWNER_EMAIL);
-    await page.getByLabel("Senha", { exact: true }).fill(OWNER_PASSWORD);
-    await page.getByLabel("Confirmar senha").fill(OWNER_PASSWORD);
-    await page.getByRole("button", { name: "Criar conta" }).click();
-    await expect(page).toHaveURL(/\/login(\?.*)?$/);
-  }
-
-  await page.goto("/login");
-  await page.getByLabel("E-mail").fill(OWNER_EMAIL);
-  await page.getByLabel("Senha", { exact: true }).fill(OWNER_PASSWORD);
-  await page.getByRole("button", { name: "Entrar" }).click();
-  await expect(page).toHaveURL("/vehicles");
-
-  await page.getByRole("button", { name: "Sair" }).click();
-  await expect(page).toHaveURL("/login");
+  await signupWithCredentials(page, {
+    email: credentials.email,
+    password: credentials.password,
+  });
+  await loginWithCredentials(page, {
+    email: credentials.email,
+    password: credentials.password,
+  });
+  await logout(page);
 
   await page.goto("/summaries");
   await expect(page).toHaveURL("/login");
+});
+
+test("supports multiple independent user accounts and keeps signup open", async ({ page }) => {
+  const suffix = Date.now().toString();
+  const userA = {
+    email: `user-a-${suffix}@minha-garagem.dev`,
+    password: "12345678",
+  };
+  const userB = {
+    email: `user-b-${suffix}@minha-garagem.dev`,
+    password: "12345678",
+  };
+
+  await signupWithCredentials(page, userA);
+  await loginWithCredentials(page, userA);
+  await logout(page);
+
+  await page.goto("/signup");
+  await expect(page).toHaveURL("/signup");
+  await expect(page.getByRole("heading", { name: "Criar conta" })).toBeVisible();
+  await expect(
+    page.getByText("Preencha os dados abaixo para começar"),
+  ).toBeVisible();
+
+  await signupWithCredentials(page, userB);
+  await loginWithCredentials(page, userB);
+  await expect(page).toHaveURL("/summaries");
 });

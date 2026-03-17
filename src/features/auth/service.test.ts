@@ -4,7 +4,7 @@ import { InMemoryOwnerUserRepository } from "@/features/auth/repositories/in-mem
 import { registerOwner, verifyOwnerCredentials } from "@/features/auth/service";
 
 describe("auth service", () => {
-  it("creates owner account and enforces single-owner signup", async () => {
+  it("creates multiple accounts with distinct emails", async () => {
     const repository = new InMemoryOwnerUserRepository();
 
     const first = await registerOwner(
@@ -32,9 +32,36 @@ describe("auth service", () => {
       confirmPassword: "12345678",
     });
 
-    expect(second.ok).toBe(false);
-    if (!second.ok) {
-      expect(second.message).toContain("já foi criada");
+    expect(second.ok).toBe(true);
+    if (second.ok) {
+      expect(second.data.email).toBe("second@garage.com");
+    }
+  });
+
+  it("rejects signup when email is already in use", async () => {
+    const repository = new InMemoryOwnerUserRepository();
+
+    await registerOwner(
+      repository,
+      {
+        email: "owner@garage.com",
+        password: "12345678",
+        confirmPassword: "12345678",
+      },
+      {
+        hashPasswordFn: async () => "hash-1",
+      },
+    );
+
+    const duplicated = await registerOwner(repository, {
+      email: "owner@garage.com",
+      password: "12345678",
+      confirmPassword: "12345678",
+    });
+
+    expect(duplicated.ok).toBe(false);
+    if (!duplicated.ok) {
+      expect(duplicated.errors?.email).toContain("já está em uso");
     }
   });
 

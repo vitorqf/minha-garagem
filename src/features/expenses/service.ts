@@ -2,11 +2,13 @@ import { EXPENSE_COPY } from "@/features/expenses/constants";
 import type { ExpenseRepository } from "@/features/expenses/repositories/expense-repository";
 import type {
   Expense,
+  ExpenseCategory,
   ExpenseFilterInput,
   ExpenseInput,
   ExpenseUpdateData,
   ExpenseCreateData,
 } from "@/features/expenses/types";
+import type { VehicleRepository } from "@/features/vehicles/repositories/vehicle-repository";
 import {
   parseExpenseFilter,
   parseExpenseInput,
@@ -34,6 +36,14 @@ const byNewest = (a: Expense, b: Expense) => {
   }
   return b.createdAt.getTime() - a.createdAt.getTime();
 };
+
+function toExpenseCategory(value: string | undefined): ExpenseCategory | undefined {
+  if (value === "fuel" || value === "parts" || value === "service") {
+    return value;
+  }
+
+  return undefined;
+}
 
 function buildCreateData(ownerId: string, input: ExpenseInput): ExpenseServiceResult<ExpenseCreateData> {
   const parsed = parseExpenseInput(input);
@@ -83,7 +93,8 @@ function buildUpdateData(input: ExpenseInput): ExpenseServiceResult<ExpenseUpdat
 }
 
 export async function createExpense(
-  repository: ExpenseRepository,
+  expenseRepository: ExpenseRepository,
+  vehicleRepository: VehicleRepository,
   ownerId: string,
   input: ExpenseInput,
 ): Promise<ExpenseServiceResult<Expense>> {
@@ -92,7 +103,18 @@ export async function createExpense(
     return built;
   }
 
-  const expense = await repository.create(built.data);
+  const vehicle = await vehicleRepository.findById(built.data.vehicleId, ownerId);
+  if (!vehicle) {
+    return {
+      ok: false,
+      message: EXPENSE_COPY.vehicleNotFound,
+      errors: {
+        vehicleId: EXPENSE_COPY.vehicleNotFound,
+      },
+    };
+  }
+
+  const expense = await expenseRepository.create(built.data);
 
   return {
     ok: true,
@@ -102,7 +124,8 @@ export async function createExpense(
 }
 
 export async function updateExpense(
-  repository: ExpenseRepository,
+  expenseRepository: ExpenseRepository,
+  vehicleRepository: VehicleRepository,
   ownerId: string,
   id: string,
   input: ExpenseInput,
@@ -112,7 +135,18 @@ export async function updateExpense(
     return built;
   }
 
-  const updated = await repository.update(id, ownerId, built.data);
+  const vehicle = await vehicleRepository.findById(built.data.vehicleId, ownerId);
+  if (!vehicle) {
+    return {
+      ok: false,
+      message: EXPENSE_COPY.vehicleNotFound,
+      errors: {
+        vehicleId: EXPENSE_COPY.vehicleNotFound,
+      },
+    };
+  }
+
+  const updated = await expenseRepository.update(id, ownerId, built.data);
   if (!updated) {
     return {
       ok: false,
@@ -164,6 +198,7 @@ export async function listExpenses(
   const expenses = await repository.listByFilter({
     ownerId,
     vehicleId: parsedFilter.data.vehicleId || undefined,
+    category: toExpenseCategory(parsedFilter.data.category),
     startDate: parsedFilter.data.startDate,
     endDate: parsedFilter.data.endDate,
   });

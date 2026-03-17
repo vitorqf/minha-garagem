@@ -1,11 +1,13 @@
 export type ReportExpenseExportFilter = {
   vehicleId?: string;
+  category?: string;
   startDate: string;
   endDate: string;
 };
 
 export type NormalizedReportExpenseExportFilter = {
   vehicleId: string;
+  category: string;
   startDate: string;
   endDate: string;
 };

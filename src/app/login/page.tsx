@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { loginAction } from "@/features/auth/actions";
 import { extractOwnerIdFromSession } from "@/features/auth/auth-callbacks";
+import { AuthCardLayout } from "@/features/auth/components/auth-card-layout";
 import { LoginForm } from "@/features/auth/components/login-form";
 import { AUTH_COPY } from "@/features/auth/constants";
 import { getOwnerUserRepository } from "@/features/auth/repositories";
@@ -26,7 +27,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
   const session = await auth();
   const ownerId = extractOwnerIdFromSession(session);
   if (ownerId) {
-    redirect("/vehicles");
+    redirect("/summaries");
   }
 
   const ownerRepository = getOwnerUserRepository();
@@ -35,29 +36,20 @@ export default async function LoginPage({ searchParams }: PageProps) {
   const justRegistered = toSingleValue(query?.registered) === "1";
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-4 py-10 sm:px-6">
-      <section className="w-full rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Entrar</h1>
-        <p className="mt-1 text-sm text-zinc-600">
-          Acesse sua garagem para gerenciar veículos, despesas e resumos.
-        </p>
-
-        <div className="mt-6">
-          {ownerCount === 0 ? (
-            <div className="space-y-3 rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-4 text-sm text-zinc-700">
-              <p>{AUTH_COPY.noOwnerAccount}</p>
-              <Link href="/signup" className="inline-block font-semibold text-emerald-700">
-                Criar conta do proprietário
-              </Link>
-            </div>
-          ) : (
-            <LoginForm
-              loginAction={loginAction}
-              notice={justRegistered ? AUTH_COPY.signupSuccess : undefined}
-            />
-          )}
+    <AuthCardLayout
+      title="Bem-vindo de volta"
+      description="Acesse sua conta para gerenciar seus veículos"
+    >
+      {ownerCount === 0 ? (
+        <div className="space-y-3 rounded-2xl border border-dashed border-[#C5D2E5] bg-[#F6F9FD] p-4 text-base text-[#506684]">
+          <p>{AUTH_COPY.noOwnerAccount}</p>
+          <Link href="/signup" className="inline-block font-semibold text-[#2F84EB]">
+            Criar conta
+          </Link>
         </div>
-      </section>
-    </main>
+      ) : (
+        <LoginForm loginAction={loginAction} notice={justRegistered ? AUTH_COPY.signupSuccess : undefined} />
+      )}
+    </AuthCardLayout>
   );
 }

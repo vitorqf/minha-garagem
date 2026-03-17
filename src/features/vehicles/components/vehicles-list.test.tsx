@@ -13,6 +13,7 @@ describe("VehiclesList", () => {
       <VehiclesList
         updateVehicleAction={noopUpdateAction}
         deleteVehicleAction={noopDeleteAction}
+        onCreateRequest={() => {}}
         vehicles={[
           {
             id: "old",
@@ -41,8 +42,8 @@ describe("VehiclesList", () => {
     const titles = screen.getAllByTestId("vehicle-title").map((element) => element.textContent);
 
     expect(titles).toEqual([
-      "Carro Novo (Toyota Corolla)",
-      "Carro Antigo (Fiat Uno)",
+      "Carro Novo",
+      "Carro Antigo",
     ]);
   });
 });

@@ -10,6 +10,7 @@ import {
   deleteExpense,
   updateExpense,
 } from "@/features/expenses/service";
+import { getVehicleRepository } from "@/features/vehicles/repositories";
 import {
   parseExpenseFilter,
   parseExpenseFilterFormData,
@@ -40,9 +41,10 @@ export async function createExpenseAction(
 ): Promise<ExpenseFormState> {
   void previousState;
   const ownerId = await requireAuthenticatedOwnerId();
-  const repository = getExpenseRepository();
+  const expenseRepository = getExpenseRepository();
+  const vehicleRepository = getVehicleRepository();
   const input = parseExpenseFormData(formData);
-  const result = await createExpense(repository, ownerId, input);
+  const result = await createExpense(expenseRepository, vehicleRepository, ownerId, input);
 
   if (!result.ok) {
     return toFormFailureState(result.message, result.errors);
@@ -70,8 +72,9 @@ export async function updateExpenseAction(
   }
 
   const repository = getExpenseRepository();
+  const vehicleRepository = getVehicleRepository();
   const input = parseExpenseFormData(formData);
-  const result = await updateExpense(repository, ownerId, id, input);
+  const result = await updateExpense(repository, vehicleRepository, ownerId, id, input);
 
   if (!result.ok) {
     return toFormFailureState(result.message, result.errors);
@@ -112,6 +115,7 @@ export async function applyExpenseFiltersAction(
   const filterInput = parseExpenseFilterFormData(formData);
   const parsed = parseExpenseFilter({
     vehicleId: filterInput.vehicleId,
+    category: filterInput.category,
     startDate: filterInput.startDate,
     endDate: filterInput.endDate,
   });
@@ -121,12 +125,14 @@ export async function applyExpenseFiltersAction(
       status: "error",
       message: EXPENSE_COPY.invalidPeriod,
       errors: {
+        category: toExpenseErrorMap(parsed.error).category,
         startDate: toExpenseErrorMap(parsed.error).startDate,
         endDate: toExpenseErrorMap(parsed.error).endDate,
         period: toExpenseErrorMap(parsed.error).period,
       },
       filters: {
         vehicleId: filterInput.vehicleId,
+        category: filterInput.category,
         startDate: filterInput.startDate,
         endDate: filterInput.endDate,
       },
@@ -137,6 +143,7 @@ export async function applyExpenseFiltersAction(
     status: "success",
     filters: {
       vehicleId: parsed.data.vehicleId || "",
+      category: parsed.data.category || "",
       startDate: parsed.data.startDate,
       endDate: parsed.data.endDate,
     },

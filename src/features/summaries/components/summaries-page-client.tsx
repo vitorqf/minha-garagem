@@ -33,6 +33,18 @@ type SummariesPageClientProps = {
   filterError?: string;
 };
 
+function buildSummaryExportHref(defaultFilters: SummaryPeriodInput): string {
+  const searchParams = new URLSearchParams();
+  searchParams.set("startMonth", defaultFilters.startMonth);
+  searchParams.set("endMonth", defaultFilters.endMonth);
+
+  if (defaultFilters.vehicleId) {
+    searchParams.set("vehicleId", defaultFilters.vehicleId);
+  }
+
+  return `/api/reports/summaries.csv?${searchParams.toString()}`;
+}
+
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -92,6 +104,7 @@ export function SummariesPageClient({
     () => [...summaries].sort((a, b) => b.totalSpentCents - a.totalSpentCents),
     [summaries],
   );
+  const exportHref = buildSummaryExportHref(defaultFilters);
 
   return (
     <div className="space-y-5">
@@ -152,13 +165,12 @@ export function SummariesPageClient({
             >
               Aplicar filtros
             </button>
-            <button
-              type="button"
-              disabled
-              className="h-12 rounded-full border border-[#D3DCEA] bg-white px-4 text-sm font-semibold text-[#778CA8]"
+            <a
+              href={exportHref}
+              className="inline-flex h-12 items-center rounded-full border border-[#D3DCEA] bg-white px-4 text-sm font-semibold text-[#2A3E5B] transition-colors hover:bg-[#F4F8FF]"
             >
-              Exportar CSV (em breve)
-            </button>
+              Exportar CSV
+            </a>
           </form>
           {filterError ? (
             <p className="text-sm text-[#D94C45]">{filterError}</p>

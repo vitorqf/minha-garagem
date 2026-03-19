@@ -26,3 +26,31 @@ export type ExpenseCsvExportData = {
   appliedFilter: NormalizedReportExpenseExportFilter;
   rows: ExpenseCsvRow[];
 };
+
+export type ReportSummaryExportFilter = {
+  vehicleId?: string;
+  startMonth: string;
+  endMonth: string;
+};
+
+export type NormalizedReportSummaryExportFilter = {
+  vehicleId: string;
+  startMonth: string;
+  endMonth: string;
+};
+
+export type SummaryCsvRow = {
+  vehicle: string;
+  total: string;
+  fuel: string;
+  parts: string;
+  service: string;
+  monthlyTotals: Record<string, string>;
+};
+
+export type SummaryCsvExportData = {
+  appliedFilter: NormalizedReportSummaryExportFilter;
+  months: string[];
+  monthLabels: Record<string, string>;
+  rows: SummaryCsvRow[];
+};

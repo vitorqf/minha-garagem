@@ -5,14 +5,17 @@ import {
   parseExpenseFilter,
   toExpenseErrorMap,
 } from "@/features/expenses/validation";
-import type { VehicleRepository } from "@/features/vehicles/repositories/vehicle-repository";
-import { listVehicles } from "@/features/vehicles/vehicle-service";
 import { REPORT_COPY } from "@/features/reports/constants";
-import { formatCsvAmountFromCents, formatCsvDate } from "@/features/reports/format";
+import { formatCsvAmountFromCents, formatCsvDate, formatCsvMonthLabel } from "@/features/reports/format";
 import type {
   ExpenseCsvExportData,
   ReportExpenseExportFilter,
+  ReportSummaryExportFilter,
+  SummaryCsvExportData,
 } from "@/features/reports/types";
+import { getVehicleSummaries } from "@/features/summaries/service";
+import type { VehicleRepository } from "@/features/vehicles/repositories/vehicle-repository";
+import { listVehicles } from "@/features/vehicles/vehicle-service";
 
 type ReportServiceSuccess<T> = {
   ok: true;
@@ -80,6 +83,71 @@ export async function buildExpenseCsvExport(
     ok: true,
     data: {
       appliedFilter,
+      rows,
+    },
+  };
+}
+
+export async function buildSummaryCsvExport(
+  vehicleRepository: VehicleRepository,
+  expenseRepository: ExpenseRepository,
+  ownerId: string,
+  filterInput: ReportSummaryExportFilter,
+): Promise<ReportServiceResult<SummaryCsvExportData>> {
+  const summaryResult = await getVehicleSummaries(
+    vehicleRepository,
+    expenseRepository,
+    ownerId,
+    {
+      startMonth: filterInput.startMonth,
+      endMonth: filterInput.endMonth,
+      vehicleId: filterInput.vehicleId ?? "",
+    },
+  );
+
+  if (!summaryResult.ok) {
+    return {
+      ok: false,
+      message: REPORT_COPY.invalidSummaryFilters,
+      errors: summaryResult.errors,
+    };
+  }
+
+  const appliedFilter = {
+    startMonth: summaryResult.data.period.startMonth,
+    endMonth: summaryResult.data.period.endMonth,
+    vehicleId: summaryResult.data.period.vehicleId ?? "",
+  };
+
+  const monthLabels = Object.fromEntries(
+    summaryResult.data.months.map((month) => [month, formatCsvMonthLabel(month)]),
+  );
+  const vehicleLabels = new Map(
+    summaryResult.data.vehicles.map((vehicle) => [vehicle.id, `${vehicle.nickname} (${vehicle.brand} ${vehicle.model})`]),
+  );
+
+  const rows = summaryResult.data.summaries
+    .filter((summary) => summary.totalSpentCents > 0)
+    .map((summary) => ({
+      vehicle: vehicleLabels.get(summary.vehicleId) ?? summary.vehicleId,
+      total: formatCsvAmountFromCents(summary.totalSpentCents),
+      fuel: formatCsvAmountFromCents(summary.categoryBreakdown.fuel),
+      parts: formatCsvAmountFromCents(summary.categoryBreakdown.parts),
+      service: formatCsvAmountFromCents(summary.categoryBreakdown.service),
+      monthlyTotals: Object.fromEntries(
+        summaryResult.data.months.map((month) => [
+          month,
+          formatCsvAmountFromCents(summary.monthlyTotals[month] ?? 0),
+        ]),
+      ),
+    }));
+
+  return {
+    ok: true,
+    data: {
+      appliedFilter,
+      months: summaryResult.data.months,
+      monthLabels,
       rows,
     },
   };

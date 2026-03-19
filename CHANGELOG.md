@@ -7,6 +7,10 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 ## [Unreleased]
 
 ### Added
+- Coverage tooling and script:
+- `@vitest/coverage-v8` dev dependency.
+- `pnpm test:coverage` script for local coverage reports.
+- New unit tests for auth password utilities, summaries formatting helpers, and additional vehicle validation branches.
 - Post-v1 hardening patch with:
 - Credentials login attempt throttling to reduce brute-force risk.
 - Strict calendar-date validation for expense input/filter payloads.

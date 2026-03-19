@@ -144,4 +144,30 @@ describe("SummariesPageClient", () => {
     expect(within(summaryCard).getByTestId("month-total-2026-01")).toHaveTextContent(/R\$\s?0,00/);
     expect(within(summaryCard).getByTestId("month-total-2026-02")).toHaveTextContent(/R\$\s?0,00/);
   });
+
+  it("renders csv export link using active summary filters", () => {
+    render(
+      <SummariesPageClient
+        defaultFilters={{ startMonth: "2026-01", endMonth: "2026-02", vehicleId: "vehicle-1" }}
+        vehicles={[{ id: "vehicle-1", label: "Carro Principal (Toyota Corolla)" }]}
+        monthColumns={[
+          { key: "2026-01", label: "jan/2026" },
+          { key: "2026-02", label: "fev/2026" },
+        ]}
+        summaries={[]}
+        kpis={{
+          totalSpentLabel: "R$ 0,00",
+          monthlyAverageLabel: "R$ 0,00",
+          variationLabel: "—",
+          variationDirection: "neutral",
+        }}
+        recentExpenses={[]}
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: "Exportar CSV" })).toHaveAttribute(
+      "href",
+      "/api/reports/summaries.csv?startMonth=2026-01&endMonth=2026-02&vehicleId=vehicle-1",
+    );
+  });
 });

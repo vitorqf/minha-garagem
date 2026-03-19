@@ -12,6 +12,7 @@ model User {
   passwordHash String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  vehicles     Vehicle[]
 }
 
 model Vehicle {
@@ -24,8 +25,10 @@ model Vehicle {
   year      Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   expenses  Expense[]
 
+  @@unique([id, ownerId])
   @@unique([ownerId, plate])
   @@index([ownerId, createdAt])
 }
@@ -45,10 +48,10 @@ model Expense {
   amountCents Int
   mileage    Int?
   notes      String?
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Restrict)
+  vehicle Vehicle @relation(fields: [vehicleId, ownerId], references: [id, ownerId], onDelete: Restrict, onUpdate: Cascade)
 
   @@index([ownerId, expenseDate])
   @@index([ownerId, vehicleId, expenseDate])

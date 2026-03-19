@@ -72,4 +72,36 @@ describe("auth actions", () => {
       redirectTo: "/login",
     });
   });
+
+  it("maps credentials sign-in failures to a user-facing error state", async () => {
+    mockSignIn.mockRejectedValue({
+      type: "CredentialsSignin",
+    });
+
+    const { loginAction } = await import("@/features/auth/actions");
+
+    const formData = new FormData();
+    formData.set("email", "owner@garage.com");
+    formData.set("password", "12345678");
+
+    const state = await loginAction(undefined, formData);
+    expect(state.status).toBe("error");
+    expect(state.message).toContain("inválidos");
+  });
+
+  it("rethrows non-credential auth errors", async () => {
+    mockSignIn.mockRejectedValue({
+      type: "AccessDenied",
+    });
+
+    const { loginAction } = await import("@/features/auth/actions");
+
+    const formData = new FormData();
+    formData.set("email", "owner@garage.com");
+    formData.set("password", "12345678");
+
+    await expect(loginAction(undefined, formData)).rejects.toEqual({
+      type: "AccessDenied",
+    });
+  });
 });

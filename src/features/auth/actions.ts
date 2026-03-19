@@ -19,12 +19,16 @@ import {
   toAuthErrorMap,
 } from "@/features/auth/validation";
 
-function isAuthFailure(error: unknown): boolean {
+function isCredentialsSigninFailure(error: unknown): boolean {
   if (typeof error !== "object" || error === null) {
     return false;
   }
 
-  return "type" in error;
+  if (!("type" in error)) {
+    return false;
+  }
+
+  return error.type === "CredentialsSignin";
 }
 
 export async function signupAction(
@@ -74,7 +78,7 @@ export async function loginAction(
       errors: {},
     };
   } catch (error) {
-    if (isAuthFailure(error)) {
+    if (isCredentialsSigninFailure(error)) {
       return {
         status: "error",
         message: AUTH_COPY.invalidCredentials,

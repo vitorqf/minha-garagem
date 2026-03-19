@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { InMemoryOwnerUserRepository } from "@/features/auth/repositories/in-memory-owner-user-repository";
+import type { OwnerUserRepository } from "@/features/auth/repositories/owner-user-repository";
 import { registerOwner, verifyOwnerCredentials } from "@/features/auth/service";
 
 describe("auth service", () => {
@@ -105,5 +106,26 @@ describe("auth service", () => {
 
     expect(valid?.email).toBe("owner@garage.com");
     expect(invalid).toBeNull();
+  });
+
+  it("maps concurrent unique-email constraint errors to a domain validation error", async () => {
+    const repository: OwnerUserRepository = {
+      count: async () => 0,
+      findByEmail: async () => null,
+      create: async () => {
+        throw { code: "P2002" };
+      },
+    };
+
+    const result = await registerOwner(repository, {
+      email: "owner@garage.com",
+      password: "12345678",
+      confirmPassword: "12345678",
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors?.email).toContain("já está em uso");
+    }
   });
 });

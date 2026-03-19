@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { InMemoryVehicleRepository } from "@/features/vehicles/repositories/in-memory-vehicle-repository";
+import type { VehicleRepository } from "@/features/vehicles/repositories/vehicle-repository";
 import {
   createVehicle,
   deleteVehicle,
@@ -146,6 +147,70 @@ describe("vehicle service", () => {
     expect(deleted.ok).toBe(false);
     if (!deleted.ok) {
       expect(deleted.message).toContain("despesas vinculadas");
+    }
+  });
+
+  it("maps concurrent duplicate-plate errors on create to field validation", async () => {
+    const repository: VehicleRepository = {
+      listByOwner: async () => [],
+      findById: async () => null,
+      findByOwnerAndPlate: async () => null,
+      create: async () => {
+        throw { code: "P2002" };
+      },
+      update: async () => null,
+      delete: async () => false,
+    };
+
+    const result = await createVehicle(repository, "owner-a", {
+      nickname: "Carro A",
+      brand: "Fiat",
+      model: "Uno",
+      plate: "ABC1D23",
+      year: 2020,
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors?.plate).toContain("Já existe");
+    }
+  });
+
+  it("maps concurrent duplicate-plate errors on update to field validation", async () => {
+    const repository: VehicleRepository = {
+      listByOwner: async () => [],
+      findById: async () => ({
+        id: "vehicle-1",
+        ownerId: "owner-a",
+        nickname: "Carro A",
+        brand: "Fiat",
+        model: "Uno",
+        plate: "ABC1D23",
+        year: 2020,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+      findByOwnerAndPlate: async () => null,
+      create: async () => {
+        throw new Error("not used");
+      },
+      update: async () => {
+        throw { code: "P2002" };
+      },
+      delete: async () => false,
+    };
+
+    const result = await updateVehicle(repository, "owner-a", "vehicle-1", {
+      nickname: "Carro A",
+      brand: "Fiat",
+      model: "Uno",
+      plate: "ABC1D23",
+      year: 2021,
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors?.plate).toContain("Já existe");
     }
   });
 });

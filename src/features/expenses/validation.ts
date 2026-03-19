@@ -7,12 +7,31 @@ const expenseCategorySchema = z.enum(["fuel", "parts", "service"], {
   error: EXPENSE_COPY.invalidCategory,
 });
 
+function isValidIsoDate(value: string): boolean {
+  const [yearRaw, monthRaw, dayRaw] = value.split("-");
+  const year = Number(yearRaw);
+  const month = Number(monthRaw);
+  const day = Number(dayRaw);
+
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    return false;
+  }
+
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+
+  return (
+    parsed.getUTCFullYear() === year &&
+    parsed.getUTCMonth() + 1 === month &&
+    parsed.getUTCDate() === day
+  );
+}
+
 const dateStringSchema = z
   .string()
   .trim()
   .min(1, EXPENSE_COPY.requiredDate)
   .regex(/^\d{4}-\d{2}-\d{2}$/, EXPENSE_COPY.requiredDate)
-  .refine((value) => !Number.isNaN(Date.parse(`${value}T00:00:00.000Z`)), {
+  .refine((value) => isValidIsoDate(value), {
     message: EXPENSE_COPY.requiredDate,
   });
 

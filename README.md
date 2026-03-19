@@ -194,7 +194,7 @@ pnpm test:e2e
 - `ci / e2e-main`: runs only on pushes to `main` and blocks production branch changes when Playwright smoke tests fail.
 - `security / dependency-review`: runs on pull requests with `actions/dependency-review-action`.
 - `security / audit`: runs `pnpm audit --audit-level high`.
-- `security / sast-semgrep`: runs Semgrep SAST (`semgrep scan --config auto --severity ERROR`) against `src` and `prisma`.
+- `security / sast-semgrep`: runs Semgrep SAST (`semgrep scan --config auto --severity ERROR`) against `src` and `prisma`, uploads SARIF findings to GitHub Code Scanning, and fails on matching findings.
 - `security / secret-scan`: runs gitleaks against full git history (`fetch-depth: 0`).
 - `codeql / analyze`: runs CodeQL (`javascript-typescript`) on pull requests, pushes to `main`, and weekly schedule.
 - Dependabot (`.github/dependabot.yml`) updates npm and GitHub Actions dependencies weekly.

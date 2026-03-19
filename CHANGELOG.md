@@ -82,7 +82,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - GitHub CI workflow (`.github/workflows/ci.yml`) with `quality` gates for install, Prisma client generation, lint, unit/component tests, and production build.
 - Main-branch-only Playwright gate (`ci / e2e-main`) with failure artifact upload (`playwright-report`, `test-results`).
 - Security workflow (`.github/workflows/security.yml`) with dependency review, high-severity dependency audit, and gitleaks secret scan.
-- Security workflow now also includes a Semgrep SAST gate (`security / sast-semgrep`) running `semgrep scan --config auto --severity ERROR` against application and Prisma sources.
+- Security workflow now also includes a Semgrep SAST gate (`security / sast-semgrep`) running `semgrep scan --config auto --severity ERROR` against application and Prisma sources, publishing SARIF results to GitHub Code Scanning.
 - CodeQL workflow (`.github/workflows/codeql.yml`) for JavaScript/TypeScript security and quality analysis.
 - Dependabot weekly update policy for npm and GitHub Actions (`.github/dependabot.yml`).
 - README CI/CD documentation including required status checks and manual GitHub/Vercel configuration steps.

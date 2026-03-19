@@ -3,7 +3,7 @@
 Personal multi-account vehicle expense tracker with isolated user data.
 
 ## Status
-- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) + v1 Increment 3 (Complete Visual Reimplementation) + v1 Increment 4 (Summaries CSV Export) implemented.
+- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) + v1 Increment 3 (Complete Visual Reimplementation) + v1 Increment 4 (Summaries CSV Export) + post-v1 hardening patch implemented.
 - Source of truth: `AGENTS.md`.
 
 ## Product Goal
@@ -103,6 +103,17 @@ Track spending per vehicle with a clear, incremental workflow:
 - Validation/auth behavior:
 - `401` JSON for unauthenticated requests.
 - `400` JSON with pt-BR `message` and field `errors` map for invalid filters.
+
+## Post-v1 Hardening Patch Delivered
+- Credentials login now includes in-memory attempt throttling to reduce brute-force risk.
+- Expense date validation now rejects impossible calendar dates (for example `2026-02-31`).
+- CSV serializer now neutralizes formula-like cells (`=`, `+`, `-`, `@`) before export.
+- Export guardrails:
+- Expenses CSV supports periods up to 12 months.
+- Summaries CSV supports periods up to 24 months.
+- Database integrity hardening:
+- `Vehicle.ownerId` now references `User.id`.
+- `Expense` now uses an owner-scoped composite relation to `Vehicle` (`vehicleId + ownerId`), reinforcing tenant isolation at DB level.
 
 ## Tech Baseline
 - Next.js App Router + TypeScript + Tailwind CSS.

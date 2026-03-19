@@ -29,4 +29,16 @@ describe("reports csv serializer", () => {
 
     expect(csv).toBe("\uFEFFID;Data\r\n");
   });
+
+  it("neutralizes spreadsheet formula cells", () => {
+    const csv = serializeCsv({
+      headers: ["Observações"],
+      rows: [["=2+2"], ["+cmd"], ["-10"], ["@SUM(A1:A2)"]],
+    });
+
+    expect(csv).toContain("'=2+2");
+    expect(csv).toContain("'+cmd");
+    expect(csv).toContain("'-10");
+    expect(csv).toContain("'@SUM(A1:A2)");
+  });
 });

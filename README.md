@@ -194,13 +194,14 @@ pnpm test:e2e
 - `ci / e2e-main`: runs only on pushes to `main` and blocks production branch changes when Playwright smoke tests fail.
 - `security / dependency-review`: runs on pull requests with `actions/dependency-review-action`.
 - `security / audit`: runs `pnpm audit --audit-level high`.
+- `security / sast-semgrep`: runs Semgrep SAST (`semgrep scan --config auto --severity ERROR`) against `src` and `prisma`.
 - `security / secret-scan`: runs gitleaks against full git history (`fetch-depth: 0`).
 - `codeql / analyze`: runs CodeQL (`javascript-typescript`) on pull requests, pushes to `main`, and weekly schedule.
 - Dependabot (`.github/dependabot.yml`) updates npm and GitHub Actions dependencies weekly.
 
 ## Manual Platform Configuration
 Set these once in your GitHub/Vercel project settings:
-1. Configure GitHub branch protection for `main` to require pull requests, require up-to-date branches, and require these checks: `ci / quality`, `security / dependency-review`, `security / audit`, `security / secret-scan`, `codeql / analyze`.
+1. Configure GitHub branch protection for `main` to require pull requests, require up-to-date branches, and require these checks: `ci / quality`, `security / dependency-review`, `security / audit`, `security / sast-semgrep`, `security / secret-scan`, `codeql / analyze`.
 2. Keep `ci / e2e-main` out of required pull request checks because it runs only after push to `main`.
 3. Configure Vercel Git integration: connect this repository, set production branch to `main`, keep preview deployments for pull requests, and keep production deploys on merges to `main`.
 

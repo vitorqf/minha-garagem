@@ -62,6 +62,20 @@ jobs:
       - name: Dependency audit
         run: pnpm audit --audit-level high --prod
 
+  sast-semgrep:
+    name: sast-semgrep
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: semgrep/semgrep
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Semgrep SAST scan
+        run: semgrep scan --config auto --severity ERROR --error --metrics=off src prisma
+
   secret-scan:
     name: secret-scan
     runs-on: ubuntu-latest

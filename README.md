@@ -3,7 +3,7 @@
 Personal multi-account vehicle expense tracker with isolated user data.
 
 ## Status
-- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) + v1 Increment 3 (Complete Visual Reimplementation) implemented.
+- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) + v1 Increment 3 (Complete Visual Reimplementation) + v1 Increment 4 (Summaries CSV Export) implemented.
 - Source of truth: `AGENTS.md`.
 
 ## Product Goal
@@ -84,9 +84,25 @@ Track spending per vehicle with a clear, incremental workflow:
 - Vehicles flow updated to card gallery with cover placeholders, plate badge, row menus, modal create/edit, and delete confirmation dialog.
 - Expenses flow updated to mock-aligned filters + table layout with row action menus, modal create/edit, and delete confirmation dialog.
 - Summaries flow updated to dashboard layout (KPI cards, category distribution, ranking by vehicle, recent expenses list with real data).
-- Out-of-scope controls remain visual placeholders (`Buscar`, paginação visual, export de resumos "em breve", notification bell).
+- Out-of-scope controls remain visual placeholders (`Buscar`, paginação visual, notification bell).
 - New UI foundation with shadcn-style primitives, shared design tokens in `globals.css`, and expressive typography via `next/font`.
 - Existing backend/domain contracts preserved (no API or Prisma schema changes for this redesign).
+
+## v1 Increment 4 Delivered (Summaries CSV Export)
+- New authenticated endpoint: `GET /api/reports/summaries.csv?startMonth=YYYY-MM&endMonth=YYYY-MM&vehicleId=<optional>`.
+- `/summaries` now includes a functional `Exportar CSV` action bound to active summary filters.
+- Summaries CSV response contract:
+- `Content-Type: text/csv; charset=utf-8`.
+- `Content-Disposition: attachment; filename=\"resumos-YYYY-MM-a-YYYY-MM.csv\"`.
+- UTF-8 BOM for Excel compatibility.
+- Semicolon (`;`) delimiter and `pt-BR` headers.
+- Fixed columns: `Veículo`, `Total (R$)`, `Combustível (R$)`, `Peças (R$)`, `Serviços (R$)`.
+- Dynamic month columns appended based on the selected period (`jan/2026`, `fev/2026`, ...).
+- Category/month values exported as numeric BRL-like values (`150,25`, without `R$` in data cells).
+- Empty result sets export header-only CSV.
+- Validation/auth behavior:
+- `401` JSON for unauthenticated requests.
+- `400` JSON with pt-BR `message` and field `errors` map for invalid filters.
 
 ## Tech Baseline
 - Next.js App Router + TypeScript + Tailwind CSS.
@@ -158,6 +174,7 @@ pnpm test:e2e
 - Expenses e2e smoke now validates CSV export download (filename + content shape) from `/expenses`.
 - E2E smoke covers redesigned modal/menu flows across vehicles, expenses, and summaries.
 - Expenses e2e smoke validates cross-user isolation across list/summaries/export flows.
+- Unit and component coverage now also includes summaries CSV export service/route/filter-link contracts.
 
 ## CI/CD and Security Pipeline
 - `ci / quality`: runs on pull requests and pushes to `main` with `pnpm install --frozen-lockfile`, `pnpm prisma:generate`, `pnpm lint`, `pnpm test`, and `pnpm build`.
@@ -181,4 +198,4 @@ Set these once in your GitHub/Vercel project settings:
 - Billing and third-party integrations
 
 ## Next Milestone
-Implement v1 Increment 4: summaries CSV export (`/api/reports/summaries.csv` + functional `Exportar CSV` in `/summaries`).
+Define post-v1 roadmap priorities after CSV exports (for example reminders or richer analytics) while preserving owner-scoped isolation.

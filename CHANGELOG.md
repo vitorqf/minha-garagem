@@ -7,6 +7,15 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 ## [Unreleased]
 
 ### Added
+- v1 Increment 4 (`Summaries Export + Finalization`) implementation with end-to-end summaries CSV download flow from `/summaries`.
+- New authenticated API endpoint `GET /api/reports/summaries.csv` with owner-scoped aggregation and filename strategy `resumos-YYYY-MM-a-YYYY-MM.csv`.
+- Summaries CSV response contract: `text/csv; charset=utf-8`, pt-BR headers, fixed category/total columns plus dynamic month columns derived from selected range.
+- `/summaries` filters section now includes functional `Exportar CSV` action using active summary filters.
+- Report service support for summaries CSV export with month labels, category totals, period totals, and owner-scoped filtering.
+- Coverage for summaries CSV export contracts:
+- Service tests for owner scoping, validation errors, dynamic months, and empty-period behavior.
+- Route tests for `401`, `400`, and `200` CSV responses with dynamic headers.
+- Component test for summaries export link query propagation.
 - v1 Increment 3 (`Complete Visual Reimplementation Before Summaries CSV`) delivery with high-fidelity responsive redesign for auth, shell, vehicles, expenses, summaries, and modal workflows.
 - New reusable UI foundation with Radix/shadcn-style primitives (`Dialog`, `DropdownMenu`, `AlertDialog`, `Select`, `Sheet`, `Button`, `Input`, `Badge`, `Card`) and shared design tokens in `globals.css`.
 - New authenticated `AppShell` with desktop sidebar, mobile drawer, contextual header CTA, and placeholder topbar controls aligned with the approved mocks.
@@ -70,7 +79,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Successful login redirect target changed from `/vehicles` to `/summaries`.
 - Authenticated access to `/` now redirects to `/summaries`.
 - Vehicles and expenses creation/editing UX moved from inline forms to modal-first interactions while preserving existing backend/domain rules.
-- Out-of-scope controls are intentionally visual placeholders in this increment (`Buscar`, notification bell, pagination visuals, summaries export button marked as coming soon).
+- Out-of-scope controls are intentionally visual placeholders in this increment (`Buscar`, notification bell, pagination visuals).
 
 ### Fixed
 - Expenses filter now supports functional category selection in `/expenses`, including owner-scoped list filtering and active-filter propagation to expenses CSV export links/API.

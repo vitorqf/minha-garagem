@@ -5,6 +5,7 @@ import { AppShell } from "@/app/_components/app-shell";
 import { auth } from "@/auth";
 import { logoutAction } from "@/features/auth/actions";
 import { getCurrentOwnerId } from "@/features/auth/session";
+import { Analytics } from "@vercel/analytics/next";
 
 const manrope = Manrope({
   variable: "--font-geist-sans",
@@ -20,7 +21,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: "Minha Garagem",
-  description: "Aplicativo pessoal para cadastro de veículos e controle de gastos.",
+  description:
+    "Aplicativo pessoal para cadastro de veículos e controle de gastos.",
 };
 
 export default async function RootLayout({
@@ -34,10 +36,13 @@ export default async function RootLayout({
 
   return (
     <html lang="pt-BR">
-      <body className={`${manrope.variable} ${ibmPlexMono.variable} antialiased`}>
+      <body
+        className={`${manrope.variable} ${ibmPlexMono.variable} antialiased`}
+      >
         {ownerId ? (
           <AppShell logoutAction={logoutAction} userEmail={userEmail}>
             {children}
+            <Analytics />
           </AppShell>
         ) : (
           children

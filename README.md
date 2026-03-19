@@ -171,12 +171,14 @@ Run before considering an increment complete:
 ```bash
 pnpm lint
 pnpm test
+pnpm test:coverage
 pnpm build
 pnpm test:e2e
 ```
 
 ## Testing Notes
 - Unit + component tests run with Vitest (`pnpm test`).
+- Coverage report runs with Vitest v8 provider (`pnpm test:coverage`).
 - E2E smoke tests run with Playwright (`pnpm test:e2e`).
 - Playwright web server uses in-memory repositories (`VEHICLE_REPOSITORY=memory`, `USER_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
 - Auth e2e smoke validates signup/login/logout and protected-route redirects before feature flows.

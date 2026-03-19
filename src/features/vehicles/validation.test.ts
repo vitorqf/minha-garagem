@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   isValidBrazilianPlate,
   normalizePlate,
+  parseVehicleFormData,
   parseVehicleInput,
+  toErrorMap,
 } from "@/features/vehicles/validation";
 
 describe("vehicle validation", () => {
@@ -83,5 +85,42 @@ describe("vehicle validation", () => {
     });
 
     expect(result.success).toBe(false);
+  });
+
+  it("parses form data preserving optional empty fields as undefined", () => {
+    const formData = new FormData();
+    formData.set("nickname", "Meu carro");
+    formData.set("brand", "Toyota");
+    formData.set("model", "Corolla");
+    formData.set("plate", " ");
+    formData.set("year", "");
+
+    expect(parseVehicleFormData(formData)).toEqual({
+      nickname: "Meu carro",
+      brand: "Toyota",
+      model: "Corolla",
+      plate: undefined,
+      year: undefined,
+    });
+  });
+
+  it("maps zod validation errors to field error map", () => {
+    const parsed = parseVehicleInput({
+      nickname: "",
+      brand: "",
+      model: "",
+      plate: "invalid",
+      year: 1800,
+    });
+
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      const errors = toErrorMap(parsed.error);
+      expect(errors.nickname).toContain("Apelido");
+      expect(errors.brand).toContain("Marca");
+      expect(errors.model).toContain("Modelo");
+      expect(errors.plate).toContain("Placa");
+      expect(errors.year).toContain("Ano");
+    }
   });
 });

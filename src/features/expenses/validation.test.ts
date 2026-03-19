@@ -26,6 +26,34 @@ describe("expense validation", () => {
     }
   });
 
+  it("rejects impossible calendar dates", () => {
+    const invalidExpenseDate = parseExpenseInput({
+      expenseDate: "2026-02-31",
+      vehicleId: "vehicle-1",
+      category: "fuel",
+      amountInput: "120,00",
+      mileage: undefined,
+      notes: undefined,
+    });
+
+    expect(invalidExpenseDate.success).toBe(false);
+    if (!invalidExpenseDate.success) {
+      expect(invalidExpenseDate.error.flatten().fieldErrors.expenseDate?.[0]).toContain("Data");
+    }
+
+    const invalidFilterDate = parseExpenseFilter({
+      vehicleId: "",
+      category: "",
+      startDate: "2026-02-31",
+      endDate: "2026-03-01",
+    });
+
+    expect(invalidFilterDate.success).toBe(false);
+    if (!invalidFilterDate.success) {
+      expect(invalidFilterDate.error.flatten().fieldErrors.startDate?.[0]).toContain("Data");
+    }
+  });
+
   it("converts BRL decimal input to cents", () => {
     expect(parseMonetaryInputToCents("123,45")).toBe(12345);
     expect(parseMonetaryInputToCents(" 1.234,56 ")).toBe(123456);

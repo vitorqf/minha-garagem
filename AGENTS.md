@@ -158,7 +158,7 @@
 - Confirm output is clear for quick spending analysis.
 
 ## v1 Proposal (In Progress)
-- Status: v1 Increment 4 implemented (`Summaries Export + Finalization`).
+- Status: v1 Increment 4 implemented (`Summaries Export + Finalization`) + post-increment hardening patch implemented.
 
 ### Summary
 - v1 focus: CSV exports plus multi-account authentication with strict data isolation and a high-fidelity responsive UI redesign.
@@ -182,6 +182,12 @@
 - `GET /api/reports/summaries.csv` endpoint with owner-scoped summary aggregation.
 - Functional `Exportar CSV` action in `/summaries` using active month/vehicle filters.
 - Dynamic month columns in CSV output (`jan/2026`, `fev/2026`, etc.) with fixed totals/category columns.
+- Post-increment hardening delivered:
+- Login attempt throttling for credentials auth flow.
+- Strict calendar-date validation for expense inputs/filters (invalid dates like `2026-02-31` are rejected).
+- CSV formula neutralization for exported cell values to reduce spreadsheet formula injection risk.
+- Export period guardrails for CSV endpoints (despesas: up to 12 months; resumos: up to 24 months).
+- Database integrity hardening with owner foreign keys and owner-scoped expense-to-vehicle composite relation constraints.
 
 ### Public API and Contract Targets
 - Implemented authenticated endpoint:
@@ -198,6 +204,9 @@
 - Unauthenticated request returns `401` JSON with pt-BR message.
 - Validation behavior:
 - Invalid filters return `400` JSON with pt-BR message and field error map.
+- CSV export period constraints:
+- Expenses export allows up to 12 months per request.
+- Summaries export allows up to 24 months per request.
 - Success behavior:
 - `200` with `Content-Type: text/csv; charset=utf-8`.
 - `Content-Disposition: attachment; filename="<report>-<period>.csv"`.
@@ -214,7 +223,8 @@
 - `resumos-YYYY-MM-a-YYYY-MM.csv`.
 - Schema/API stability:
 - No public HTTP contract changes beyond redirect destination behavior.
-- No Prisma schema changes and no persisted `Report` entity in this visual increment.
+- Prisma schema now includes owner-integrity constraints for `Vehicle` and owner-scoped composite relation integrity for `Expense -> Vehicle`.
+- No persisted `Report` entity.
 
 ### v1 Domain/Type Additions
 - Implemented:
@@ -273,6 +283,12 @@
 - Service coverage for summaries CSV export owner scoping, validation, dynamic month range, and empty dataset behavior.
 - Route/API coverage for summaries CSV `401`, `400`, and `200` responses with dynamic month headers.
 - Component coverage for `/summaries` export action query propagation.
+- Implemented in post-increment hardening patch:
+- Unit coverage for login rate limiter behavior (block/unblock/reset).
+- Validation coverage for strict calendar date rejection in expenses.
+- Service coverage for CSV export period guardrails (expenses and summaries).
+- Unit coverage for CSV formula neutralization behavior.
+- Service coverage for mapping Prisma unique-constraint races to domain validation messages (auth + vehicles).
 
 ### v1 Assumptions Locked
 - CSV-only in v1 (no PDF).

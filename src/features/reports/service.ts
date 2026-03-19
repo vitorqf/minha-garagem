@@ -14,6 +14,7 @@ import type {
   SummaryCsvExportData,
 } from "@/features/reports/types";
 import { getVehicleSummaries } from "@/features/summaries/service";
+import { parseSummaryPeriod, toSummaryErrorMap } from "@/features/summaries/validation";
 import type { VehicleRepository } from "@/features/vehicles/repositories/vehicle-repository";
 import { listVehicles } from "@/features/vehicles/vehicle-service";
 
@@ -29,6 +30,31 @@ type ReportServiceFailure = {
 };
 
 export type ReportServiceResult<T> = ReportServiceSuccess<T> | ReportServiceFailure;
+
+const MAX_EXPENSE_EXPORT_RANGE_DAYS = 366;
+const MAX_SUMMARY_EXPORT_RANGE_MONTHS = 24;
+
+function toUtcDate(value: string): Date {
+  return new Date(`${value}T00:00:00.000Z`);
+}
+
+function getInclusiveDayRange(startDate: string, endDate: string): number {
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  const start = toUtcDate(startDate);
+  const end = toUtcDate(endDate);
+  return Math.floor((end.getTime() - start.getTime()) / millisecondsPerDay) + 1;
+}
+
+function getInclusiveMonthRange(startMonth: string, endMonth: string): number {
+  const [startYearRaw, startMonthRaw] = startMonth.split("-");
+  const [endYearRaw, endMonthRaw] = endMonth.split("-");
+  const startYear = Number(startYearRaw);
+  const startMonthValue = Number(startMonthRaw);
+  const endYear = Number(endYearRaw);
+  const endMonthValue = Number(endMonthRaw);
+
+  return (endYear - startYear) * 12 + (endMonthValue - startMonthValue) + 1;
+}
 
 export async function buildExpenseCsvExport(
   vehicleRepository: VehicleRepository,
@@ -51,6 +77,17 @@ export async function buildExpenseCsvExport(
     startDate: parsedFilter.data.startDate,
     endDate: parsedFilter.data.endDate,
   };
+
+  const dayRange = getInclusiveDayRange(appliedFilter.startDate, appliedFilter.endDate);
+  if (dayRange > MAX_EXPENSE_EXPORT_RANGE_DAYS) {
+    return {
+      ok: false,
+      message: REPORT_COPY.invalidExpenseFilters,
+      errors: {
+        period: REPORT_COPY.expenseRangeTooLarge,
+      },
+    };
+  }
 
   const [vehicles, expensesResult] = await Promise.all([
     listVehicles(vehicleRepository, ownerId),
@@ -94,14 +131,39 @@ export async function buildSummaryCsvExport(
   ownerId: string,
   filterInput: ReportSummaryExportFilter,
 ): Promise<ReportServiceResult<SummaryCsvExportData>> {
+  const parsedPeriod = parseSummaryPeriod({
+    startMonth: filterInput.startMonth,
+    endMonth: filterInput.endMonth,
+    vehicleId: filterInput.vehicleId ?? "",
+  });
+
+  if (!parsedPeriod.success) {
+    return {
+      ok: false,
+      message: REPORT_COPY.invalidSummaryFilters,
+      errors: toSummaryErrorMap(parsedPeriod.error),
+    };
+  }
+
+  const monthRange = getInclusiveMonthRange(parsedPeriod.data.startMonth, parsedPeriod.data.endMonth);
+  if (monthRange > MAX_SUMMARY_EXPORT_RANGE_MONTHS) {
+    return {
+      ok: false,
+      message: REPORT_COPY.invalidSummaryFilters,
+      errors: {
+        period: REPORT_COPY.summaryRangeTooLarge,
+      },
+    };
+  }
+
   const summaryResult = await getVehicleSummaries(
     vehicleRepository,
     expenseRepository,
     ownerId,
     {
-      startMonth: filterInput.startMonth,
-      endMonth: filterInput.endMonth,
-      vehicleId: filterInput.vehicleId ?? "",
+      startMonth: parsedPeriod.data.startMonth,
+      endMonth: parsedPeriod.data.endMonth,
+      vehicleId: parsedPeriod.data.vehicleId ?? "",
     },
   );
 

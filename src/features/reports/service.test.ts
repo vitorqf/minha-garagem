@@ -165,6 +165,26 @@ describe("reports service", () => {
     expect(result.errors?.period).toContain("Período");
   });
 
+  it("rejects expense exports with too broad date range", async () => {
+    const ownerId = "owner-1";
+    const vehicleRepository = new InMemoryVehicleRepository();
+    const expenseRepository = new InMemoryExpenseRepository();
+
+    const result = await buildExpenseCsvExport(vehicleRepository, expenseRepository, ownerId, {
+      startDate: "2024-01-01",
+      endDate: "2026-12-31",
+      vehicleId: "",
+      category: "",
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      return;
+    }
+
+    expect(result.errors?.period).toContain("máximo");
+  });
+
   it("returns header-ready empty rows for periods without expenses", async () => {
     const ownerId = "owner-1";
     const vehicleRepository = new InMemoryVehicleRepository();
@@ -322,6 +342,32 @@ describe("reports service", () => {
     }
 
     expect(result.errors?.period).toContain("Período");
+  });
+
+  it("rejects summary exports with too broad month range", async () => {
+    const buildSummaryCsvExport = getBuildSummaryCsvExport();
+
+    const ownerId = "owner-1";
+    const vehicleRepository = new InMemoryVehicleRepository();
+    const expenseRepository = new InMemoryExpenseRepository();
+
+    const result = await buildSummaryCsvExport(
+      vehicleRepository,
+      expenseRepository,
+      ownerId,
+      {
+        startMonth: "2023-01",
+        endMonth: "2026-12",
+        vehicleId: "",
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      return;
+    }
+
+    expect(result.errors?.period).toContain("máximo");
   });
 
   it("returns header-ready empty summary rows when period has no expenses", async () => {

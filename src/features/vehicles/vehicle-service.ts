@@ -2,6 +2,7 @@ import { VEHICLE_COPY } from "@/features/vehicles/constants";
 import type { VehicleRepository } from "@/features/vehicles/repositories/vehicle-repository";
 import { parseVehicleInput, toErrorMap } from "@/features/vehicles/validation";
 import type { Vehicle, VehicleInput } from "@/features/vehicles/types";
+import { isPrismaUniqueConstraintError } from "@/lib/prisma-errors";
 
 type ServiceSuccess<T> = {
   ok: true;
@@ -53,14 +54,28 @@ export async function createVehicle(
     }
   }
 
-  const vehicle = await repository.create({
-    ownerId,
-    nickname: parsed.data.nickname,
-    brand: parsed.data.brand,
-    model: parsed.data.model,
-    plate: parsed.data.plate,
-    year: parsed.data.year,
-  });
+  let vehicle: Vehicle;
+
+  try {
+    vehicle = await repository.create({
+      ownerId,
+      nickname: parsed.data.nickname,
+      brand: parsed.data.brand,
+      model: parsed.data.model,
+      plate: parsed.data.plate,
+      year: parsed.data.year,
+    });
+  } catch (error) {
+    if (isPrismaUniqueConstraintError(error)) {
+      return {
+        ok: false,
+        message: VEHICLE_COPY.duplicatePlate,
+        errors: { plate: VEHICLE_COPY.duplicatePlate },
+      };
+    }
+
+    throw error;
+  }
 
   return {
     ok: true,
@@ -104,7 +119,21 @@ export async function updateVehicle(
     }
   }
 
-  const vehicle = await repository.update(id, ownerId, parsed.data);
+  let vehicle: Vehicle | null;
+
+  try {
+    vehicle = await repository.update(id, ownerId, parsed.data);
+  } catch (error) {
+    if (isPrismaUniqueConstraintError(error)) {
+      return {
+        ok: false,
+        message: VEHICLE_COPY.duplicatePlate,
+        errors: { plate: VEHICLE_COPY.duplicatePlate },
+      };
+    }
+
+    throw error;
+  }
   if (!vehicle) {
     return {
       ok: false,

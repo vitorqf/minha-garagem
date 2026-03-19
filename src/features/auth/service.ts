@@ -3,6 +3,7 @@ import { hashPassword, verifyPasswordHash } from "@/features/auth/password";
 import type { OwnerUserRepository } from "@/features/auth/repositories/owner-user-repository";
 import type { AuthFormErrors, LoginInput, OwnerUser, SignupInput } from "@/features/auth/types";
 import { parseLoginInput, parseSignupInput, toAuthErrorMap } from "@/features/auth/validation";
+import { isPrismaUniqueConstraintError } from "@/lib/prisma-errors";
 
 type RegisterOwnerSuccess = {
   ok: true;
@@ -51,10 +52,24 @@ export async function registerOwner(
 
   const passwordHashFn = options?.hashPasswordFn ?? hashPassword;
   const passwordHash = await passwordHashFn(parsed.data.password);
-  const owner = await repository.create({
-    email: parsed.data.email,
-    passwordHash,
-  });
+  let owner: OwnerUser;
+
+  try {
+    owner = await repository.create({
+      email: parsed.data.email,
+      passwordHash,
+    });
+  } catch (error) {
+    if (isPrismaUniqueConstraintError(error)) {
+      return {
+        ok: false,
+        message: AUTH_COPY.emailInUse,
+        errors: { email: AUTH_COPY.emailInUse },
+      };
+    }
+
+    throw error;
+  }
 
   return {
     ok: true,

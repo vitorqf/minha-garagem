@@ -158,7 +158,7 @@
 - Confirm output is clear for quick spending analysis.
 
 ## v1 Proposal (In Progress)
-- Status: v1 Increment 3 implemented (`Complete Visual Reimplementation Before Summaries CSV`).
+- Status: v1 Increment 4 implemented (`Summaries Export + Finalization`).
 
 ### Summary
 - v1 focus: CSV exports plus multi-account authentication with strict data isolation and a high-fidelity responsive UI redesign.
@@ -178,14 +178,15 @@
 - New reusable UI primitives (`Dialog`, `DropdownMenu`, `AlertDialog`, `Select`, `Sheet`, `Button`, `Input`, `Badge`, `Card`) with shared theme tokens.
 - Successful login and authenticated access to `/` now redirect to `/summaries`.
 - Non-scope controls remain visual placeholders (`Buscar`, notification bell, pagination/search placeholders, summaries export placeholder).
-- Remaining v1 scope:
-- `GET /api/reports/summaries.csv`.
-- Replace summaries export placeholder with functional `Exportar CSV` action in `/summaries`.
+- Increment 4 delivered:
+- `GET /api/reports/summaries.csv` endpoint with owner-scoped summary aggregation.
+- Functional `Exportar CSV` action in `/summaries` using active month/vehicle filters.
+- Dynamic month columns in CSV output (`jan/2026`, `fev/2026`, etc.) with fixed totals/category columns.
 
 ### Public API and Contract Targets
 - Implemented authenticated endpoint:
 - `GET /api/reports/expenses.csv?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&vehicleId=<optional>&category=<optional>`.
-- Planned next endpoint:
+- Implemented authenticated endpoint:
 - `GET /api/reports/summaries.csv?startMonth=YYYY-MM&endMonth=YYYY-MM&vehicleId=<optional>`.
 - Behavioral routing updates:
 - Successful login redirects to `/summaries` (previously `/vehicles`).
@@ -209,6 +210,8 @@
 - Empty datasets export header row without hard error.
 - Expenses filename contract:
 - `despesas-YYYY-MM-DD-a-YYYY-MM-DD.csv`.
+- Summaries filename contract:
+- `resumos-YYYY-MM-a-YYYY-MM.csv`.
 - Schema/API stability:
 - No public HTTP contract changes beyond redirect destination behavior.
 - No Prisma schema changes and no persisted `Report` entity in this visual increment.
@@ -217,10 +220,9 @@
 - Implemented:
 - `ReportExpenseExportFilter`.
 - `ExpenseCsvRow`.
-- Internal summaries view-model expansion to support KPI cards and recent-expenses rendering without changing persistence contracts.
-- Planned for summaries export increment:
 - `ReportSummaryExportFilter`.
 - `SummaryCsvRow`.
+- Internal summaries view-model expansion to support KPI cards and recent-expenses rendering without changing persistence contracts.
 
 ### Milestone Status
 1. Milestone 1 (Foundation / Week 1)
@@ -246,10 +248,10 @@
 - Modal-first CRUD interactions and dashboard layout delivered with placeholder-only out-of-scope controls.
 
 5. Milestone 5 (Summaries Export + Finalization / Week 5)
-- Status: pending.
-- Planned: `GET /api/reports/summaries.csv`.
-- Planned: functional `Exportar CSV` in `/summaries` using active resolved filters.
-- Planned columns: `Veículo`, `Total (R$)`, `Combustível (R$)`, `Peças (R$)`, `Serviços (R$)`, plus dynamic month columns.
+- Status: completed.
+- `GET /api/reports/summaries.csv` implemented.
+- `/summaries` now exposes functional `Exportar CSV` using active resolved filters.
+- Delivered columns: `Veículo`, `Total (R$)`, `Combustível (R$)`, `Peças (R$)`, `Serviços (R$)`, plus dynamic month columns.
 
 ### v1 Test Targets and Coverage
 - Implemented in Increment 1:
@@ -267,8 +269,10 @@
 - Component coverage update for redesigned auth, vehicles, expenses, and summaries UIs.
 - Playwright smoke update for modal/menu flows and authenticated landing on `/summaries`.
 - Summary rendering coverage now includes KPI cards, per-category breakdown, vehicle ranking, and recent expenses block.
-- Pending in Increment 4:
-- Equivalent service/route/component/e2e coverage for summaries CSV export.
+- Implemented in Increment 4:
+- Service coverage for summaries CSV export owner scoping, validation, dynamic month range, and empty dataset behavior.
+- Route/API coverage for summaries CSV `401`, `400`, and `200` responses with dynamic month headers.
+- Component coverage for `/summaries` export action query propagation.
 
 ### v1 Assumptions Locked
 - CSV-only in v1 (no PDF).

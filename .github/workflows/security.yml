@@ -62,6 +62,49 @@ jobs:
       - name: Dependency audit
         run: pnpm audit --audit-level high --prod
 
+  sast-semgrep:
+    name: sast-semgrep
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    container:
+      image: semgrep/semgrep
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Semgrep SAST scan
+        id: semgrep
+        run: |
+          set +e
+          semgrep scan --config p/javascript --config p/nodejs --severity ERROR --error --metrics=off --sarif --output semgrep.sarif src prisma
+          semgrep_exit_code=$?
+          echo "exit_code=${semgrep_exit_code}" >> "$GITHUB_OUTPUT"
+
+          # Exit code 1 means findings when using --error.
+          # Let the dedicated gate step fail the job for that case.
+          if [ "$semgrep_exit_code" -eq 1 ]; then
+            exit 0
+          fi
+
+          # Exit with the original status for true Semgrep execution failures.
+          exit "$semgrep_exit_code"
+
+      - name: Upload Semgrep SARIF
+        if: always() && hashFiles('semgrep.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep-sast
+
+      - name: Enforce Semgrep findings gate
+        if: steps.semgrep.outputs.exit_code == '1'
+        run: exit 1
+
   secret-scan:
     name: secret-scan
     runs-on: ubuntu-latest

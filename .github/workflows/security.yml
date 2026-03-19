@@ -79,8 +79,20 @@ jobs:
 
       - name: Semgrep SAST scan
         id: semgrep
-        continue-on-error: true
-        run: semgrep scan --config auto --severity ERROR --error --metrics=off --sarif --output semgrep.sarif src prisma
+        run: |
+          set +e
+          semgrep scan --config p/javascript --config p/nodejs --severity ERROR --error --metrics=off --sarif --output semgrep.sarif src prisma
+          semgrep_exit_code=$?
+          echo "exit_code=${semgrep_exit_code}" >> "$GITHUB_OUTPUT"
+
+          # Exit code 1 means findings when using --error.
+          # Let the dedicated gate step fail the job for that case.
+          if [ "$semgrep_exit_code" -eq 1 ]; then
+            exit 0
+          fi
+
+          # Exit with the original status for true Semgrep execution failures.
+          exit "$semgrep_exit_code"
 
       - name: Upload Semgrep SARIF
         if: always() && hashFiles('semgrep.sarif') != ''
@@ -90,7 +102,7 @@ jobs:
           category: semgrep-sast
 
       - name: Enforce Semgrep findings gate
-        if: steps.semgrep.outcome == 'failure'
+        if: steps.semgrep.outputs.exit_code == '1'
         run: exit 1
 
   secret-scan:

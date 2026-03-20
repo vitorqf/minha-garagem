@@ -3,7 +3,7 @@
 Personal multi-account vehicle expense tracker with isolated user data.
 
 ## Status
-- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) + v1 Increment 3 (Complete Visual Reimplementation) + v1 Increment 4 (Summaries CSV Export) + post-v1 hardening patch implemented.
+- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) + v1 Increment 3 (Complete Visual Reimplementation) + v1 Increment 4 (Summaries CSV Export) + post-v1 hardening patch implemented + decision-grade summaries insights patch implemented.
 - Source of truth: `AGENTS.md`.
 
 ## Product Goal
@@ -115,6 +115,19 @@ Track spending per vehicle with a clear, incremental workflow:
 - `Vehicle.ownerId` now references `User.id`.
 - `Expense` now uses an owner-scoped composite relation to `Vehicle` (`vehicleId + ownerId`), reinforcing tenant isolation at DB level.
 
+## Decision-Grade Summaries Insights Patch Delivered
+- `/summaries` now includes per-vehicle `Custo por km`:
+- Formula: total spent in filtered period divided by mileage delta in filtered period (`maxMileage - minMileage`).
+- Vehicles without enough mileage basis now render `Dados insuficientes`.
+- New `Tendência mensal` block with global month totals and delta vs previous month:
+- Delta amount shown as signed BRL.
+- Delta percent shown only when previous month total is greater than zero.
+- Semantics: spending increase is negative (red), spending decrease is positive (green).
+- New `Top fatores de custo` block:
+- Ranking is Top 3 `Veículo • Categoria` pairs by amount in selected period.
+- Each row shows amount and share of total.
+- Scope is dashboard-only (`/summaries` UI); no changes to CSV endpoints, HTTP contracts, or Prisma schema.
+
 ## Tech Baseline
 - Next.js App Router + TypeScript + Tailwind CSS.
 - Prisma ORM + PostgreSQL.
@@ -188,6 +201,9 @@ pnpm test:e2e
 - E2E smoke covers redesigned modal/menu flows across vehicles, expenses, and summaries.
 - Expenses e2e smoke validates cross-user isolation across list/summaries/export flows.
 - Unit and component coverage now also includes summaries CSV export service/route/filter-link contracts.
+- Unit coverage includes summaries insights builders for `custo por km`, monthly trend deltas, and top cost drivers.
+- Summaries component coverage includes new insights blocks and insufficient-data states.
+- Summaries e2e smoke validates `custo por km`, trend deltas, and top-driver ordering.
 
 ## CI/CD and Security Pipeline
 - `ci / quality`: runs on pull requests and pushes to `main` with `pnpm install --frozen-lockfile`, `pnpm prisma:generate`, `pnpm lint`, `pnpm test`, and `pnpm build`.

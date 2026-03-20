@@ -18,6 +18,12 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - CSV export period guardrails (despesas: up to 12 months, resumos: up to 24 months).
 - Prisma migration `20260319100000_harden_owner_integrity` adding owner FK integrity and owner-scoped composite expense-to-vehicle constraint.
 - New/updated tests covering rate limiting, strict date validation, export range limits, CSV formula neutralization, and Prisma unique-race mapping in auth/vehicles services.
+- Decision-grade summaries insights patch on `/summaries` with:
+- Per-vehicle `Custo por km` computed from filtered spend over filtered mileage delta (`maxMileage - minMileage`) and explicit `Dados insuficientes` fallback.
+- New global `Tendência mensal` block with month totals plus signed amount and percent deltas vs previous month.
+- New `Top fatores de custo` ranking (Top 3) by `Veículo • Categoria` with amount and share of total.
+- New summaries insights domain builder module (`buildCostPerKmByVehicle`, `buildMonthlyTrendRows`, `buildTopCostDrivers`) with dedicated unit tests.
+- Updated summaries component and e2e smoke coverage for cost/km, monthly deltas, and top-driver ordering.
 - v1 Increment 4 (`Summaries Export + Finalization`) implementation with end-to-end summaries CSV download flow from `/summaries`.
 - New authenticated API endpoint `GET /api/reports/summaries.csv` with owner-scoped aggregation and filename strategy `resumos-YYYY-MM-a-YYYY-MM.csv`.
 - Summaries CSV response contract: `text/csv; charset=utf-8`, pt-BR headers, fixed category/total columns plus dynamic month columns derived from selected range.
@@ -92,6 +98,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 - Successful login redirect target changed from `/vehicles` to `/summaries`.
 - Authenticated access to `/` now redirects to `/summaries`.
 - Vehicles and expenses creation/editing UX moved from inline forms to modal-first interactions while preserving existing backend/domain rules.
+- `/summaries` dashboard now includes decision-grade insights blocks (cost/km, monthly trends, top drivers) without changing existing CSV/API contracts.
 - Out-of-scope controls are intentionally visual placeholders in this increment (`Buscar`, notification bell, pagination visuals).
 
 ### Fixed

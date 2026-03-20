@@ -17,8 +17,10 @@ import {
 import type {
   SummaryKpiViewModel,
   SummaryMonthColumn,
+  SummaryMonthlyTrendViewModel,
   SummaryPeriodInput,
   SummaryRecentExpenseViewModel,
+  SummaryTopCostDriverViewModel,
   SummaryVehicleOption,
   SummaryViewModel,
 } from "@/features/summaries/types";
@@ -28,6 +30,8 @@ type SummariesPageClientProps = {
   vehicles: SummaryVehicleOption[];
   monthColumns: SummaryMonthColumn[];
   summaries: SummaryViewModel[];
+  monthlyTrends: SummaryMonthlyTrendViewModel[];
+  topCostDrivers: SummaryTopCostDriverViewModel[];
   kpis: SummaryKpiViewModel;
   recentExpenses: SummaryRecentExpenseViewModel[];
   filterError?: string;
@@ -57,6 +61,8 @@ export function SummariesPageClient({
   vehicles,
   monthColumns,
   summaries,
+  monthlyTrends,
+  topCostDrivers,
   kpis,
   recentExpenses,
   filterError,
@@ -317,6 +323,18 @@ export function SummariesPageClient({
                       <p>Peças: {summary.categoryBreakdown.parts}</p>
                       <p>Serviços: {summary.categoryBreakdown.service}</p>
                     </div>
+                    <p
+                      className={`mt-3 text-sm ${
+                        summary.costPerKm.status === "available"
+                          ? "text-[#1C2A42]"
+                          : "text-[#7F93AF]"
+                      }`}
+                    >
+                      Custo por km:{" "}
+                      <strong data-testid={`cost-per-km-${summary.vehicleId}`}>
+                        {summary.costPerKm.label}
+                      </strong>
+                    </p>
                     <div className="mt-3 flex flex-wrap gap-2 text-xs">
                       {monthColumns.map((month) => (
                         <span
@@ -333,6 +351,95 @@ export function SummariesPageClient({
                   </article>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="space-y-4 p-6">
+              <h2 className="text-2xl font-extrabold text-[#111D36]">
+                Tendência mensal
+              </h2>
+              <p className="text-base text-[#6D82A1]">
+                Variação de gastos mês a mês no período filtrado
+              </p>
+              {monthlyTrends.length === 0 ? (
+                <p className="text-sm text-[#6D82A1]">
+                  Sem dados suficientes para tendência mensal.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {monthlyTrends.map((trend) => (
+                    <div
+                      key={trend.monthKey}
+                      data-testid={`trend-row-${trend.monthKey}`}
+                      className="rounded-2xl border border-[#E0E8F4] bg-[#F9FBFF] p-3"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-sm font-semibold text-[#1C2A42]">{trend.monthLabel}</p>
+                        <p className="text-sm font-bold text-[#111D36]">{trend.totalSpentLabel}</p>
+                      </div>
+                      <div className="mt-1 flex items-center justify-between gap-3 text-sm">
+                        <p
+                          className={
+                            trend.deltaDirection === "negative"
+                              ? "text-[#D94C45]"
+                              : trend.deltaDirection === "positive"
+                                ? "text-[#17854B]"
+                                : "text-[#7F93AF]"
+                          }
+                        >
+                          {trend.deltaLabel}
+                        </p>
+                        <p
+                          className={
+                            trend.deltaDirection === "negative"
+                              ? "text-[#D94C45]"
+                              : trend.deltaDirection === "positive"
+                                ? "text-[#17854B]"
+                                : "text-[#7F93AF]"
+                          }
+                        >
+                          {trend.deltaPercentLabel}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="space-y-4 p-6">
+              <h2 className="text-2xl font-extrabold text-[#111D36]">
+                Top fatores de custo
+              </h2>
+              <p className="text-base text-[#6D82A1]">
+                Maiores combinações veículo e categoria no período
+              </p>
+              {topCostDrivers.length === 0 ? (
+                <p className="text-sm text-[#6D82A1]">
+                  Nenhum fator de custo no período selecionado.
+                </p>
+              ) : (
+                <ol className="space-y-2">
+                  {topCostDrivers.map((driver, index) => (
+                    <li
+                      key={driver.key}
+                      data-testid="top-driver-row"
+                      className="rounded-2xl border border-[#E0E8F4] bg-[#F9FBFF] p-3"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="text-sm font-semibold text-[#1C2A42]">
+                          {index + 1}. {driver.vehicleLabel} • {driver.categoryLabel}
+                        </p>
+                        <p className="text-sm font-bold text-[#111D36]">{driver.amountLabel}</p>
+                      </div>
+                      <p className="mt-1 text-xs text-[#6D82A1]">{driver.shareLabel} do total</p>
+                    </li>
+                  ))}
+                </ol>
+              )}
             </CardContent>
           </Card>
         </div>

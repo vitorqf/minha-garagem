@@ -22,6 +22,10 @@ describe("SummariesPageClient", () => {
             vehicleLabel: "Carro Principal (Toyota Corolla)",
             totalSpentCents: 35000,
             totalSpentLabel: "R$ 350,00",
+            costPerKm: {
+              status: "available",
+              label: "R$ 1,75/km",
+            },
             categoryBreakdownCents: {
               fuel: 10000,
               parts: 0,
@@ -40,6 +44,44 @@ describe("SummariesPageClient", () => {
               "2026-01": "R$ 100,00",
               "2026-02": "R$ 250,00",
             },
+          },
+        ]}
+        monthlyTrends={[
+          {
+            monthKey: "2026-01",
+            monthLabel: "jan. de 2026",
+            totalSpentCents: 10000,
+            totalSpentLabel: "R$ 100,00",
+            deltaLabel: "—",
+            deltaPercentLabel: "—",
+            deltaDirection: "neutral",
+          },
+          {
+            monthKey: "2026-02",
+            monthLabel: "fev. de 2026",
+            totalSpentCents: 25000,
+            totalSpentLabel: "R$ 250,00",
+            deltaLabel: "+R$ 150,00",
+            deltaPercentLabel: "+150,0%",
+            deltaDirection: "negative",
+          },
+        ]}
+        topCostDrivers={[
+          {
+            key: "vehicle-1-service",
+            vehicleLabel: "Carro Principal (Toyota Corolla)",
+            categoryLabel: "Serviços",
+            amountCents: 25000,
+            amountLabel: "R$ 250,00",
+            shareLabel: "71,4%",
+          },
+          {
+            key: "vehicle-1-fuel",
+            vehicleLabel: "Carro Principal (Toyota Corolla)",
+            categoryLabel: "Combustível",
+            amountCents: 10000,
+            amountLabel: "R$ 100,00",
+            shareLabel: "28,6%",
           },
         ]}
         kpis={{
@@ -68,8 +110,18 @@ describe("SummariesPageClient", () => {
     const summaryCard = screen.getByTestId("summary-card");
     expect(within(summaryCard).getByText("Carro Principal (Toyota Corolla)")).toBeInTheDocument();
     expect(within(summaryCard).getAllByText(/R\$\s?350,00/).length).toBeGreaterThan(0);
+    expect(within(summaryCard).getByTestId("cost-per-km-vehicle-1")).toHaveTextContent(
+      /R\$\s?1,75\/km/,
+    );
     expect(within(summaryCard).getByTestId("month-total-2026-01")).toHaveTextContent(/R\$\s?100,00/);
     expect(within(summaryCard).getByTestId("month-total-2026-02")).toHaveTextContent(/R\$\s?250,00/);
+
+    expect(screen.getByRole("heading", { name: "Tendência mensal" })).toBeInTheDocument();
+    expect(screen.getByTestId("trend-row-2026-02")).toHaveTextContent("+R$ 150,00");
+    expect(screen.getByTestId("trend-row-2026-02")).toHaveTextContent("+150,0%");
+    expect(screen.getByRole("heading", { name: "Top fatores de custo" })).toBeInTheDocument();
+    expect(screen.getAllByTestId("top-driver-row")).toHaveLength(2);
+    expect(screen.getByText(/Carro Principal \(Toyota Corolla\) • Serviços/)).toBeInTheDocument();
   });
 
   it("shows empty-state when no vehicles are registered", () => {
@@ -79,6 +131,8 @@ describe("SummariesPageClient", () => {
         vehicles={[]}
         monthColumns={[{ key: "2026-03", label: "mar/2026" }]}
         summaries={[]}
+        monthlyTrends={[]}
+        topCostDrivers={[]}
         kpis={{
           totalSpentLabel: "R$ 0,00",
           monthlyAverageLabel: "R$ 0,00",
@@ -109,6 +163,10 @@ describe("SummariesPageClient", () => {
             vehicleLabel: "Carro Reserva (Honda Fit)",
             totalSpentCents: 0,
             totalSpentLabel: "R$ 0,00",
+            costPerKm: {
+              status: "insufficient",
+              label: "Dados insuficientes",
+            },
             categoryBreakdownCents: {
               fuel: 0,
               parts: 0,
@@ -129,6 +187,27 @@ describe("SummariesPageClient", () => {
             },
           },
         ]}
+        monthlyTrends={[
+          {
+            monthKey: "2026-01",
+            monthLabel: "jan. de 2026",
+            totalSpentCents: 0,
+            totalSpentLabel: "R$ 0,00",
+            deltaLabel: "—",
+            deltaPercentLabel: "—",
+            deltaDirection: "neutral",
+          },
+          {
+            monthKey: "2026-02",
+            monthLabel: "fev. de 2026",
+            totalSpentCents: 0,
+            totalSpentLabel: "R$ 0,00",
+            deltaLabel: "R$ 0,00",
+            deltaPercentLabel: "—",
+            deltaDirection: "neutral",
+          },
+        ]}
+        topCostDrivers={[]}
         kpis={{
           totalSpentLabel: "R$ 0,00",
           monthlyAverageLabel: "R$ 0,00",
@@ -141,8 +220,12 @@ describe("SummariesPageClient", () => {
 
     const summaryCard = screen.getByTestId("summary-card");
     expect(within(summaryCard).getByText(/Total:\s*R\$\s?0,00/)).toBeInTheDocument();
+    expect(within(summaryCard).getByTestId("cost-per-km-vehicle-2")).toHaveTextContent(
+      "Dados insuficientes",
+    );
     expect(within(summaryCard).getByTestId("month-total-2026-01")).toHaveTextContent(/R\$\s?0,00/);
     expect(within(summaryCard).getByTestId("month-total-2026-02")).toHaveTextContent(/R\$\s?0,00/);
+    expect(screen.getByText("Nenhum fator de custo no período selecionado.")).toBeInTheDocument();
   });
 
   it("renders csv export link using active summary filters", () => {
@@ -155,6 +238,8 @@ describe("SummariesPageClient", () => {
           { key: "2026-02", label: "fev/2026" },
         ]}
         summaries={[]}
+        monthlyTrends={[]}
+        topCostDrivers={[]}
         kpis={{
           totalSpentLabel: "R$ 0,00",
           monthlyAverageLabel: "R$ 0,00",

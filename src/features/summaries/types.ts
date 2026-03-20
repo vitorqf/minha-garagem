@@ -40,6 +40,7 @@ export type SummaryViewModel = {
   vehicleLabel: string;
   totalSpentCents: number;
   totalSpentLabel: string;
+  costPerKm: SummaryCostPerKmViewModel;
   categoryBreakdownCents: Record<ExpenseCategory, number>;
   categoryBreakdown: Record<ExpenseCategory, string>;
   monthlyTotalsCents: Record<string, number>;
@@ -60,4 +61,28 @@ export type SummaryRecentExpenseViewModel = {
   categoryLabel: string;
   notesLabel: string;
   amountLabel: string;
+};
+
+export type SummaryCostPerKmViewModel = {
+  status: "available" | "insufficient";
+  label: string;
+};
+
+export type SummaryMonthlyTrendViewModel = {
+  monthKey: string;
+  monthLabel: string;
+  totalSpentCents: number;
+  totalSpentLabel: string;
+  deltaLabel: string;
+  deltaPercentLabel: string;
+  deltaDirection: "positive" | "negative" | "neutral";
+};
+
+export type SummaryTopCostDriverViewModel = {
+  key: string;
+  vehicleLabel: string;
+  categoryLabel: string;
+  amountCents: number;
+  amountLabel: string;
+  shareLabel: string;
 };

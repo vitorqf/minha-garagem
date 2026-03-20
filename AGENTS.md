@@ -158,7 +158,7 @@
 - Confirm output is clear for quick spending analysis.
 
 ## v1 Proposal (In Progress)
-- Status: v1 Increment 4 implemented (`Summaries Export + Finalization`) + post-increment hardening patch implemented.
+- Status: v1 Increment 4 implemented (`Summaries Export + Finalization`) + post-increment hardening patch implemented + decision-grade summaries insights patch implemented.
 
 ### Summary
 - v1 focus: CSV exports plus multi-account authentication with strict data isolation and a high-fidelity responsive UI redesign.
@@ -188,6 +188,10 @@
 - CSV formula neutralization for exported cell values to reduce spreadsheet formula injection risk.
 - Export period guardrails for CSV endpoints (despesas: up to 12 months; resumos: up to 24 months).
 - Database integrity hardening with owner foreign keys and owner-scoped expense-to-vehicle composite relation constraints.
+- Post-increment decision-grade insights delivered:
+- Per-vehicle `custo por km` on `/summaries` computed from filtered period spend divided by filtered mileage delta (`maxMileage - minMileage`).
+- Global monthly trend rows with absolute and percent deltas versus previous month (increase in spend treated as negative signal).
+- Top cost drivers ranking on `/summaries` as Top 3 `Veículo • Categoria` pairs with amount and share.
 
 ### Public API and Contract Targets
 - Implemented authenticated endpoint:
@@ -233,6 +237,7 @@
 - `ReportSummaryExportFilter`.
 - `SummaryCsvRow`.
 - Internal summaries view-model expansion to support KPI cards and recent-expenses rendering without changing persistence contracts.
+- Additional internal summaries view-model expansion to support `custo por km`, monthly trend deltas, and top cost drivers without changing persistence or HTTP contracts.
 
 ### Milestone Status
 1. Milestone 1 (Foundation / Week 1)
@@ -262,6 +267,7 @@
 - `GET /api/reports/summaries.csv` implemented.
 - `/summaries` now exposes functional `Exportar CSV` using active resolved filters.
 - Delivered columns: `Veículo`, `Total (R$)`, `Combustível (R$)`, `Peças (R$)`, `Serviços (R$)`, plus dynamic month columns.
+- Post-finalization analytics patch delivered in `/summaries` UI only (no CSV/API contract changes).
 
 ### v1 Test Targets and Coverage
 - Implemented in Increment 1:
@@ -278,7 +284,7 @@
 - Implemented in Increment 3:
 - Component coverage update for redesigned auth, vehicles, expenses, and summaries UIs.
 - Playwright smoke update for modal/menu flows and authenticated landing on `/summaries`.
-- Summary rendering coverage now includes KPI cards, per-category breakdown, vehicle ranking, and recent expenses block.
+- Summary rendering coverage now includes KPI cards, per-category breakdown, vehicle ranking, recent expenses block, per-vehicle `custo por km`, monthly trend deltas, and top cost drivers ranking.
 - Implemented in Increment 4:
 - Service coverage for summaries CSV export owner scoping, validation, dynamic month range, and empty dataset behavior.
 - Route/API coverage for summaries CSV `401`, `400`, and `200` responses with dynamic month headers.
@@ -289,6 +295,10 @@
 - Service coverage for CSV export period guardrails (expenses and summaries).
 - Unit coverage for CSV formula neutralization behavior.
 - Service coverage for mapping Prisma unique-constraint races to domain validation messages (auth + vehicles).
+- Implemented in decision-grade insights patch:
+- Unit coverage for summaries insights builders (`custo por km`, monthly trend deltas, top cost drivers ranking).
+- Component coverage for new `/summaries` insights blocks and insufficient-data rendering.
+- Playwright coverage update for `/summaries` validating `custo por km`, trend deltas, and top cost drivers ordering.
 
 ### v1 Assumptions Locked
 - CSV-only in v1 (no PDF).

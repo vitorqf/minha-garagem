@@ -3,7 +3,7 @@
 Personal multi-account vehicle expense tracker with isolated user data.
 
 ## Status
-- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) + v1 Increment 3 (Complete Visual Reimplementation) + v1 Increment 4 (Summaries CSV Export) + post-v1 hardening patch implemented.
+- Current increment: Slice 0 (Authentication) + Slices 1-3 implemented + v1 Increment 1 (Foundation + Expenses CSV Export) + v1 Increment 2 (Multi-User Authentication) + v1 Increment 3 (Complete Visual Reimplementation) + v1 Increment 4 (Summaries CSV Export) + post-v1 hardening patch implemented + decision-grade summaries insights patch implemented.
 - Source of truth: `AGENTS.md`.
 
 ## Product Goal
@@ -115,6 +115,19 @@ Track spending per vehicle with a clear, incremental workflow:
 - `Vehicle.ownerId` now references `User.id`.
 - `Expense` now uses an owner-scoped composite relation to `Vehicle` (`vehicleId + ownerId`), reinforcing tenant isolation at DB level.
 
+## Decision-Grade Summaries Insights Patch Delivered
+- `/summaries` now includes per-vehicle `Custo por km`:
+- Formula: total spent in filtered period divided by mileage delta in filtered period (`maxMileage - minMileage`).
+- Vehicles without enough mileage basis now render `Dados insuficientes`.
+- New `Tendência mensal` block with global month totals and delta vs previous month:
+- Delta amount shown as signed BRL.
+- Delta percent shown only when previous month total is greater than zero.
+- Semantics: spending increase is negative (red), spending decrease is positive (green).
+- New `Top fatores de custo` block:
+- Ranking is Top 3 `Veículo • Categoria` pairs by amount in selected period.
+- Each row shows amount and share of total.
+- Scope is dashboard-only (`/summaries` UI); no changes to CSV endpoints, HTTP contracts, or Prisma schema.
+
 ## Tech Baseline
 - Next.js App Router + TypeScript + Tailwind CSS.
 - Prisma ORM + PostgreSQL.
@@ -171,12 +184,14 @@ Run before considering an increment complete:
 ```bash
 pnpm lint
 pnpm test
+pnpm test:coverage
 pnpm build
 pnpm test:e2e
 ```
 
 ## Testing Notes
 - Unit + component tests run with Vitest (`pnpm test`).
+- Coverage report runs with Vitest v8 provider (`pnpm test:coverage`).
 - E2E smoke tests run with Playwright (`pnpm test:e2e`).
 - Playwright web server uses in-memory repositories (`VEHICLE_REPOSITORY=memory`, `USER_REPOSITORY=memory`) for deterministic smoke coverage without requiring a live DB in CI/test runs.
 - Auth e2e smoke validates signup/login/logout and protected-route redirects before feature flows.
@@ -186,19 +201,23 @@ pnpm test:e2e
 - E2E smoke covers redesigned modal/menu flows across vehicles, expenses, and summaries.
 - Expenses e2e smoke validates cross-user isolation across list/summaries/export flows.
 - Unit and component coverage now also includes summaries CSV export service/route/filter-link contracts.
+- Unit coverage includes summaries insights builders for `custo por km`, monthly trend deltas, and top cost drivers.
+- Summaries component coverage includes new insights blocks and insufficient-data states.
+- Summaries e2e smoke validates `custo por km`, trend deltas, and top-driver ordering.
 
 ## CI/CD and Security Pipeline
 - `ci / quality`: runs on pull requests and pushes to `main` with `pnpm install --frozen-lockfile`, `pnpm prisma:generate`, `pnpm lint`, `pnpm test`, and `pnpm build`.
 - `ci / e2e-main`: runs only on pushes to `main` and blocks production branch changes when Playwright smoke tests fail.
 - `security / dependency-review`: runs on pull requests with `actions/dependency-review-action`.
 - `security / audit`: runs `pnpm audit --audit-level high`.
+- `security / sast-semgrep`: runs Semgrep SAST (`semgrep scan --config p/javascript --config p/nodejs --severity ERROR`) against `src` and `prisma`, uploads SARIF findings to GitHub Code Scanning, and fails on matching findings.
 - `security / secret-scan`: runs gitleaks against full git history (`fetch-depth: 0`).
 - `codeql / analyze`: runs CodeQL (`javascript-typescript`) on pull requests, pushes to `main`, and weekly schedule.
 - Dependabot (`.github/dependabot.yml`) updates npm and GitHub Actions dependencies weekly.
 
 ## Manual Platform Configuration
 Set these once in your GitHub/Vercel project settings:
-1. Configure GitHub branch protection for `main` to require pull requests, require up-to-date branches, and require these checks: `ci / quality`, `security / dependency-review`, `security / audit`, `security / secret-scan`, `codeql / analyze`.
+1. Configure GitHub branch protection for `main` to require pull requests, require up-to-date branches, and require these checks: `ci / quality`, `security / dependency-review`, `security / audit`, `security / sast-semgrep`, `security / secret-scan`, `codeql / analyze`.
 2. Keep `ci / e2e-main` out of required pull request checks because it runs only after push to `main`.
 3. Configure Vercel Git integration: connect this repository, set production branch to `main`, keep preview deployments for pull requests, and keep production deploys on merges to `main`.
 

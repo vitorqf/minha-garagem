@@ -9,13 +9,21 @@ import {
   toEndDateFromMonth,
   toStartDateFromMonth,
 } from "@/features/summaries/format";
+import {
+  buildCostPerKmByVehicle,
+  buildMonthlyTrendRows,
+  buildTopCostDrivers,
+} from "@/features/summaries/insights";
 import { getVehicleSummaries } from "@/features/summaries/service";
 import type {
+  SummaryCostPerKmViewModel,
   SummaryData,
   SummaryKpiViewModel,
   SummaryMonthColumn,
+  SummaryMonthlyTrendViewModel,
   SummaryPeriodInput,
   SummaryRecentExpenseViewModel,
+  SummaryTopCostDriverViewModel,
   SummaryVehicleOption,
   SummaryViewModel,
 } from "@/features/summaries/types";
@@ -64,6 +72,7 @@ function toSummaryViewModels(
   summaries: SummaryData["summaries"],
   vehicleOptions: SummaryVehicleOption[],
   months: string[],
+  costPerKmByVehicle: Record<string, SummaryCostPerKmViewModel>,
 ): SummaryViewModel[] {
   const labels = new Map(vehicleOptions.map((vehicle) => [vehicle.id, vehicle.label]));
 
@@ -72,6 +81,10 @@ function toSummaryViewModels(
     vehicleLabel: labels.get(summary.vehicleId) ?? summary.vehicleId,
     totalSpentCents: summary.totalSpentCents,
     totalSpentLabel: formatSummaryCurrencyFromCents(summary.totalSpentCents),
+    costPerKm: costPerKmByVehicle[summary.vehicleId] ?? {
+      status: "insufficient",
+      label: "Dados insuficientes",
+    },
     categoryBreakdownCents: {
       fuel: summary.categoryBreakdown.fuel,
       parts: summary.categoryBreakdown.parts,
@@ -154,6 +167,17 @@ function toRecentExpenseViewModels(
   }));
 }
 
+function toMonthlyTrendViewModels(
+  months: string[],
+  summaries: SummaryViewModel[],
+): SummaryMonthlyTrendViewModel[] {
+  return buildMonthlyTrendRows(months, summaries);
+}
+
+function toTopCostDrivers(summaries: SummaryViewModel[]): SummaryTopCostDriverViewModel[] {
+  return buildTopCostDrivers(summaries, 3);
+}
+
 export default async function SummariesPage({ searchParams }: PageProps) {
   const ownerId = await requireAuthenticatedOwnerId();
   const query = await searchParams;
@@ -192,11 +216,23 @@ export default async function SummariesPage({ searchParams }: PageProps) {
 
   const vehicleOptions = toVehicleOptions(result.data.vehicles);
   const monthColumns = toMonthColumns(result.data.months);
+  const expensesResult = await listExpenses(expenseRepository, ownerId, {
+    startDate: toStartDateFromMonth(activeFilters.startMonth),
+    endDate: toEndDateFromMonth(activeFilters.endMonth),
+    vehicleId: activeFilters.vehicleId,
+  });
+  const costsPerKm = buildCostPerKmByVehicle(
+    result.data.summaries,
+    expensesResult.ok ? expensesResult.data : [],
+  );
   const summaryViewModels = toSummaryViewModels(
     result.data.summaries,
     vehicleOptions,
     result.data.months,
+    costsPerKm,
   );
+  const monthlyTrends = toMonthlyTrendViewModels(result.data.months, summaryViewModels);
+  const topCostDrivers = toTopCostDrivers(summaryViewModels);
   const currentTotalCents = summaryViewModels.reduce(
     (acc, summary) => acc + summary.totalSpentCents,
     0,
@@ -217,14 +253,7 @@ export default async function SummariesPage({ searchParams }: PageProps) {
     ? previousResult.data.summaries.reduce((acc, summary) => acc + summary.totalSpentCents, 0)
     : null;
   const kpis = buildSummaryKpis(currentTotalCents, previousTotalCents, monthCount);
-  const recentExpenses = toRecentExpenseViewModels(
-    await listExpenses(expenseRepository, ownerId, {
-      startDate: toStartDateFromMonth(activeFilters.startMonth),
-      endDate: toEndDateFromMonth(activeFilters.endMonth),
-      vehicleId: activeFilters.vehicleId,
-    }),
-    vehicleOptions,
-  );
+  const recentExpenses = toRecentExpenseViewModels(expensesResult, vehicleOptions);
 
   return (
     <SummariesPageClient
@@ -232,6 +261,8 @@ export default async function SummariesPage({ searchParams }: PageProps) {
       vehicles={vehicleOptions}
       monthColumns={monthColumns}
       summaries={summaryViewModels}
+      monthlyTrends={monthlyTrends}
+      topCostDrivers={topCostDrivers}
       kpis={kpis}
       recentExpenses={recentExpenses}
       filterError={filterError}

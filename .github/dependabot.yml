@@ -7,7 +7,7 @@ updates:
       day: monday
       time: "06:00"
       timezone: America/Fortaleza
-    target-branch: main
+    target-branch: develop
     open-pull-requests-limit: 10
   - package-ecosystem: github-actions
     directory: /
@@ -16,5 +16,5 @@ updates:
       day: monday
       time: "06:00"
       timezone: America/Fortaleza
-    target-branch: main
+    target-branch: develop
     open-pull-requests-limit: 10

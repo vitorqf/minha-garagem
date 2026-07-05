@@ -2,19 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Bell,
-  Car,
-  CarFront,
-  ChartColumn,
-  Menu,
-  Receipt,
-  Search,
-  Settings,
-} from "lucide-react";
+import { Car, CarFront, ChartColumn, Menu, Receipt, Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -32,19 +22,16 @@ const NAV_ITEMS = [
 const PAGE_META = {
   "/summaries": {
     title: "Resumos",
-    searchPlaceholder: undefined,
     ctaLabel: undefined,
     ctaEvent: undefined,
   },
   "/vehicles": {
     title: "Meus veículos",
-    searchPlaceholder: "Buscar placa ou modelo...",
     ctaLabel: "Cadastrar Veículo",
     ctaEvent: "open-create-vehicle",
   },
   "/expenses": {
     title: "Gastos",
-    searchPlaceholder: "Pesquisar gastos...",
     ctaLabel: "Adicionar Gasto",
     ctaEvent: "open-create-expense",
   },
@@ -58,7 +45,6 @@ type AppShellProps = {
 
 type PageMeta = {
   title: string;
-  searchPlaceholder?: string;
   ctaLabel?: string;
   ctaEvent?: string;
 };
@@ -79,7 +65,7 @@ function InitialsAvatar({ userEmail }: { userEmail?: string }) {
   const initials = userEmail ? userEmail.slice(0, 2).toUpperCase() : "MG";
 
   return (
-    <div className="grid size-11 place-items-center rounded-full bg-gradient-to-br from-primary to-primary-active font-bold text-primary-foreground">
+    <div className="grid size-11 place-items-center rounded-full bg-primary font-bold text-primary-foreground">
       {initials}
     </div>
   );
@@ -207,27 +193,6 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
               </div>
 
               <div className="flex min-w-0 items-center gap-3">
-                {pageMeta.searchPlaceholder ? (
-                  <div className="relative hidden w-full min-w-64 max-w-md md:block">
-                    <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle" />
-                    <Input
-                      aria-label="Busca (em breve)"
-                      placeholder={pageMeta.searchPlaceholder}
-                      disabled
-                      className="pl-9"
-                    />
-                  </div>
-                ) : null}
-
-                <button
-                  type="button"
-                  disabled
-                  aria-label="Notificações (em breve)"
-                  className="grid size-11 min-w-11 place-items-center rounded-full text-subtle transition-colors hover:bg-surface disabled:opacity-70"
-                >
-                  <Bell className="size-5" />
-                </button>
-
                 {pageMeta.ctaLabel ? (
                   <Button
                     type="button"

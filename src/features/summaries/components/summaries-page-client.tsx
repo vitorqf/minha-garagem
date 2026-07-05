@@ -6,6 +6,8 @@ import { CarFront, CircleDollarSign, PiggyBank, Wallet } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { FILTER_CONTROL_CLASS, FilterField } from "@/components/ui/filter-field";
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -49,6 +51,18 @@ function buildSummaryExportHref(defaultFilters: SummaryPeriodInput): string {
   return `/api/reports/summaries.csv?${searchParams.toString()}`;
 }
 
+const CATEGORY_DOT_CLASS: Record<"fuel" | "parts" | "service", string> = {
+  fuel: "bg-fuel",
+  parts: "bg-parts",
+  service: "bg-service",
+};
+
+const DELTA_TEXT_CLASS: Record<"positive" | "negative" | "neutral", string> = {
+  positive: "text-success-foreground",
+  negative: "text-danger-foreground",
+  neutral: "text-subtle",
+};
+
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -85,19 +99,19 @@ export function SummariesPageClient({
     return {
       rows: [
         {
-          key: "fuel",
+          key: "fuel" as const,
           label: "Combustível",
           amount: totals.fuel,
           width: Math.round((totals.fuel / max) * 100),
         },
         {
-          key: "parts",
+          key: "parts" as const,
           label: "Peças",
           amount: totals.parts,
           width: Math.round((totals.parts / max) * 100),
         },
         {
-          key: "service",
+          key: "service" as const,
           label: "Serviços",
           amount: totals.service,
           width: Math.round((totals.service / max) * 100),
@@ -121,13 +135,12 @@ export function SummariesPageClient({
               <label className="sr-only" htmlFor="summary-vehicleId">
                 Veículo
               </label>
-              <div className="relative">
-                <CarFront className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle" />
+              <FilterField icon={CarFront}>
                 <select
                   id="summary-vehicleId"
                   name="vehicleId"
                   defaultValue={defaultFilters.vehicleId ?? ""}
-                  className="h-12 w-full rounded-full border border-line bg-field py-2 pr-3 pl-9 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className={cn(FILTER_CONTROL_CLASS, "w-full")}
                 >
                   <option value="">Todos os veículos</option>
                   {vehicles.map((vehicle) => (
@@ -136,7 +149,7 @@ export function SummariesPageClient({
                     </option>
                   ))}
                 </select>
-              </div>
+              </FilterField>
             </div>
 
             <div>
@@ -224,15 +237,7 @@ export function SummariesPageClient({
             <p className="text-3xl font-extrabold text-foreground">
               {kpis.variationLabel}
             </p>
-            <p
-              className={`text-sm ${
-                kpis.variationDirection === "positive"
-                  ? "text-success-foreground"
-                  : kpis.variationDirection === "negative"
-                    ? "text-danger-foreground"
-                    : "text-subtle"
-              }`}
-            >
+            <p className={`text-sm ${DELTA_TEXT_CLASS[kpis.variationDirection]}`}>
               Comparado ao período anterior equivalente
             </p>
           </CardContent>
@@ -276,28 +281,14 @@ export function SummariesPageClient({
                   <div key={row.key} className="space-y-1.5">
                     <div className="flex items-center justify-between text-base font-semibold text-foreground">
                       <span className="flex items-center gap-2">
-                        <span
-                          className={`size-2.5 rounded-full ${
-                            row.key === "fuel"
-                              ? "bg-fuel"
-                              : row.key === "parts"
-                                ? "bg-parts"
-                                : "bg-service"
-                          }`}
-                        />
+                        <span className={`size-2.5 rounded-full ${CATEGORY_DOT_CLASS[row.key]}`} />
                         {row.label}
                       </span>
                       <span>{formatCurrency(row.amount / 100)}</span>
                     </div>
                     <div className="h-2.5 overflow-hidden rounded-full bg-surface ring-1 ring-inset ring-line">
                       <div
-                        className={`h-full rounded-full transition-[width] duration-500 ${
-                          row.key === "fuel"
-                            ? "bg-fuel"
-                            : row.key === "parts"
-                              ? "bg-parts"
-                              : "bg-service"
-                        }`}
+                        className={`h-full rounded-full transition-[width] duration-500 ${CATEGORY_DOT_CLASS[row.key]}`}
                         style={{ width: `${row.width}%` }}
                       />
                     </div>
@@ -385,42 +376,26 @@ export function SummariesPageClient({
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {monthlyTrends.map((trend) => (
-                    <div
-                      key={trend.monthKey}
-                      data-testid={`trend-row-${trend.monthKey}`}
-                      className="rounded-2xl border border-line bg-surface p-3"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-semibold text-foreground">{trend.monthLabel}</p>
-                        <p className="text-sm font-bold text-foreground">{trend.totalSpentLabel}</p>
+                  {monthlyTrends.map((trend) => {
+                    const deltaClass = DELTA_TEXT_CLASS[trend.deltaDirection];
+
+                    return (
+                      <div
+                        key={trend.monthKey}
+                        data-testid={`trend-row-${trend.monthKey}`}
+                        className="rounded-2xl border border-line bg-surface p-3"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="text-sm font-semibold text-foreground">{trend.monthLabel}</p>
+                          <p className="text-sm font-bold text-foreground">{trend.totalSpentLabel}</p>
+                        </div>
+                        <div className="mt-1 flex items-center justify-between gap-3 text-sm">
+                          <p className={deltaClass}>{trend.deltaLabel}</p>
+                          <p className={deltaClass}>{trend.deltaPercentLabel}</p>
+                        </div>
                       </div>
-                      <div className="mt-1 flex items-center justify-between gap-3 text-sm">
-                        <p
-                          className={
-                            trend.deltaDirection === "negative"
-                              ? "text-danger-foreground"
-                              : trend.deltaDirection === "positive"
-                                ? "text-success-foreground"
-                                : "text-subtle"
-                          }
-                        >
-                          {trend.deltaLabel}
-                        </p>
-                        <p
-                          className={
-                            trend.deltaDirection === "negative"
-                              ? "text-danger-foreground"
-                              : trend.deltaDirection === "positive"
-                                ? "text-success-foreground"
-                                : "text-subtle"
-                          }
-                        >
-                          {trend.deltaPercentLabel}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </CardContent>

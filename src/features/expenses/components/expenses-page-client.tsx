@@ -8,6 +8,7 @@ import { CalendarDays, CarFront, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FILTER_CONTROL_CLASS, FilterField } from "@/components/ui/filter-field";
 import { ExpenseFormFields } from "@/features/expenses/components/expense-form-fields";
 import { ExpensesList } from "@/features/expenses/components/expenses-list";
 import {
@@ -128,13 +129,12 @@ export function ExpensesPageClient({
               <label className="sr-only" htmlFor="filters-vehicleId">
                 Veículo
               </label>
-              <div className="relative">
-                <CarFront className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle" />
+              <FilterField icon={CarFront}>
                 <select
                   id="filters-vehicleId"
                   name="vehicleId"
                   defaultValue={defaultFilters.vehicleId ?? ""}
-                  className="h-12 rounded-full border border-line bg-field py-2 pr-3 pl-9 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className={FILTER_CONTROL_CLASS}
                 >
                   <option value="">Todos os Veículos</option>
                   {vehicles.map((vehicle) => (
@@ -143,21 +143,20 @@ export function ExpensesPageClient({
                     </option>
                   ))}
                 </select>
-              </div>
+              </FilterField>
 
               <label className="sr-only" htmlFor="filters-startDate">
                 Data inicial
               </label>
-              <div className="relative">
-                <CalendarDays className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle" />
+              <FilterField icon={CalendarDays}>
                 <input
                   id="filters-startDate"
                   name="startDate"
                   type="date"
                   defaultValue={defaultFilters.startDate}
-                  className="h-12 rounded-full border border-line bg-field py-2 pr-3 pl-9 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className={FILTER_CONTROL_CLASS}
                 />
-              </div>
+              </FilterField>
 
               <label className="sr-only" htmlFor="filters-endDate">
                 Data final
@@ -173,20 +172,19 @@ export function ExpensesPageClient({
               <label className="sr-only" htmlFor="filters-category">
                 Categoria
               </label>
-              <div className="relative">
-                <Filter className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle" />
+              <FilterField icon={Filter}>
                 <select
                   id="filters-category"
                   name="category"
                   defaultValue={defaultFilters.category ?? ""}
-                  className="h-12 rounded-full border border-line bg-field py-2 pr-3 pl-9 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className={FILTER_CONTROL_CLASS}
                 >
                   <option value="">Todas as Categorias</option>
                   <option value="fuel">Combustível</option>
                   <option value="parts">Peças</option>
                   <option value="service">Serviço</option>
                 </select>
-              </div>
+              </FilterField>
 
               <Button type="submit" variant="outline" className="h-12 rounded-full">
                 Aplicar filtros

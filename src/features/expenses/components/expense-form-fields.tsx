@@ -40,7 +40,7 @@ export function ExpenseFormFields({
           name="vehicleId"
           disabled={disabled}
           defaultValue={values?.vehicleId ?? ""}
-          className="h-12 w-full rounded-xl border border-[#D3DCEA] bg-[#F8FBFF] px-3 text-base text-[#101C33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3A8DFF]/30"
+          className="h-12 w-full rounded-xl border border-line bg-field px-3.5 text-base text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         >
           <option value="">Escolha um veículo da sua garagem</option>
           {vehicles.map((vehicle) => (
@@ -49,12 +49,12 @@ export function ExpenseFormFields({
             </option>
           ))}
         </select>
-        {errors?.vehicleId ? <p className="text-sm text-[#D94C45]">{errors.vehicleId}</p> : null}
+        {errors?.vehicleId ? <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.vehicleId}</p> : null}
       </div>
 
       <div className="space-y-2 sm:col-span-2">
         <Label>Categoria</Label>
-        <div className="grid grid-cols-3 gap-1 rounded-2xl bg-[#ECF1F8] p-1">
+        <div className="grid grid-cols-3 gap-1 rounded-2xl bg-surface p-1 ring-1 ring-inset ring-line">
           {[
             { key: "fuel", label: "Combustível", icon: Fuel },
             { key: "parts", label: "Peças", icon: Wrench },
@@ -67,8 +67,10 @@ export function ExpenseFormFields({
               <label
                 key={option.key}
                 className={cn(
-                  "flex cursor-pointer items-center justify-center gap-2 rounded-xl px-2 py-2 text-sm font-semibold text-[#5D7290] transition-colors",
-                  isActive && "bg-white text-[#2F84EB] shadow-[0_1px_3px_rgba(14,23,38,0.12)]",
+                  "flex cursor-pointer items-center justify-center gap-2 rounded-xl px-2 py-2 text-sm font-semibold transition-colors",
+                  isActive
+                    ? "bg-card text-primary shadow-sm"
+                    : "text-muted hover:text-foreground",
                 )}
               >
                 <input
@@ -85,7 +87,7 @@ export function ExpenseFormFields({
             );
           })}
         </div>
-        {errors?.category ? <p className="text-sm text-[#D94C45]">{errors.category}</p> : null}
+        {errors?.category ? <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.category}</p> : null}
       </div>
 
       <div className="space-y-2">
@@ -97,7 +99,7 @@ export function ExpenseFormFields({
           defaultValue={values?.amountInput ?? ""}
           placeholder="R$ 0,00"
         />
-        {errors?.amountInput ? <p className="text-sm text-[#D94C45]">{errors.amountInput}</p> : null}
+        {errors?.amountInput ? <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.amountInput}</p> : null}
       </div>
 
       <div className="space-y-2">
@@ -109,7 +111,7 @@ export function ExpenseFormFields({
           disabled={disabled}
           defaultValue={values?.expenseDate ?? ""}
         />
-        {errors?.expenseDate ? <p className="text-sm text-[#D94C45]">{errors.expenseDate}</p> : null}
+        {errors?.expenseDate ? <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.expenseDate}</p> : null}
       </div>
 
       <div className="space-y-2 sm:col-span-2">
@@ -122,7 +124,7 @@ export function ExpenseFormFields({
           defaultValue={values?.mileage ?? ""}
           placeholder="Ex: 45000"
         />
-        {errors?.mileage ? <p className="text-sm text-[#D94C45]">{errors.mileage}</p> : null}
+        {errors?.mileage ? <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.mileage}</p> : null}
       </div>
 
       <div className="space-y-2 sm:col-span-2">
@@ -132,10 +134,10 @@ export function ExpenseFormFields({
           name="notes"
           disabled={disabled}
           defaultValue={values?.notes ?? ""}
-          className="min-h-24 w-full rounded-xl border border-[#D3DCEA] bg-[#F8FBFF] px-3 py-2 text-base text-[#101C33] placeholder:text-[#8CA0BC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3A8DFF]/30"
+          className="min-h-24 w-full rounded-xl border border-line bg-field px-3.5 py-2.5 text-base text-foreground transition-[border-color,box-shadow] placeholder:text-subtle hover:border-line-strong focus-visible:border-primary focus-visible:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
           placeholder="Detalhes adicionais sobre o gasto..."
         />
-        {errors?.notes ? <p className="text-sm text-[#D94C45]">{errors.notes}</p> : null}
+        {errors?.notes ? <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.notes}</p> : null}
       </div>
     </>
   );

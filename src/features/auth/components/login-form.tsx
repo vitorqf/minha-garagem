@@ -48,7 +48,7 @@ export function LoginForm({
   return (
     <form action={formAction} className="space-y-5">
       {notice ? (
-        <p className="rounded-xl border border-[#CFE7D8] bg-[#ECF9F0] px-3 py-2 text-sm text-[#17854B]">
+        <p className="rounded-xl border border-success/25 bg-success-subtle px-3.5 py-2.5 text-sm font-medium text-success-foreground">
           {notice}
         </p>
       ) : null}
@@ -56,7 +56,7 @@ export function LoginForm({
       <div className="space-y-2">
         <Label htmlFor="login-email">E-mail</Label>
         <div className="relative">
-          <Mail className="pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 text-[#8CA0BC]" />
+          <Mail className="pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 text-subtle" />
           <Input
             id="login-email"
             name="email"
@@ -68,14 +68,14 @@ export function LoginForm({
           />
         </div>
         {state.errors?.email ? (
-          <p className="text-sm text-[#D94C45]">{state.errors.email}</p>
+          <p className="mt-1.5 text-sm font-medium text-danger-foreground">{state.errors.email}</p>
         ) : null}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="login-password">Senha</Label>
         <div className="relative">
-          <Lock className="pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 text-[#8CA0BC]" />
+          <Lock className="pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 text-subtle" />
           <Input
             id="login-password"
             name="password"
@@ -84,34 +84,16 @@ export function LoginForm({
             className="px-11"
             required
           />
-          <Eye className="pointer-events-none absolute top-1/2 right-3 size-5 -translate-y-1/2 text-[#8CA0BC]" />
+          <Eye className="pointer-events-none absolute top-1/2 right-3 size-5 -translate-y-1/2 text-subtle" />
         </div>
         {state.errors?.password ? (
-          <p className="text-sm text-[#D94C45]">{state.errors.password}</p>
+          <p className="mt-1.5 text-sm font-medium text-danger-foreground">{state.errors.password}</p>
         ) : null}
       </div>
 
-      {/* <div className="flex items-center justify-between">
-        <label className="inline-flex items-center gap-2 text-sm text-[#4F6482]">
-          <input
-            type="checkbox"
-            name="rememberMe"
-            className="size-5 rounded-full border border-[#C7D3E6] accent-[#2F84EB]"
-          />
-          Lembrar de mim
-        </label>
-        <a
-          href="#"
-          aria-disabled="true"
-          className="pointer-events-none text-base font-semibold text-[#2F84EB] opacity-80"
-        >
-          Esqueci minha senha
-        </a>
-      </div> */}
-
       {state.message ? (
         <p
-          className={`text-sm ${state.status === "success" ? "text-[#17854B]" : "text-[#D94C45]"}`}
+          className={`text-sm font-medium ${state.status === "success" ? "text-success-foreground" : "text-danger-foreground"}`}
         >
           {state.message}
         </p>
@@ -119,9 +101,9 @@ export function LoginForm({
 
       <SubmitButton />
 
-      <p className="border-t border-[#E4EBF6] pt-5 text-center text-base text-[#7288A8]">
+      <p className="border-t border-line pt-5 text-center text-base text-muted">
         Não tem uma conta?{" "}
-        <Link href="/signup" className="font-bold text-[#2F84EB]">
+        <Link href="/signup" className="font-bold text-primary hover:text-primary-hover">
           Cadastre-se agora
         </Link>
       </p>

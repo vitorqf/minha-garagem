@@ -122,12 +122,12 @@ export function SummariesPageClient({
                 Veículo
               </label>
               <div className="relative">
-                <CarFront className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#7288A8]" />
+                <CarFront className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle" />
                 <select
                   id="summary-vehicleId"
                   name="vehicleId"
                   defaultValue={defaultFilters.vehicleId ?? ""}
-                  className="h-12 w-full rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-sm text-[#1E3658]"
+                  className="h-12 w-full rounded-full border border-line bg-field py-2 pr-3 pl-9 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">Todos os veículos</option>
                   {vehicles.map((vehicle) => (
@@ -148,7 +148,7 @@ export function SummariesPageClient({
                 name="startMonth"
                 type="month"
                 defaultValue={defaultFilters.startMonth}
-                className="h-12 w-full rounded-full border border-[#D3DCEA] bg-[#F8FBFF] px-3 py-2 text-sm text-[#1E3658]"
+                className="h-12 w-full rounded-full border border-line bg-field px-4 py-2 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
 
@@ -161,25 +161,25 @@ export function SummariesPageClient({
                 name="endMonth"
                 type="month"
                 defaultValue={defaultFilters.endMonth}
-                className="h-12 w-full rounded-full border border-[#D3DCEA] bg-[#F8FBFF] px-3 py-2 text-sm text-[#1E3658]"
+                className="h-12 w-full rounded-full border border-line bg-field px-4 py-2 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
 
             <button
               type="submit"
-              className="h-12 rounded-full bg-[#2F84EB] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#2676d8]"
+              className="h-12 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-xs transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
             >
               Aplicar filtros
             </button>
             <a
               href={exportHref}
-              className="inline-flex h-12 items-center rounded-full border border-[#D3DCEA] bg-white px-4 text-sm font-semibold text-[#2A3E5B] transition-colors hover:bg-[#F4F8FF]"
+              className="inline-flex h-12 items-center rounded-full border border-line-strong bg-card px-4 text-sm font-semibold text-foreground transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               Exportar CSV
             </a>
           </form>
           {filterError ? (
-            <p className="text-sm text-[#D94C45]">{filterError}</p>
+            <p className="text-sm text-danger-foreground">{filterError}</p>
           ) : null}
         </CardContent>
       </Card>
@@ -188,49 +188,49 @@ export function SummariesPageClient({
         <Card>
           <CardContent className="space-y-2 p-6">
             <div className="flex items-center justify-between">
-              <p className="text-base text-[#5D7290]">Total Gasto</p>
-              <span className="grid size-11 place-items-center rounded-full bg-[#E7F0FF] text-[#2F84EB]">
+              <p className="text-base text-muted">Total Gasto</p>
+              <span className="grid size-11 place-items-center rounded-full bg-primary-subtle text-primary">
                 <Wallet className="size-5" />
               </span>
             </div>
-            <p className="text-3xl font-extrabold text-[#101C33]">
+            <p className="text-3xl font-extrabold text-foreground">
               {kpis.totalSpentLabel}
             </p>
-            <p className="text-sm text-[#7F93AF]">No período selecionado</p>
+            <p className="text-sm text-subtle">No período selecionado</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="space-y-2 p-6">
             <div className="flex items-center justify-between">
-              <p className="text-base text-[#5D7290]">Média Mensal</p>
-              <span className="grid size-11 place-items-center rounded-full bg-[#E7F0FF] text-[#2F84EB]">
+              <p className="text-base text-muted">Média Mensal</p>
+              <span className="grid size-11 place-items-center rounded-full bg-primary-subtle text-primary">
                 <CircleDollarSign className="size-5" />
               </span>
             </div>
-            <p className="text-3xl font-extrabold text-[#101C33]">
+            <p className="text-3xl font-extrabold text-foreground">
               {kpis.monthlyAverageLabel}
             </p>
-            <p className="text-sm text-[#7F93AF]">Média do período filtrado</p>
+            <p className="text-sm text-subtle">Média do período filtrado</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="space-y-2 p-6">
             <div className="flex items-center justify-between">
-              <p className="text-base text-[#5D7290]">Variação</p>
-              <span className="grid size-11 place-items-center rounded-full bg-[#E7F7EF] text-[#1C9E64]">
+              <p className="text-base text-muted">Variação</p>
+              <span className="grid size-11 place-items-center rounded-full bg-success-subtle text-success-foreground">
                 <PiggyBank className="size-5" />
               </span>
             </div>
-            <p className="text-3xl font-extrabold text-[#101C33]">
+            <p className="text-3xl font-extrabold text-foreground">
               {kpis.variationLabel}
             </p>
             <p
               className={`text-sm ${
                 kpis.variationDirection === "positive"
-                  ? "text-[#17854B]"
+                  ? "text-success-foreground"
                   : kpis.variationDirection === "negative"
-                    ? "text-[#D94C45]"
-                    : "text-[#7F93AF]"
+                    ? "text-danger-foreground"
+                    : "text-subtle"
               }`}
             >
               Comparado ao período anterior equivalente
@@ -242,12 +242,12 @@ export function SummariesPageClient({
       {vehicles.length === 0 ? (
         <Card>
           <CardContent className="py-7 text-center">
-            <p className="text-base text-[#5E7391]">
+            <p className="text-base text-muted">
               Cadastre um veículo para visualizar o resumo.
             </p>
             <Link
               href="/vehicles"
-              className="mt-2 inline-block text-sm font-semibold text-[#2F84EB]"
+              className="mt-2 inline-block text-sm font-semibold text-primary hover:text-primary-hover"
             >
               Ir para veículos
             </Link>
@@ -256,7 +256,7 @@ export function SummariesPageClient({
       ) : summaries.length === 0 ? (
         <Card>
           <CardContent className="py-7 text-center">
-            <p className="text-base text-[#5E7391]">
+            <p className="text-base text-muted">
               Nenhum veículo encontrado para o filtro selecionado.
             </p>
           </CardContent>
@@ -265,22 +265,39 @@ export function SummariesPageClient({
         <div className="grid gap-4 xl:grid-cols-2">
           <Card>
             <CardContent className="space-y-4 p-6">
-              <h2 className="text-2xl font-extrabold text-[#111D36]">
+              <h2 className="text-2xl font-extrabold text-foreground">
                 Gastos por Categoria
               </h2>
-              <p className="text-base text-[#6D82A1]">
+              <p className="text-base text-muted">
                 Distribuição no período selecionado
               </p>
               <div className="space-y-4">
                 {categoryTotals.rows.map((row) => (
-                  <div key={row.key} className="space-y-1">
-                    <div className="flex items-center justify-between text-base font-semibold text-[#1C2A42]">
-                      <span>{row.label}</span>
+                  <div key={row.key} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-base font-semibold text-foreground">
+                      <span className="flex items-center gap-2">
+                        <span
+                          className={`size-2.5 rounded-full ${
+                            row.key === "fuel"
+                              ? "bg-fuel"
+                              : row.key === "parts"
+                                ? "bg-parts"
+                                : "bg-service"
+                          }`}
+                        />
+                        {row.label}
+                      </span>
                       <span>{formatCurrency(row.amount / 100)}</span>
                     </div>
-                    <div className="h-3 rounded-full bg-[#E8EEF6]">
+                    <div className="h-2.5 overflow-hidden rounded-full bg-surface ring-1 ring-inset ring-line">
                       <div
-                        className="h-full rounded-full bg-[#2F84EB]"
+                        className={`h-full rounded-full transition-[width] duration-500 ${
+                          row.key === "fuel"
+                            ? "bg-fuel"
+                            : row.key === "parts"
+                              ? "bg-parts"
+                              : "bg-service"
+                        }`}
                         style={{ width: `${row.width}%` }}
                       />
                     </div>
@@ -292,10 +309,10 @@ export function SummariesPageClient({
 
           <Card>
             <CardContent className="space-y-4 p-6">
-              <h2 className="text-2xl font-extrabold text-[#111D36]">
+              <h2 className="text-2xl font-extrabold text-foreground">
                 Gastos por Veículo
               </h2>
-              <p className="text-base text-[#6D82A1]">
+              <p className="text-base text-muted">
                 Total acumulado por placa
               </p>
               <div className="space-y-3">
@@ -303,22 +320,22 @@ export function SummariesPageClient({
                   <article
                     key={summary.vehicleId}
                     data-testid="summary-card"
-                    className="rounded-3xl border border-[#E0E8F4] bg-[#F9FBFF] p-4"
+                    className="rounded-3xl border border-line bg-surface p-4"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-xl font-bold text-[#132039]">
+                        <h3 className="text-xl font-bold text-foreground">
                           {summary.vehicleLabel}
                         </h3>
-                        <p className="mt-1 text-base text-[#6D82A1]">
+                        <p className="mt-1 text-base text-muted">
                           Total: {summary.totalSpentLabel}
                         </p>
                       </div>
-                      <span className="text-xl font-extrabold text-[#111D36]">
+                      <span className="text-xl font-extrabold text-foreground">
                         {summary.totalSpentLabel}
                       </span>
                     </div>
-                    <div className="mt-3 grid gap-2 text-sm text-[#4F6482] sm:grid-cols-3">
+                    <div className="mt-3 grid gap-2 text-sm text-muted sm:grid-cols-3">
                       <p>Combustível: {summary.categoryBreakdown.fuel}</p>
                       <p>Peças: {summary.categoryBreakdown.parts}</p>
                       <p>Serviços: {summary.categoryBreakdown.service}</p>
@@ -326,8 +343,8 @@ export function SummariesPageClient({
                     <p
                       className={`mt-3 text-sm ${
                         summary.costPerKm.status === "available"
-                          ? "text-[#1C2A42]"
-                          : "text-[#7F93AF]"
+                          ? "text-foreground"
+                          : "text-subtle"
                       }`}
                     >
                       Custo por km:{" "}
@@ -339,7 +356,7 @@ export function SummariesPageClient({
                       {monthColumns.map((month) => (
                         <span
                           key={month.key}
-                          className="rounded-full bg-white px-2 py-1 text-[#5D7290]"
+                          className="rounded-full bg-card px-2.5 py-1 text-muted ring-1 ring-inset ring-line"
                         >
                           {month.label}:{" "}
                           <strong data-testid={`month-total-${month.key}`}>
@@ -356,14 +373,14 @@ export function SummariesPageClient({
 
           <Card>
             <CardContent className="space-y-4 p-6">
-              <h2 className="text-2xl font-extrabold text-[#111D36]">
+              <h2 className="text-2xl font-extrabold text-foreground">
                 Tendência mensal
               </h2>
-              <p className="text-base text-[#6D82A1]">
+              <p className="text-base text-muted">
                 Variação de gastos mês a mês no período filtrado
               </p>
               {monthlyTrends.length === 0 ? (
-                <p className="text-sm text-[#6D82A1]">
+                <p className="text-sm text-muted">
                   Sem dados suficientes para tendência mensal.
                 </p>
               ) : (
@@ -372,20 +389,20 @@ export function SummariesPageClient({
                     <div
                       key={trend.monthKey}
                       data-testid={`trend-row-${trend.monthKey}`}
-                      className="rounded-2xl border border-[#E0E8F4] bg-[#F9FBFF] p-3"
+                      className="rounded-2xl border border-line bg-surface p-3"
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-semibold text-[#1C2A42]">{trend.monthLabel}</p>
-                        <p className="text-sm font-bold text-[#111D36]">{trend.totalSpentLabel}</p>
+                        <p className="text-sm font-semibold text-foreground">{trend.monthLabel}</p>
+                        <p className="text-sm font-bold text-foreground">{trend.totalSpentLabel}</p>
                       </div>
                       <div className="mt-1 flex items-center justify-between gap-3 text-sm">
                         <p
                           className={
                             trend.deltaDirection === "negative"
-                              ? "text-[#D94C45]"
+                              ? "text-danger-foreground"
                               : trend.deltaDirection === "positive"
-                                ? "text-[#17854B]"
-                                : "text-[#7F93AF]"
+                                ? "text-success-foreground"
+                                : "text-subtle"
                           }
                         >
                           {trend.deltaLabel}
@@ -393,10 +410,10 @@ export function SummariesPageClient({
                         <p
                           className={
                             trend.deltaDirection === "negative"
-                              ? "text-[#D94C45]"
+                              ? "text-danger-foreground"
                               : trend.deltaDirection === "positive"
-                                ? "text-[#17854B]"
-                                : "text-[#7F93AF]"
+                                ? "text-success-foreground"
+                                : "text-subtle"
                           }
                         >
                           {trend.deltaPercentLabel}
@@ -411,14 +428,14 @@ export function SummariesPageClient({
 
           <Card>
             <CardContent className="space-y-4 p-6">
-              <h2 className="text-2xl font-extrabold text-[#111D36]">
+              <h2 className="text-2xl font-extrabold text-foreground">
                 Top fatores de custo
               </h2>
-              <p className="text-base text-[#6D82A1]">
+              <p className="text-base text-muted">
                 Maiores combinações veículo e categoria no período
               </p>
               {topCostDrivers.length === 0 ? (
-                <p className="text-sm text-[#6D82A1]">
+                <p className="text-sm text-muted">
                   Nenhum fator de custo no período selecionado.
                 </p>
               ) : (
@@ -427,15 +444,15 @@ export function SummariesPageClient({
                     <li
                       key={driver.key}
                       data-testid="top-driver-row"
-                      className="rounded-2xl border border-[#E0E8F4] bg-[#F9FBFF] p-3"
+                      className="rounded-2xl border border-line bg-surface p-3"
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <p className="text-sm font-semibold text-[#1C2A42]">
+                        <p className="text-sm font-semibold text-foreground">
                           {index + 1}. {driver.vehicleLabel} • {driver.categoryLabel}
                         </p>
-                        <p className="text-sm font-bold text-[#111D36]">{driver.amountLabel}</p>
+                        <p className="text-sm font-bold text-foreground">{driver.amountLabel}</p>
                       </div>
-                      <p className="mt-1 text-xs text-[#6D82A1]">{driver.shareLabel} do total</p>
+                      <p className="mt-1 text-xs text-muted">{driver.shareLabel} do total</p>
                     </li>
                   ))}
                 </ol>
@@ -447,19 +464,19 @@ export function SummariesPageClient({
 
       <Card>
         <CardContent className="p-0">
-          <div className="flex items-center justify-between border-b border-[#E4EAF4] px-6 py-4">
-            <h2 className="text-2xl font-extrabold text-[#111D36]">
+          <div className="flex items-center justify-between border-b border-line px-6 py-4">
+            <h2 className="text-2xl font-extrabold text-foreground">
               Últimas Despesas
             </h2>
             <Link
               href="/expenses"
-              className="text-base font-bold text-[#2F84EB]"
+              className="text-base font-bold text-primary hover:text-primary-hover"
             >
               Ver todas
             </Link>
           </div>
           {recentExpenses.length === 0 ? (
-            <p className="px-6 py-5 text-base text-[#6D82A1]">
+            <p className="px-6 py-5 text-base text-muted">
               Sem despesas recentes no período selecionado.
             </p>
           ) : (
@@ -477,7 +494,7 @@ export function SummariesPageClient({
                 {recentExpenses.map((expense) => (
                   <TableRow key={expense.id}>
                     <TableCell>{expense.dateLabel}</TableCell>
-                    <TableCell className="font-semibold text-[#14203A]">
+                    <TableCell className="font-semibold text-foreground">
                       {expense.vehicleLabel}
                     </TableCell>
                     <TableCell>
@@ -494,7 +511,7 @@ export function SummariesPageClient({
                       </Badge>
                     </TableCell>
                     <TableCell>{expense.notesLabel}</TableCell>
-                    <TableCell className="text-right text-lg font-bold text-[#0F1A32]">
+                    <TableCell className="text-right text-lg font-bold text-foreground">
                       {expense.amountLabel}
                     </TableCell>
                   </TableRow>

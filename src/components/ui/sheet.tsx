@@ -8,14 +8,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-white p-6 shadow-xl transition ease-in-out",
+  "fixed z-50 gap-4 bg-card p-6 shadow-lg transition ease-in-out",
   {
     variants: {
       side: {
-        top: "inset-x-0 top-0 border-b border-[#D8E0EC]",
-        bottom: "inset-x-0 bottom-0 border-t border-[#D8E0EC]",
-        left: "inset-y-0 left-0 h-full w-80 border-r border-[#D8E0EC]",
-        right: "inset-y-0 right-0 h-full w-80 border-l border-[#D8E0EC]",
+        top: "inset-x-0 top-0 border-b border-line",
+        bottom: "inset-x-0 bottom-0 border-t border-line",
+        left: "inset-y-0 left-0 h-full w-80 border-r border-line",
+        right: "inset-y-0 right-0 h-full w-80 border-l border-line",
       },
     },
     defaultVariants: {
@@ -47,7 +47,7 @@ function SheetOverlay({
   return (
     <DialogPrimitive.Overlay
       data-slot="sheet-overlay"
-      className={cn("fixed inset-0 z-50 bg-[#34435F]/50", className)}
+      className={cn("fixed inset-0 z-50 bg-overlay", className)}
       {...props}
     />
   );
@@ -70,7 +70,7 @@ function SheetContent({
       >
         {children}
         <DialogPrimitive.Close
-          className="absolute top-4 right-4 rounded-md p-1 text-[#8CA0BC] hover:bg-[#EEF3FA]"
+          className="absolute top-4 right-4 rounded-lg p-1.5 text-subtle transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="Fechar"
         >
           <X className="size-5" />
@@ -87,7 +87,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
 function SheetTitle(props: React.ComponentProps<typeof DialogPrimitive.Title>) {
   return (
     <DialogPrimitive.Title
-      className="text-lg font-bold text-[#0F1A32]"
+      className="text-lg font-bold text-foreground"
       {...props}
     />
   );

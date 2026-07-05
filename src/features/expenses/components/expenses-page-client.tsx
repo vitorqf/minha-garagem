@@ -129,12 +129,12 @@ export function ExpensesPageClient({
                 Veículo
               </label>
               <div className="relative">
-                <CarFront className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#7085A4]" />
+                <CarFront className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle" />
                 <select
                   id="filters-vehicleId"
                   name="vehicleId"
                   defaultValue={defaultFilters.vehicleId ?? ""}
-                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-sm text-[#1E3658]"
+                  className="h-12 rounded-full border border-line bg-field py-2 pr-3 pl-9 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">Todos os Veículos</option>
                   {vehicles.map((vehicle) => (
@@ -149,13 +149,13 @@ export function ExpensesPageClient({
                 Data inicial
               </label>
               <div className="relative">
-                <CalendarDays className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#7085A4]" />
+                <CalendarDays className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle" />
                 <input
                   id="filters-startDate"
                   name="startDate"
                   type="date"
                   defaultValue={defaultFilters.startDate}
-                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-sm text-[#1E3658]"
+                  className="h-12 rounded-full border border-line bg-field py-2 pr-3 pl-9 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
 
@@ -167,19 +167,19 @@ export function ExpensesPageClient({
                 name="endDate"
                 type="date"
                 defaultValue={defaultFilters.endDate}
-                className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] px-3 py-2 text-sm text-[#1E3658]"
+                className="h-12 rounded-full border border-line bg-field px-4 py-2 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
 
               <label className="sr-only" htmlFor="filters-category">
                 Categoria
               </label>
               <div className="relative">
-                <Filter className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#7085A4]" />
+                <Filter className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle" />
                 <select
                   id="filters-category"
                   name="category"
                   defaultValue={defaultFilters.category ?? ""}
-                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-sm text-[#1E3658]"
+                  className="h-12 rounded-full border border-line bg-field py-2 pr-3 pl-9 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <option value="">Todas as Categorias</option>
                   <option value="fuel">Combustível</option>
@@ -194,13 +194,13 @@ export function ExpensesPageClient({
             </form>
 
             <div className="flex flex-col items-end gap-2">
-              <p className="text-base text-[#5E7391]">
+              <p className="text-base text-muted">
                 Total no período:{" "}
-                <strong className="text-2xl font-extrabold text-[#101C33]">{formatCurrencyFromCents(totalPeriod)}</strong>
+                <strong className="text-2xl font-extrabold text-foreground">{formatCurrencyFromCents(totalPeriod)}</strong>
               </p>
               <a
                 href={exportHref}
-                className="inline-flex h-11 items-center rounded-full border border-[#D3DCEA] bg-white px-4 text-sm font-semibold text-[#2A3E5B] transition-colors hover:bg-[#F4F8FF]"
+                className="inline-flex h-11 items-center rounded-full border border-line-strong bg-card px-4 text-sm font-semibold text-foreground transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 Exportar CSV
               </a>
@@ -211,10 +211,10 @@ export function ExpensesPageClient({
 
       {createState.message ? (
         <p
-          className={`rounded-xl border px-4 py-2 text-sm ${
+          className={`rounded-xl border px-4 py-2.5 text-sm font-medium ${
             createState.status === "success"
-              ? "border-[#BFE8CF] bg-[#F1FCF5] text-[#17854B]"
-              : "border-[#F2C4C0] bg-[#FFF3F2] text-[#C24740]"
+              ? "border-success/25 bg-success-subtle text-success-foreground"
+              : "border-danger/25 bg-danger-subtle text-danger-foreground"
           }`}
         >
           {createState.message}
@@ -224,8 +224,8 @@ export function ExpensesPageClient({
       {!canCreateExpenses ? (
         <Card>
           <CardContent className="space-y-2 py-6 text-center">
-            <p className="text-base text-[#5E7391]">Cadastre um veículo antes de lançar despesas.</p>
-            <Link href="/vehicles" className="text-sm font-semibold text-[#2F84EB]">
+            <p className="text-base text-muted">Cadastre um veículo antes de lançar despesas.</p>
+            <Link href="/vehicles" className="text-sm font-semibold text-primary hover:text-primary-hover">
               Ir para veículos
             </Link>
           </CardContent>

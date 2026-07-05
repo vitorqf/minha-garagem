@@ -84,10 +84,10 @@ export function VehiclesPageClient({
     <>
       {createState.message ? (
         <p
-          className={`mb-4 rounded-xl border px-4 py-2 text-sm ${
+          className={`mb-4 rounded-xl border px-4 py-2.5 text-sm font-medium ${
             createState.status === "success"
-              ? "border-[#BFE8CF] bg-[#F1FCF5] text-[#17854B]"
-              : "border-[#F2C4C0] bg-[#FFF3F2] text-[#C24740]"
+              ? "border-success/25 bg-success-subtle text-success-foreground"
+              : "border-danger/25 bg-danger-subtle text-danger-foreground"
           }`}
         >
           {createState.message}

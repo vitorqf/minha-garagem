@@ -27,14 +27,14 @@ function SelectTrigger({
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "flex h-12 w-full items-center justify-between gap-2 rounded-xl border border-[#D3DCEA] bg-[#F8FBFF] px-3 text-sm text-[#101C33] focus:outline-none focus:ring-2 focus:ring-[#3A8DFF]/30 disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-12 w-full items-center justify-between gap-2 rounded-xl border border-line bg-field px-3.5 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus:border-primary focus:bg-card focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDown className="size-4 text-[#7288A8]" />
+        <ChevronDown className="size-4 text-subtle" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -81,7 +81,7 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          "relative z-50 max-h-80 min-w-[8rem] overflow-hidden rounded-xl border border-[#D8E0EC] bg-white shadow-lg",
+          "relative z-50 max-h-80 min-w-[8rem] overflow-hidden rounded-xl border border-line bg-card shadow-md",
           position === "popper" &&
             "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
           className,
@@ -104,7 +104,7 @@ function SelectLabel({
   return (
     <SelectPrimitive.Label
       data-slot="select-label"
-      className={cn("px-2 py-1.5 text-xs font-semibold text-[#7F93AF]", className)}
+      className={cn("px-2 py-1.5 text-xs font-semibold text-subtle", className)}
       {...props}
     />
   );
@@ -119,7 +119,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-default select-none items-center rounded-lg py-2 pr-2 pl-8 text-sm text-[#2A3E5B] outline-none focus:bg-[#EEF3FA] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex w-full cursor-default select-none items-center rounded-lg py-2 pr-2 pl-8 text-sm text-foreground outline-none transition-colors focus:bg-primary-subtle focus:text-primary-subtle-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}
       {...props}
@@ -141,7 +141,7 @@ function SelectSeparator({
   return (
     <SelectPrimitive.Separator
       data-slot="select-separator"
-      className={cn("my-1 h-px bg-[#E8EEF6]", className)}
+      className={cn("my-1 h-px bg-line", className)}
       {...props}
     />
   );

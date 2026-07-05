@@ -27,7 +27,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-40 rounded-xl border border-[#D8E0EC] bg-white p-1 shadow-lg",
+          "z-50 min-w-40 rounded-xl border border-line bg-card p-1 shadow-md",
           className,
         )}
         {...props}
@@ -47,7 +47,7 @@ function DropdownMenuItem({
     <DropdownMenuPrimitive.Item
       data-slot="dropdown-menu-item"
       className={cn(
-        "relative flex cursor-default select-none items-center rounded-lg px-2 py-2 text-sm font-medium text-[#2A3E5B] outline-none transition-colors focus:bg-[#EEF3FA]",
+        "relative flex cursor-default select-none items-center rounded-lg px-2 py-2 text-sm font-medium text-foreground outline-none transition-colors focus:bg-primary-subtle focus:text-primary-subtle-foreground",
         inset && "pl-8",
         className,
       )}
@@ -66,7 +66,7 @@ function DropdownMenuCheckboxItem({
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
-        "relative flex cursor-default select-none items-center rounded-lg py-2 pr-2 pl-8 text-sm font-medium text-[#2A3E5B] outline-none transition-colors focus:bg-[#EEF3FA]",
+        "relative flex cursor-default select-none items-center rounded-lg py-2 pr-2 pl-8 text-sm font-medium text-foreground outline-none transition-colors focus:bg-primary-subtle focus:text-primary-subtle-foreground",
         className,
       )}
       checked={checked}
@@ -92,7 +92,7 @@ function DropdownMenuLabel({
   return (
     <DropdownMenuPrimitive.Label
       data-slot="dropdown-menu-label"
-      className={cn("px-2 py-1.5 text-xs font-semibold text-[#7F93AF]", inset && "pl-8", className)}
+      className={cn("px-2 py-1.5 text-xs font-semibold text-subtle", inset && "pl-8", className)}
       {...props}
     />
   );
@@ -105,7 +105,7 @@ function DropdownMenuSeparator({
   return (
     <DropdownMenuPrimitive.Separator
       data-slot="dropdown-menu-separator"
-      className={cn("mx-1 my-1 h-px bg-[#E8EEF6]", className)}
+      className={cn("mx-1 my-1 h-px bg-line", className)}
       {...props}
     />
   );
@@ -123,7 +123,7 @@ function DropdownMenuSubTrigger({
     <DropdownMenuPrimitive.SubTrigger
       data-slot="dropdown-menu-sub-trigger"
       className={cn(
-        "flex cursor-default select-none items-center rounded-lg px-2 py-2 text-sm font-medium text-[#2A3E5B] outline-none focus:bg-[#EEF3FA]",
+        "flex cursor-default select-none items-center rounded-lg px-2 py-2 text-sm font-medium text-foreground outline-none transition-colors focus:bg-primary-subtle focus:text-primary-subtle-foreground",
         inset && "pl-8",
         className,
       )}
@@ -143,7 +143,7 @@ function DropdownMenuSubContent({
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
       className={cn(
-        "z-50 min-w-40 rounded-xl border border-[#D8E0EC] bg-white p-1 shadow-lg",
+        "z-50 min-w-40 rounded-xl border border-line bg-card p-1 shadow-md",
         className,
       )}
       {...props}

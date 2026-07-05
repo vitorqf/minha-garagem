@@ -41,9 +41,9 @@ export default async function LoginPage({ searchParams }: PageProps) {
       description="Acesse sua conta para gerenciar seus veículos"
     >
       {ownerCount === 0 ? (
-        <div className="space-y-3 rounded-2xl border border-dashed border-[#C5D2E5] bg-[#F6F9FD] p-4 text-base text-[#506684]">
+        <div className="space-y-3 rounded-2xl border border-dashed border-line-strong bg-surface p-4 text-base text-muted">
           <p>{AUTH_COPY.noOwnerAccount}</p>
-          <Link href="/signup" className="inline-block font-semibold text-[#2F84EB]">
+          <Link href="/signup" className="inline-block font-semibold text-primary hover:text-primary-hover">
             Criar conta
           </Link>
         </div>

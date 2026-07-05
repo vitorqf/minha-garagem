@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { CarFront, CircleDollarSign, PiggyBank, Wallet } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FILTER_CONTROL_CLASS, FilterField } from "@/components/ui/filter-field";
 import { cn } from "@/lib/utils";
@@ -161,7 +162,7 @@ export function SummariesPageClient({
                 name="startMonth"
                 type="month"
                 defaultValue={defaultFilters.startMonth}
-                className="h-12 w-full rounded-full border border-line bg-field px-4 py-2 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-12 w-full rounded-xl border border-line bg-field px-4 py-2 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
 
@@ -174,22 +175,16 @@ export function SummariesPageClient({
                 name="endMonth"
                 type="month"
                 defaultValue={defaultFilters.endMonth}
-                className="h-12 w-full rounded-full border border-line bg-field px-4 py-2 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-12 w-full rounded-xl border border-line bg-field px-4 py-2 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
 
-            <button
-              type="submit"
-              className="h-12 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-xs transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
-            >
+            <Button type="submit" size="lg">
               Aplicar filtros
-            </button>
-            <a
-              href={exportHref}
-              className="inline-flex h-12 items-center rounded-full border border-line-strong bg-card px-4 text-sm font-semibold text-foreground transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              Exportar CSV
-            </a>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <a href={exportHref}>Exportar CSV</a>
+            </Button>
           </form>
           {filterError ? (
             <p className="text-sm text-danger-foreground">{filterError}</p>
@@ -197,52 +192,40 @@ export function SummariesPageClient({
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card>
-          <CardContent className="space-y-2 p-6">
-            <div className="flex items-center justify-between">
-              <p className="text-base text-muted">Total Gasto</p>
-              <span className="grid size-11 place-items-center rounded-full bg-primary-subtle text-primary">
-                <Wallet className="size-5" />
-              </span>
-            </div>
-            <p className="text-3xl font-extrabold text-foreground">
+      <Card>
+        <div className="grid divide-y divide-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div className="space-y-1.5 p-6">
+            <p className="flex items-center gap-1.5 text-sm text-muted">
+              <Wallet className="size-4" aria-hidden />
+              Total gasto
+            </p>
+            <p className="font-mono text-3xl font-bold text-primary">
               {kpis.totalSpentLabel}
             </p>
             <p className="text-sm text-subtle">No período selecionado</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="space-y-2 p-6">
-            <div className="flex items-center justify-between">
-              <p className="text-base text-muted">Média Mensal</p>
-              <span className="grid size-11 place-items-center rounded-full bg-primary-subtle text-primary">
-                <CircleDollarSign className="size-5" />
-              </span>
-            </div>
-            <p className="text-3xl font-extrabold text-foreground">
+          </div>
+          <div className="space-y-1.5 p-6">
+            <p className="flex items-center gap-1.5 text-sm text-muted">
+              <CircleDollarSign className="size-4" aria-hidden />
+              Média mensal
+            </p>
+            <p className="font-mono text-3xl font-bold text-foreground">
               {kpis.monthlyAverageLabel}
             </p>
             <p className="text-sm text-subtle">Média do período filtrado</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="space-y-2 p-6">
-            <div className="flex items-center justify-between">
-              <p className="text-base text-muted">Variação</p>
-              <span className="grid size-11 place-items-center rounded-full bg-success-subtle text-success-foreground">
-                <PiggyBank className="size-5" />
-              </span>
-            </div>
-            <p className="text-3xl font-extrabold text-foreground">
+          </div>
+          <div className="space-y-1.5 p-6">
+            <p className="flex items-center gap-1.5 text-sm text-muted">
+              <PiggyBank className="size-4" aria-hidden />
+              Variação
+            </p>
+            <p className={`font-mono text-3xl font-bold ${DELTA_TEXT_CLASS[kpis.variationDirection]}`}>
               {kpis.variationLabel}
             </p>
-            <p className={`text-sm ${DELTA_TEXT_CLASS[kpis.variationDirection]}`}>
-              Comparado ao período anterior equivalente
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+            <p className="text-sm text-subtle">Comparado ao período anterior equivalente</p>
+          </div>
+        </div>
+      </Card>
 
       {vehicles.length === 0 ? (
         <Card>
@@ -267,107 +250,104 @@ export function SummariesPageClient({
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 xl:grid-cols-2">
-          <Card>
-            <CardContent className="space-y-4 p-6">
-              <h2 className="text-2xl font-extrabold text-foreground">
-                Gastos por Categoria
-              </h2>
-              <p className="text-base text-muted">
-                Distribuição no período selecionado
-              </p>
-              <div className="space-y-4">
-                {categoryTotals.rows.map((row) => (
-                  <div key={row.key} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-base font-semibold text-foreground">
-                      <span className="flex items-center gap-2">
-                        <span className={`size-2.5 rounded-full ${CATEGORY_DOT_CLASS[row.key]}`} />
-                        {row.label}
-                      </span>
-                      <span>{formatCurrency(row.amount / 100)}</span>
-                    </div>
-                    <div className="h-2.5 overflow-hidden rounded-full bg-surface ring-1 ring-inset ring-line">
-                      <div
-                        className={`h-full rounded-full transition-[width] duration-500 ${CATEGORY_DOT_CLASS[row.key]}`}
-                        style={{ width: `${row.width}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="space-y-4 p-6">
-              <h2 className="text-2xl font-extrabold text-foreground">
-                Gastos por Veículo
-              </h2>
-              <p className="text-base text-muted">
-                Total acumulado por placa
-              </p>
-              <div className="space-y-3">
-                {sortedByTotal.map((summary) => (
-                  <article
-                    key={summary.vehicleId}
-                    data-testid="summary-card"
-                    className="rounded-3xl border border-line bg-surface p-4"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
+        <div className="space-y-4">
+          <div className="grid gap-4 xl:grid-cols-3">
+            <Card className="xl:col-span-2">
+              <CardContent className="space-y-4 p-6">
+                <h2 className="text-2xl font-bold text-foreground">
+                  Gastos por Veículo
+                </h2>
+                <p className="text-base text-muted">
+                  Total acumulado por placa
+                </p>
+                <div className="space-y-3">
+                  {sortedByTotal.map((summary) => (
+                    <article
+                      key={summary.vehicleId}
+                      data-testid="summary-card"
+                      className="rounded-3xl border border-line bg-surface p-4"
+                    >
+                      <div className="flex items-start justify-between gap-4">
                         <h3 className="text-xl font-bold text-foreground">
                           {summary.vehicleLabel}
                         </h3>
-                        <p className="mt-1 text-base text-muted">
-                          Total: {summary.totalSpentLabel}
-                        </p>
-                      </div>
-                      <span className="text-xl font-extrabold text-foreground">
-                        {summary.totalSpentLabel}
-                      </span>
-                    </div>
-                    <div className="mt-3 grid gap-2 text-sm text-muted sm:grid-cols-3">
-                      <p>Combustível: {summary.categoryBreakdown.fuel}</p>
-                      <p>Peças: {summary.categoryBreakdown.parts}</p>
-                      <p>Serviços: {summary.categoryBreakdown.service}</p>
-                    </div>
-                    <p
-                      className={`mt-3 text-sm ${
-                        summary.costPerKm.status === "available"
-                          ? "text-foreground"
-                          : "text-subtle"
-                      }`}
-                    >
-                      Custo por km:{" "}
-                      <strong data-testid={`cost-per-km-${summary.vehicleId}`}>
-                        {summary.costPerKm.label}
-                      </strong>
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                      {monthColumns.map((month) => (
-                        <span
-                          key={month.key}
-                          className="rounded-full bg-card px-2.5 py-1 text-muted ring-1 ring-inset ring-line"
-                        >
-                          {month.label}:{" "}
-                          <strong data-testid={`month-total-${month.key}`}>
-                            {summary.monthlyTotals[month.key]}
-                          </strong>
+                        <span className="font-mono text-xl font-bold text-foreground">
+                          {summary.totalSpentLabel}
                         </span>
-                      ))}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                      </div>
+                      <div className="mt-3 grid gap-2 text-sm text-muted sm:grid-cols-3">
+                        <p>Combustível: {summary.categoryBreakdown.fuel}</p>
+                        <p>Peças: {summary.categoryBreakdown.parts}</p>
+                        <p>Serviços: {summary.categoryBreakdown.service}</p>
+                      </div>
+                      <p
+                        className={`mt-3 text-sm ${
+                          summary.costPerKm.status === "available"
+                            ? "text-foreground"
+                            : "text-subtle"
+                        }`}
+                      >
+                        Custo por km:{" "}
+                        <strong className="font-mono" data-testid={`cost-per-km-${summary.vehicleId}`}>
+                          {summary.costPerKm.label}
+                        </strong>
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                        {monthColumns.map((month) => (
+                          <span
+                            key={month.key}
+                            className="rounded-full bg-card px-2.5 py-1 text-muted ring-1 ring-inset ring-line"
+                          >
+                            {month.label}:{" "}
+                            <strong className="font-mono" data-testid={`month-total-${month.key}`}>
+                              {summary.monthlyTotals[month.key]}
+                            </strong>
+                          </span>
+                        ))}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="space-y-4 p-6">
-              <h2 className="text-2xl font-extrabold text-foreground">
+            <Card>
+              <CardContent className="space-y-4 p-6">
+                <h2 className="text-2xl font-bold text-foreground">
+                  Gastos por Categoria
+                </h2>
+                <p className="text-base text-muted">
+                  Distribuição no período selecionado
+                </p>
+                <div className="space-y-4">
+                  {categoryTotals.rows.map((row) => (
+                    <div key={row.key} className="space-y-1.5">
+                      <div className="flex items-center justify-between text-base font-semibold text-foreground">
+                        <span className="flex items-center gap-2">
+                          <span className={`size-2.5 rounded-full ${CATEGORY_DOT_CLASS[row.key]}`} />
+                          {row.label}
+                        </span>
+                        <span>{formatCurrency(row.amount / 100)}</span>
+                      </div>
+                      <div className="h-2.5 overflow-hidden rounded-full bg-surface ring-1 ring-inset ring-line">
+                        <div
+                          className={`h-full rounded-full transition-[width] duration-500 ${CATEGORY_DOT_CLASS[row.key]}`}
+                          style={{ width: `${row.width}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-4 rounded-2xl border border-line p-5">
+              <h2 className="text-lg font-bold text-foreground">
                 Tendência mensal
               </h2>
-              <p className="text-base text-muted">
+              <p className="text-sm text-muted">
                 Variação de gastos mês a mês no período filtrado
               </p>
               {monthlyTrends.length === 0 ? (
@@ -383,7 +363,7 @@ export function SummariesPageClient({
                       <div
                         key={trend.monthKey}
                         data-testid={`trend-row-${trend.monthKey}`}
-                        className="rounded-2xl border border-line bg-surface p-3"
+                        className="rounded-2xl bg-surface p-3"
                       >
                         <div className="flex items-center justify-between gap-3">
                           <p className="text-sm font-semibold text-foreground">{trend.monthLabel}</p>
@@ -398,15 +378,13 @@ export function SummariesPageClient({
                   })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card>
-            <CardContent className="space-y-4 p-6">
-              <h2 className="text-2xl font-extrabold text-foreground">
+            <div className="space-y-4 rounded-2xl border border-line p-5">
+              <h2 className="text-lg font-bold text-foreground">
                 Top fatores de custo
               </h2>
-              <p className="text-base text-muted">
+              <p className="text-sm text-muted">
                 Maiores combinações veículo e categoria no período
               </p>
               {topCostDrivers.length === 0 ? (
@@ -419,7 +397,7 @@ export function SummariesPageClient({
                     <li
                       key={driver.key}
                       data-testid="top-driver-row"
-                      className="rounded-2xl border border-line bg-surface p-3"
+                      className="rounded-2xl bg-surface p-3"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <p className="text-sm font-semibold text-foreground">
@@ -432,15 +410,15 @@ export function SummariesPageClient({
                   ))}
                 </ol>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       )}
 
       <Card>
         <CardContent className="p-0">
           <div className="flex items-center justify-between border-b border-line px-6 py-4">
-            <h2 className="text-2xl font-extrabold text-foreground">
+            <h2 className="text-2xl font-bold text-foreground">
               Últimas Despesas
             </h2>
             <Link
@@ -468,7 +446,7 @@ export function SummariesPageClient({
               <TableBody>
                 {recentExpenses.map((expense) => (
                   <TableRow key={expense.id}>
-                    <TableCell>{expense.dateLabel}</TableCell>
+                    <TableCell className="font-mono text-sm text-muted">{expense.dateLabel}</TableCell>
                     <TableCell className="font-semibold text-foreground">
                       {expense.vehicleLabel}
                     </TableCell>
@@ -486,7 +464,7 @@ export function SummariesPageClient({
                       </Badge>
                     </TableCell>
                     <TableCell>{expense.notesLabel}</TableCell>
-                    <TableCell className="text-right text-lg font-bold text-foreground">
+                    <TableCell className="text-right font-mono text-base font-bold text-foreground">
                       {expense.amountLabel}
                     </TableCell>
                   </TableRow>

@@ -118,21 +118,21 @@ export function VehiclesList({
           return (
             <article
               key={vehicle.id}
-              className="group overflow-hidden rounded-3xl border border-line bg-card shadow-sm transition-shadow duration-200 hover:shadow-md"
+              className="group overflow-hidden rounded-xl border border-line-strong bg-card transition-shadow duration-200 hover:shadow-sm"
             >
               <div
                 className="relative h-40 bg-cover bg-center"
                 style={{ backgroundImage: `url('${cover}')` }}
                 aria-hidden
               >
-                <span className="absolute top-3 right-3 rounded-xl bg-card/90 px-3 py-1 font-mono text-sm font-semibold tracking-wide text-foreground shadow-xs ring-1 ring-line backdrop-blur-sm">
+                <span className="absolute top-3 right-3 rounded-xl bg-card px-3 py-1 font-mono text-sm font-semibold tracking-wide text-foreground shadow-xs ring-1 ring-line">
                   {vehicle.plate ?? "SEM-PLACA"}
                 </span>
               </div>
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p data-testid="vehicle-title" className="truncate text-xl font-extrabold text-foreground">
+                    <p data-testid="vehicle-title" className="truncate text-xl font-bold text-foreground">
                       {vehicle.nickname}
                     </p>
                     <p className="mt-1 text-base text-muted">
@@ -169,9 +169,9 @@ export function VehiclesList({
         <button
           type="button"
           onClick={onCreateRequest}
-          className="group flex min-h-72 flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-line-strong bg-surface p-6 text-center transition-colors hover:border-primary/40 hover:bg-primary-subtle/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="group flex min-h-72 flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-line-strong bg-surface p-6 text-center transition-colors hover:border-primary/40 hover:bg-primary-subtle/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <div className="grid size-16 place-items-center rounded-2xl bg-primary-subtle text-primary transition-transform duration-200 group-hover:scale-105">
+          <div className="grid size-16 place-items-center rounded-lg bg-primary-subtle text-primary transition-transform duration-200 group-hover:scale-105">
             <CirclePlus className="size-8" />
           </div>
           <div>

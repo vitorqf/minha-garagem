@@ -81,14 +81,14 @@ function SideNav({
   logoutAction: AppShellProps["logoutAction"];
 }) {
   return (
-    <aside className="flex h-screen w-72.5 shrink-0 flex-col border-r border-line bg-surface xl:sticky xl:top-0">
+    <aside className="flex h-screen w-72.5 shrink-0 flex-col border-r border-line-strong bg-sidebar xl:sticky xl:top-0">
       <div className="px-6 pt-7">
         <Link href="/summaries" className="flex items-center gap-3">
-          <div className="grid size-10 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+          <div className="grid size-10 place-items-center rounded-lg bg-primary text-primary-foreground">
             <Car className="size-5" />
           </div>
           <div>
-            <p className="text-lg font-extrabold leading-none text-foreground">
+            <p className="text-lg font-bold leading-none text-foreground">
               Minha Garagem
             </p>
             <p className="text-sm text-muted">Controle da sua frota</p>
@@ -110,20 +110,20 @@ function SideNav({
               href={item.href}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium transition-colors",
+                "flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-colors",
                 isActive
-                  ? "bg-primary-subtle text-primary-subtle-foreground"
-                  : "text-muted hover:bg-primary-subtle/50 hover:text-foreground",
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted hover:bg-sidebar-active hover:text-foreground",
               )}
             >
-              <Icon className={cn("size-5", isActive ? "text-primary" : "text-subtle")} />
+              <Icon className={cn("size-5", isActive ? "text-primary-foreground" : "text-subtle")} />
               {item.label}
             </Link>
           );
         })}
       </nav>
 
-      <div className="border-t border-line px-5 py-5">
+      <div className="border-t border-line-strong px-5 py-5">
         <div className="flex items-center justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <InitialsAvatar userEmail={userEmail} />
@@ -163,7 +163,7 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
         </div>
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 border-b border-line bg-card/85 backdrop-blur-md">
+          <header className="sticky top-0 z-30 border-b border-line bg-card">
             <div className="flex h-20 items-center justify-between gap-3 px-4 sm:px-6">
               <div className="flex items-center gap-3">
                 <Sheet>
@@ -187,7 +187,7 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
                   </SheetContent>
                 </Sheet>
 
-                <h1 className="text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">
+                <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                   {pageMeta.title}
                 </h1>
               </div>
@@ -196,6 +196,7 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
                 {pageMeta.ctaLabel ? (
                   <Button
                     type="button"
+                    size="lg"
                     onClick={() => {
                       if (!pageMeta.ctaEvent) {
                         return;
@@ -203,7 +204,6 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
 
                       window.dispatchEvent(new CustomEvent(pageMeta.ctaEvent));
                     }}
-                    className="h-12 rounded-full px-5"
                   >
                     + {pageMeta.ctaLabel}
                   </Button>

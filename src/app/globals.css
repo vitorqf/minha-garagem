@@ -16,6 +16,11 @@
   --card: oklch(0.995 0.002 220);
   --overlay: oklch(0.25 0.03 240 / 0.45);
 
+  /* Second neutral layer: sidebar/toolbar chrome, visibly tinted toward the
+   * brand hue instead of reading as generic gray. */
+  --sidebar: oklch(0.935 0.017 205);
+  --sidebar-active: oklch(0.885 0.026 205);
+
   /* Text: deep ink down to soft placeholder. */
   --foreground: oklch(0.26 0.026 245);
   --muted: oklch(0.5 0.024 240);
@@ -26,14 +31,15 @@
   --line-strong: oklch(0.84 0.012 225);
   --field: oklch(0.978 0.005 220);
 
-  /* Brand: petrol teal. Instrument-gauge, automotive, not SaaS blue. */
-  --primary: oklch(0.56 0.098 205);
-  --primary-hover: oklch(0.5 0.098 205);
-  --primary-active: oklch(0.44 0.09 205);
+  /* Brand: petrol teal. Instrument-gauge, automotive, not SaaS blue.
+   * Chroma pushed up from 0.098 so the accent reads as committed, not timid. */
+  --primary: oklch(0.53 0.125 205);
+  --primary-hover: oklch(0.47 0.125 205);
+  --primary-active: oklch(0.41 0.115 205);
   --primary-foreground: oklch(0.99 0.012 205);
-  --primary-subtle: oklch(0.945 0.032 205);
-  --primary-subtle-foreground: oklch(0.42 0.088 205);
-  --ring: oklch(0.56 0.098 205 / 0.35);
+  --primary-subtle: oklch(0.93 0.045 205);
+  --primary-subtle-foreground: oklch(0.38 0.1 205);
+  --ring: oklch(0.53 0.125 205 / 0.4);
 
   /* Semantic + expense categories. Each: base / subtle bg / on-subtle text. */
   --success: oklch(0.62 0.13 152);
@@ -41,34 +47,37 @@
   --success-foreground: oklch(0.44 0.11 152);
 
   --fuel: oklch(0.62 0.13 152);
-  --fuel-subtle: oklch(0.945 0.045 152);
-  --fuel-foreground: oklch(0.44 0.11 152);
+  --fuel-subtle: oklch(0.91 0.075 152);
+  --fuel-foreground: oklch(0.36 0.1 152);
 
   --parts: oklch(0.7 0.13 66);
-  --parts-subtle: oklch(0.94 0.052 72);
-  --parts-foreground: oklch(0.5 0.11 58);
+  --parts-subtle: oklch(0.9 0.085 72);
+  --parts-foreground: oklch(0.42 0.1 58);
 
   --service: oklch(0.6 0.13 250);
-  --service-subtle: oklch(0.94 0.04 250);
-  --service-foreground: oklch(0.46 0.13 250);
+  --service-subtle: oklch(0.9 0.065 250);
+  --service-foreground: oklch(0.38 0.12 250);
 
   --danger: oklch(0.58 0.17 26);
   --danger-hover: oklch(0.52 0.17 26);
   --danger-subtle: oklch(0.945 0.04 26);
   --danger-foreground: oklch(0.48 0.16 26);
 
-  /* Radius. */
-  --radius-sm: 0.625rem;
-  --radius-md: 0.875rem;
-  --radius-lg: 1.125rem;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 1.75rem;
+  /* Radius: tightened from the original 0.625-1.75rem run. Structure now reads
+   * through borders and fills, not soft bubble corners. */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
 
-  /* Elevation: soft, tinted toward ink rather than flat black. */
-  --shadow-xs: 0 1px 2px oklch(0.4 0.03 245 / 0.06);
-  --shadow-sm: 0 1px 3px oklch(0.4 0.03 245 / 0.08), 0 1px 2px oklch(0.4 0.03 245 / 0.04);
-  --shadow-md: 0 6px 16px -6px oklch(0.4 0.03 245 / 0.14), 0 2px 6px -2px oklch(0.4 0.03 245 / 0.08);
-  --shadow-lg: 0 18px 40px -12px oklch(0.35 0.04 245 / 0.22), 0 6px 14px -6px oklch(0.35 0.04 245 / 0.1);
+  /* Elevation: reserved for things actually floating above the canvas
+   * (dialogs, sheets, dropdowns, hover lift). Resting surfaces use borders
+   * and fills instead of a shadow, so shadow keeps meaning. */
+  --shadow-xs: 0 1px 2px oklch(0.4 0.03 245 / 0.08);
+  --shadow-sm: 0 2px 6px -2px oklch(0.4 0.03 245 / 0.14);
+  --shadow-md: 0 10px 24px -8px oklch(0.4 0.03 245 / 0.2), 0 3px 8px -3px oklch(0.4 0.03 245 / 0.12);
+  --shadow-lg: 0 24px 48px -14px oklch(0.32 0.04 245 / 0.3), 0 8px 18px -8px oklch(0.32 0.04 245 / 0.14);
 }
 
 @theme inline {
@@ -76,6 +85,8 @@
   --color-surface: var(--surface);
   --color-card: var(--card);
   --color-overlay: var(--overlay);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-active: var(--sidebar-active);
 
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
@@ -125,29 +136,31 @@
   --font-mono: var(--font-geist-mono);
 }
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-html {
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-}
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  background-color: var(--background);
-  color: var(--foreground);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 
-:focus-visible {
-  outline: none;
+  :focus-visible {
+    outline: none;
+  }
 }

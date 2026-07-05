@@ -93,7 +93,7 @@ export function ExpensesList({
 
   if (sortedExpenses.length === 0) {
     return (
-      <div className="rounded-3xl border-2 border-dashed border-line-strong bg-surface p-10 text-center">
+      <div className="rounded-xl border-2 border-dashed border-line-strong bg-surface p-10 text-center">
         <p className="text-base text-muted">Nenhuma despesa encontrada no período selecionado.</p>
       </div>
     );
@@ -107,8 +107,8 @@ export function ExpensesList({
             <TableHead>Data</TableHead>
             <TableHead>Veículo</TableHead>
             <TableHead>Categoria</TableHead>
-            <TableHead>Valor (R$)</TableHead>
-            <TableHead>KM</TableHead>
+            <TableHead className="text-right">Valor (R$)</TableHead>
+            <TableHead className="text-right">KM</TableHead>
             <TableHead>Observações</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
@@ -116,15 +116,15 @@ export function ExpensesList({
         <TableBody>
           {sortedExpenses.map((expense) => (
             <TableRow key={expense.id} data-testid="expense-row">
-              <TableCell data-testid="expense-row-title" className="text-base font-medium text-muted">
+              <TableCell data-testid="expense-row-title" className="font-mono text-sm text-muted">
                 {formatDate(expense.expenseDate)}
               </TableCell>
               <TableCell className="text-base font-bold text-foreground">{expense.vehicleLabel}</TableCell>
               <TableCell>
                 <Badge variant={expense.category}>{expense.category === "fuel" ? "Combustível" : expense.category === "parts" ? "Peças" : "Serviço"}</Badge>
               </TableCell>
-              <TableCell className="text-xl font-extrabold text-foreground">{expense.amountLabel}</TableCell>
-              <TableCell>{expense.mileage ? expense.mileage.toLocaleString("pt-BR") : "—"}</TableCell>
+              <TableCell className="text-right font-mono text-base font-bold text-foreground">{expense.amountLabel}</TableCell>
+              <TableCell className="text-right font-mono text-sm text-muted">{expense.mileage ? expense.mileage.toLocaleString("pt-BR") : "—"}</TableCell>
               <TableCell className="max-w-80 truncate">{expense.notes ?? "—"}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>

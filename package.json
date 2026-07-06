@@ -33,7 +33,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0",
-    "next": "16.1.7",
+    "next": "16.2.10",
     "next-auth": "5.0.0-beta.30",
     "pg": "^8.20.0",
     "react": "19.2.3",
@@ -53,7 +53,7 @@
     "@vitest/coverage-v8": "^4.1.0",
     "dotenv": "^17.3.1",
     "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "16.2.10",
     "jsdom": "^29.0.0",
     "prisma": "^7.6.0",
     "tailwindcss": "^4",
@@ -62,8 +62,10 @@
   },
   "pnpm": {
     "overrides": {
-      "hono": "4.12.4",
-      "@hono/node-server": "1.19.10"
+      "hono": "4.12.28",
+      "@hono/node-server": "1.19.10",
+      "defu": ">=6.1.7",
+      "fast-uri": ">=3.1.2 <4"
     }
   },
   "prisma": {

@@ -93,8 +93,8 @@ export function ExpensesList({
 
   if (sortedExpenses.length === 0) {
     return (
-      <div className="rounded-3xl border-2 border-dashed border-[#CCD7E8] bg-[#F8FBFF] p-8 text-center">
-        <p className="text-base text-[#5E7391]">Nenhuma despesa encontrada no período selecionado.</p>
+      <div className="rounded-xl border-2 border-dashed border-line-strong bg-surface p-10 text-center">
+        <p className="text-base text-muted">Nenhuma despesa encontrada no período selecionado.</p>
       </div>
     );
   }
@@ -107,8 +107,8 @@ export function ExpensesList({
             <TableHead>Data</TableHead>
             <TableHead>Veículo</TableHead>
             <TableHead>Categoria</TableHead>
-            <TableHead>Valor (R$)</TableHead>
-            <TableHead>KM</TableHead>
+            <TableHead className="text-right">Valor (R$)</TableHead>
+            <TableHead className="text-right">KM</TableHead>
             <TableHead>Observações</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
@@ -116,22 +116,22 @@ export function ExpensesList({
         <TableBody>
           {sortedExpenses.map((expense) => (
             <TableRow key={expense.id} data-testid="expense-row">
-              <TableCell data-testid="expense-row-title" className="text-base font-medium text-[#324864]">
+              <TableCell data-testid="expense-row-title" className="font-mono text-sm text-muted">
                 {formatDate(expense.expenseDate)}
               </TableCell>
-              <TableCell className="text-base font-bold text-[#132039]">{expense.vehicleLabel}</TableCell>
+              <TableCell className="text-base font-bold text-foreground">{expense.vehicleLabel}</TableCell>
               <TableCell>
                 <Badge variant={expense.category}>{expense.category === "fuel" ? "Combustível" : expense.category === "parts" ? "Peças" : "Serviço"}</Badge>
               </TableCell>
-              <TableCell className="text-xl font-extrabold text-[#131F37]">{expense.amountLabel}</TableCell>
-              <TableCell>{expense.mileage ? expense.mileage.toLocaleString("pt-BR") : "—"}</TableCell>
+              <TableCell className="text-right font-mono text-base font-bold text-foreground">{expense.amountLabel}</TableCell>
+              <TableCell className="text-right font-mono text-sm text-muted">{expense.mileage ? expense.mileage.toLocaleString("pt-BR") : "—"}</TableCell>
               <TableCell className="max-w-80 truncate">{expense.notes ?? "—"}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className="inline-grid size-9 place-items-center rounded-full text-[#8EA1BC] hover:bg-[#EEF3FA]"
+                      className="inline-grid size-9 place-items-center rounded-full text-subtle transition-colors hover:bg-surface hover:text-foreground"
                       aria-label={`Ações da despesa ${expense.id}`}
                     >
                       <MoreVertical className="size-5" />
@@ -152,16 +152,16 @@ export function ExpensesList({
         </TableBody>
       </Table>
 
-      <div className="flex items-center justify-between border-t border-[#E4EAF4] px-4 py-3 text-sm text-[#5D7290]">
+      <div className="flex items-center justify-between border-t border-line px-4 py-3 text-sm text-muted">
         <p>Mostrando 1-{Math.min(sortedExpenses.length, 12)} de {sortedExpenses.length} gastos</p>
         <div className="flex items-center gap-2">
-          <button type="button" disabled className="grid size-8 place-items-center rounded-full text-[#9DB0C9]">
+          <button type="button" disabled className="grid size-8 place-items-center rounded-full text-subtle disabled:opacity-60">
             <ChevronLeft className="size-5" />
           </button>
-          <button type="button" aria-current="page" className="grid size-8 place-items-center rounded-full bg-[#2F84EB] text-sm font-bold text-white">
+          <button type="button" aria-current="page" className="grid size-8 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
             1
           </button>
-          <button type="button" disabled className="grid size-8 place-items-center rounded-full text-[#9DB0C9]">
+          <button type="button" disabled className="grid size-8 place-items-center rounded-full text-subtle disabled:opacity-60">
             <ChevronRight className="size-5" />
           </button>
         </div>

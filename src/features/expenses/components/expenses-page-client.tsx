@@ -8,6 +8,7 @@ import { CalendarDays, CarFront, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FILTER_CONTROL_CLASS, FilterField } from "@/components/ui/filter-field";
 import { ExpenseFormFields } from "@/features/expenses/components/expense-form-fields";
 import { ExpensesList } from "@/features/expenses/components/expenses-list";
 import {
@@ -120,101 +121,91 @@ export function ExpensesPageClient({
   }, []);
 
   return (
-    <div className="space-y-5">
-      <Card>
-        <CardContent className="space-y-4 p-4 md:p-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <form action="/expenses" className="flex flex-wrap items-center gap-2 md:gap-3">
-              <label className="sr-only" htmlFor="filters-vehicleId">
-                Veículo
-              </label>
-              <div className="relative">
-                <CarFront className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#7085A4]" />
-                <select
-                  id="filters-vehicleId"
-                  name="vehicleId"
-                  defaultValue={defaultFilters.vehicleId ?? ""}
-                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-sm text-[#1E3658]"
-                >
-                  <option value="">Todos os Veículos</option>
-                  {vehicles.map((vehicle) => (
-                    <option key={vehicle.id} value={vehicle.id}>
-                      {vehicle.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <form action="/expenses" className="flex flex-wrap items-center gap-2 md:gap-3">
+          <label className="sr-only" htmlFor="filters-vehicleId">
+            Veículo
+          </label>
+          <FilterField icon={CarFront}>
+            <select
+              id="filters-vehicleId"
+              name="vehicleId"
+              defaultValue={defaultFilters.vehicleId ?? ""}
+              className={FILTER_CONTROL_CLASS}
+            >
+              <option value="">Todos os Veículos</option>
+              {vehicles.map((vehicle) => (
+                <option key={vehicle.id} value={vehicle.id}>
+                  {vehicle.label}
+                </option>
+              ))}
+            </select>
+          </FilterField>
 
-              <label className="sr-only" htmlFor="filters-startDate">
-                Data inicial
-              </label>
-              <div className="relative">
-                <CalendarDays className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#7085A4]" />
-                <input
-                  id="filters-startDate"
-                  name="startDate"
-                  type="date"
-                  defaultValue={defaultFilters.startDate}
-                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-sm text-[#1E3658]"
-                />
-              </div>
+          <label className="sr-only" htmlFor="filters-startDate">
+            Data inicial
+          </label>
+          <FilterField icon={CalendarDays}>
+            <input
+              id="filters-startDate"
+              name="startDate"
+              type="date"
+              defaultValue={defaultFilters.startDate}
+              className={FILTER_CONTROL_CLASS}
+            />
+          </FilterField>
 
-              <label className="sr-only" htmlFor="filters-endDate">
-                Data final
-              </label>
-              <input
-                id="filters-endDate"
-                name="endDate"
-                type="date"
-                defaultValue={defaultFilters.endDate}
-                className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] px-3 py-2 text-sm text-[#1E3658]"
-              />
+          <label className="sr-only" htmlFor="filters-endDate">
+            Data final
+          </label>
+          <input
+            id="filters-endDate"
+            name="endDate"
+            type="date"
+            defaultValue={defaultFilters.endDate}
+            className="h-12 rounded-xl border border-line bg-field px-4 py-2 text-sm text-foreground transition-[border-color,box-shadow] hover:border-line-strong focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          />
 
-              <label className="sr-only" htmlFor="filters-category">
-                Categoria
-              </label>
-              <div className="relative">
-                <Filter className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#7085A4]" />
-                <select
-                  id="filters-category"
-                  name="category"
-                  defaultValue={defaultFilters.category ?? ""}
-                  className="h-12 rounded-full border border-[#D3DCEA] bg-[#F8FBFF] py-2 pr-3 pl-9 text-sm text-[#1E3658]"
-                >
-                  <option value="">Todas as Categorias</option>
-                  <option value="fuel">Combustível</option>
-                  <option value="parts">Peças</option>
-                  <option value="service">Serviço</option>
-                </select>
-              </div>
+          <label className="sr-only" htmlFor="filters-category">
+            Categoria
+          </label>
+          <FilterField icon={Filter}>
+            <select
+              id="filters-category"
+              name="category"
+              defaultValue={defaultFilters.category ?? ""}
+              className={FILTER_CONTROL_CLASS}
+            >
+              <option value="">Todas as Categorias</option>
+              <option value="fuel">Combustível</option>
+              <option value="parts">Peças</option>
+              <option value="service">Serviço</option>
+            </select>
+          </FilterField>
 
-              <Button type="submit" variant="outline" className="h-12 rounded-full">
-                Aplicar filtros
-              </Button>
-            </form>
+          <Button type="submit" variant="outline">
+            Aplicar filtros
+          </Button>
+        </form>
 
-            <div className="flex flex-col items-end gap-2">
-              <p className="text-base text-[#5E7391]">
-                Total no período:{" "}
-                <strong className="text-2xl font-extrabold text-[#101C33]">{formatCurrencyFromCents(totalPeriod)}</strong>
-              </p>
-              <a
-                href={exportHref}
-                className="inline-flex h-11 items-center rounded-full border border-[#D3DCEA] bg-white px-4 text-sm font-semibold text-[#2A3E5B] transition-colors hover:bg-[#F4F8FF]"
-              >
-                Exportar CSV
-              </a>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="flex items-center gap-4">
+          <p className="text-base text-muted">
+            Total no período:{" "}
+            <strong className="font-mono text-2xl font-bold text-foreground">{formatCurrencyFromCents(totalPeriod)}</strong>
+          </p>
+          <Button asChild variant="outline" size="sm">
+            <a href={exportHref}>Exportar CSV</a>
+          </Button>
+        </div>
+      </div>
 
       {createState.message ? (
         <p
-          className={`rounded-xl border px-4 py-2 text-sm ${
+          className={`rounded-xl border px-4 py-2.5 text-sm font-medium ${
             createState.status === "success"
-              ? "border-[#BFE8CF] bg-[#F1FCF5] text-[#17854B]"
-              : "border-[#F2C4C0] bg-[#FFF3F2] text-[#C24740]"
+              ? "border-success/25 bg-success-subtle text-success-foreground"
+              : "border-danger/25 bg-danger-subtle text-danger-foreground"
           }`}
         >
           {createState.message}
@@ -224,8 +215,8 @@ export function ExpensesPageClient({
       {!canCreateExpenses ? (
         <Card>
           <CardContent className="space-y-2 py-6 text-center">
-            <p className="text-base text-[#5E7391]">Cadastre um veículo antes de lançar despesas.</p>
-            <Link href="/vehicles" className="text-sm font-semibold text-[#2F84EB]">
+            <p className="text-base text-muted">Cadastre um veículo antes de lançar despesas.</p>
+            <Link href="/vehicles" className="text-sm font-semibold text-primary hover:text-primary-hover">
               Ir para veículos
             </Link>
           </CardContent>

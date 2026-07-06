@@ -16,7 +16,7 @@ describe("SignupForm", () => {
     expect(screen.getByLabelText("Confirmar E-mail")).toBeInTheDocument();
     expect(screen.getByLabelText("Senha")).toBeInTheDocument();
     expect(screen.getByLabelText("Confirmar Senha")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Entrar" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Criar conta" })).toBeInTheDocument();
   });
 
   it("renders validation feedback from initial state", () => {

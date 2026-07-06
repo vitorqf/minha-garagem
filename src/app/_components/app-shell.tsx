@@ -2,19 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Bell,
-  Car,
-  CarFront,
-  ChartColumn,
-  Menu,
-  Receipt,
-  Search,
-  Settings,
-} from "lucide-react";
+import { Car, CarFront, ChartColumn, Menu, Receipt, Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -32,19 +22,16 @@ const NAV_ITEMS = [
 const PAGE_META = {
   "/summaries": {
     title: "Resumos",
-    searchPlaceholder: undefined,
     ctaLabel: undefined,
     ctaEvent: undefined,
   },
   "/vehicles": {
     title: "Meus veículos",
-    searchPlaceholder: "Buscar placa ou modelo...",
     ctaLabel: "Cadastrar Veículo",
     ctaEvent: "open-create-vehicle",
   },
   "/expenses": {
     title: "Gastos",
-    searchPlaceholder: "Pesquisar gastos...",
     ctaLabel: "Adicionar Gasto",
     ctaEvent: "open-create-expense",
   },
@@ -58,7 +45,6 @@ type AppShellProps = {
 
 type PageMeta = {
   title: string;
-  searchPlaceholder?: string;
   ctaLabel?: string;
   ctaEvent?: string;
 };
@@ -79,7 +65,7 @@ function InitialsAvatar({ userEmail }: { userEmail?: string }) {
   const initials = userEmail ? userEmail.slice(0, 2).toUpperCase() : "MG";
 
   return (
-    <div className="grid size-11 place-items-center rounded-full bg-gradient-to-br from-[#2676D8] to-[#4EA0FF] font-bold text-white">
+    <div className="grid size-11 place-items-center rounded-full bg-primary font-bold text-primary-foreground">
       {initials}
     </div>
   );
@@ -95,23 +81,23 @@ function SideNav({
   logoutAction: AppShellProps["logoutAction"];
 }) {
   return (
-    <aside className="flex h-screen w-72.5 shrink-0 flex-col border-r border-[#D6DFEC] bg-white xl:sticky xl:top-0">
+    <aside className="flex h-screen w-72.5 shrink-0 flex-col border-r border-line-strong bg-sidebar xl:sticky xl:top-0">
       <div className="px-6 pt-7">
         <Link href="/summaries" className="flex items-center gap-3">
-          <div className="grid size-10 place-items-center rounded-full bg-[#2F84EB] text-white">
+          <div className="grid size-10 place-items-center rounded-lg bg-primary text-primary-foreground">
             <Car className="size-5" />
           </div>
           <div>
-            <p className="text-lg font-extrabold leading-none text-[#111D36]">
+            <p className="text-lg font-bold leading-none text-foreground">
               Minha Garagem
             </p>
-            <p className="text-sm text-[#7B8EAA]">Gestão de Frota</p>
+            <p className="text-sm text-muted">Controle da sua frota</p>
           </div>
         </Link>
       </div>
 
       <nav
-        className="mt-8 flex-1 space-y-2 px-5"
+        className="mt-8 flex-1 space-y-1 px-4"
         aria-label="Navegação principal"
       >
         {NAV_ITEMS.map((item) => {
@@ -122,30 +108,33 @@ function SideNav({
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-2xl px-4 py-3 text-base font-medium text-[#475569] transition-colors",
-                isActive ? "bg-[#DCEBFF] text-[#1D73D2]" : "hover:bg-[#EDF3FC]",
+                "flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-colors",
+                isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted hover:bg-sidebar-active hover:text-foreground",
               )}
             >
-              <Icon className="size-5" />
+              <Icon className={cn("size-5", isActive ? "text-primary-foreground" : "text-subtle")} />
               {item.label}
             </Link>
           );
         })}
       </nav>
 
-      <div className="border-t border-[#D6DFEC] px-5 py-5">
+      <div className="border-t border-line-strong px-5 py-5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <InitialsAvatar userEmail={userEmail} />
-            <div>
-              <p className="text-lg font-bold text-[#475569]">
+            <div className="min-w-0">
+              <p className="truncate text-base font-bold text-foreground">
                 {userEmail?.split("@")[0] ?? "Conta"}
               </p>
-              <p className="text-sm text-[#6D82A1]">Plano Premium</p>
+              <p className="truncate text-sm text-muted">Conta pessoal</p>
             </div>
           </div>
-          <Settings className="size-5 text-[#8DA0BC]" aria-hidden />
+          <Settings className="size-5 shrink-0 text-subtle" aria-hidden />
         </div>
 
         <form action={logoutAction} className="mt-4">
@@ -163,7 +152,7 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
   const pageMeta = resolvePageMeta(pathname);
 
   return (
-    <div className="min-h-screen bg-[#F1F4F9] text-[#101C33]">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="flex">
         <div className="hidden xl:block">
           <SideNav
@@ -174,7 +163,7 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
         </div>
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-          <header className="border-b border-[#D6DFEC] bg-white">
+          <header className="sticky top-0 z-30 border-b border-line bg-card">
             <div className="flex h-20 items-center justify-between gap-3 px-4 sm:px-6">
               <div className="flex items-center gap-3">
                 <Sheet>
@@ -198,36 +187,16 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
                   </SheetContent>
                 </Sheet>
 
-                <h1 className="text-xl font-extrabold tracking-tight text-[#111D36] sm:text-2xl">
+                <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                   {pageMeta.title}
                 </h1>
               </div>
 
               <div className="flex min-w-0 items-center gap-3">
-                {pageMeta.searchPlaceholder ? (
-                  <div className="relative hidden w-full min-w-64 max-w-md md:block">
-                    <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#64748B]" />
-                    <Input
-                      aria-label="Busca (em breve)"
-                      placeholder={pageMeta.searchPlaceholder}
-                      disabled
-                      className="pl-9"
-                    />
-                  </div>
-                ) : null}
-
-                <button
-                  type="button"
-                  disabled
-                  aria-label="Notificações (em breve)"
-                  className="grid size-11 min-w-11 place-items-center rounded-full text-[#64748B] transition-colors hover:bg-[#E9EFF8] disabled:opacity-70"
-                >
-                  <Bell className="size-5" />
-                </button>
-
                 {pageMeta.ctaLabel ? (
                   <Button
                     type="button"
+                    size="lg"
                     onClick={() => {
                       if (!pageMeta.ctaEvent) {
                         return;
@@ -235,7 +204,6 @@ export function AppShell({ children, userEmail, logoutAction }: AppShellProps) {
 
                       window.dispatchEvent(new CustomEvent(pageMeta.ctaEvent));
                     }}
-                    className="h-12 rounded-full px-5"
                   >
                     + {pageMeta.ctaLabel}
                   </Button>

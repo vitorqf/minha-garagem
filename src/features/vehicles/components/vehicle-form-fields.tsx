@@ -32,7 +32,7 @@ export function VehicleFormFields({
           placeholder="Ex: Meu Carro do Dia a Dia"
         />
         {errors?.nickname ? (
-          <p className="text-sm text-[#D94C45]">{errors.nickname}</p>
+          <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.nickname}</p>
         ) : null}
       </div>
 
@@ -46,7 +46,7 @@ export function VehicleFormFields({
             placeholder="Ex.: Toyota"
           />
           {errors?.brand ? (
-            <p className="text-sm text-[#D94C45]">{errors.brand}</p>
+            <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.brand}</p>
           ) : null}
         </div>
 
@@ -59,7 +59,7 @@ export function VehicleFormFields({
             placeholder="Ex.: Corolla"
           />
           {errors?.model ? (
-            <p className="text-sm text-[#D94C45]">{errors.model}</p>
+            <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.model}</p>
           ) : null}
         </div>
 
@@ -73,7 +73,7 @@ export function VehicleFormFields({
             placeholder="AAA1A23 ou AAA1234"
           />
           {errors?.plate ? (
-            <p className="text-sm text-[#D94C45]">{errors.plate}</p>
+            <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.plate}</p>
           ) : null}
         </div>
 
@@ -87,7 +87,7 @@ export function VehicleFormFields({
             placeholder="Ex.: 2020"
           />
           {errors?.year ? (
-            <p className="text-sm text-[#D94C45]">{errors.year}</p>
+            <p className="mt-1.5 text-sm font-medium text-danger-foreground">{errors.year}</p>
           ) : null}
         </div>
       </div>

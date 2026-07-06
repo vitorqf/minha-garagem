@@ -219,7 +219,9 @@ describe("SummariesPageClient", () => {
     );
 
     const summaryCard = screen.getByTestId("summary-card");
-    expect(within(summaryCard).getByText(/Total:\s*R\$\s?0,00/)).toBeInTheDocument();
+    expect(within(summaryCard).getByTestId("vehicle-total-vehicle-2")).toHaveTextContent(
+      /R\$\s?0,00/,
+    );
     expect(within(summaryCard).getByTestId("cost-per-km-vehicle-2")).toHaveTextContent(
       "Dados insuficientes",
     );

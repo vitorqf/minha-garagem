@@ -101,10 +101,10 @@ export function VehiclesList({
     <div className="space-y-4">
       {deleteState.message ? (
         <p
-          className={`rounded-xl border px-4 py-2 text-sm ${
+          className={`rounded-xl border px-4 py-2.5 text-sm font-medium ${
             deleteState.status === "success"
-              ? "border-[#BFE8CF] bg-[#F1FCF5] text-[#17854B]"
-              : "border-[#F2C4C0] bg-[#FFF3F2] text-[#C24740]"
+              ? "border-success/25 bg-success-subtle text-success-foreground"
+              : "border-danger/25 bg-danger-subtle text-danger-foreground"
           }`}
         >
           {deleteState.message}
@@ -118,24 +118,24 @@ export function VehiclesList({
           return (
             <article
               key={vehicle.id}
-              className="overflow-hidden rounded-3xl border border-[#D7E0ED] bg-white shadow-[0_2px_5px_rgba(15,23,42,0.05)]"
+              className="group overflow-hidden rounded-xl border border-line-strong bg-card transition-shadow duration-200 hover:shadow-sm"
             >
               <div
                 className="relative h-40 bg-cover bg-center"
                 style={{ backgroundImage: `url('${cover}')` }}
                 aria-hidden
               >
-                <span className="absolute top-3 right-3 rounded-xl bg-white/90 px-3 py-1 text-sm font-bold tracking-wide text-[#1E3658]">
+                <span className="absolute top-3 right-3 rounded-xl bg-card px-3 py-1 font-mono text-sm font-semibold tracking-wide text-foreground shadow-xs ring-1 ring-line">
                   {vehicle.plate ?? "SEM-PLACA"}
                 </span>
               </div>
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p data-testid="vehicle-title" className="text-xl font-extrabold text-[#121E36]">
+                  <div className="min-w-0">
+                    <p data-testid="vehicle-title" className="truncate text-xl font-bold text-foreground">
                       {vehicle.nickname}
                     </p>
-                    <p className="mt-1 text-base text-[#6B7E99]">
+                    <p className="mt-1 text-base text-muted">
                       {vehicle.brand} {vehicle.model}
                       {vehicle.year ? ` • ${vehicle.year}` : ""}
                     </p>
@@ -146,7 +146,7 @@ export function VehiclesList({
                       <button
                         type="button"
                         aria-label={`Ações do veículo ${vehicle.nickname}`}
-                        className="grid size-9 place-items-center rounded-full text-[#8DA0BC] hover:bg-[#EDF3FC]"
+                        className="grid size-9 shrink-0 place-items-center rounded-full text-subtle transition-colors hover:bg-surface hover:text-foreground"
                       >
                         <MoreVertical className="size-5" />
                       </button>
@@ -169,14 +169,14 @@ export function VehiclesList({
         <button
           type="button"
           onClick={onCreateRequest}
-          className="flex min-h-72 flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-[#C5D5EA] bg-[#F8FBFF] p-6 text-center transition-colors hover:bg-[#EDF4FF]"
+          className="group flex min-h-72 flex-col items-center justify-center gap-4 rounded-xl border-2 border-dashed border-line-strong bg-surface p-6 text-center transition-colors hover:border-primary/40 hover:bg-primary-subtle/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <div className="grid size-16 place-items-center rounded-full bg-[#E6F1FF] text-[#2F84EB]">
+          <div className="grid size-16 place-items-center rounded-lg bg-primary-subtle text-primary transition-transform duration-200 group-hover:scale-105">
             <CirclePlus className="size-8" />
           </div>
           <div>
-            <p className="text-xl font-bold text-[#111D36]">Adicionar Novo</p>
-            <p className="mt-2 text-base text-[#6D82A1]">Cadastre um novo veículo em sua garagem</p>
+            <p className="text-xl font-bold text-foreground">Adicionar novo</p>
+            <p className="mt-2 text-base text-muted">Cadastre um novo veículo na sua garagem</p>
           </div>
         </button>
       </div>

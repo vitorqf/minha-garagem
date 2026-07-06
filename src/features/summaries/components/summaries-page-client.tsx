@@ -271,7 +271,10 @@ export function SummariesPageClient({
                         <h3 className="text-xl font-bold text-foreground">
                           {summary.vehicleLabel}
                         </h3>
-                        <span className="font-mono text-xl font-bold text-foreground">
+                        <span
+                          className="font-mono text-xl font-bold text-foreground"
+                          data-testid={`vehicle-total-${summary.vehicleId}`}
+                        >
                           {summary.totalSpentLabel}
                         </span>
                       </div>

@@ -1,0 +1,13 @@
+# Gitleaks configuration
+# Extends the default ruleset and allowlists documentation placeholders.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Ignore AUTH_SECRET placeholders in README setup instructions"
+paths = [
+  '''README\.md''',
+]
+regexes = [
+  '''AUTH_SECRET=.*''',
+]

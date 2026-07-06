@@ -42,7 +42,7 @@ Edite `.env` com a URL do Postgres e um segredo de auth:
 
 ```bash
 DATABASE_URL="postgresql://postgres.<project-ref>:<senha>@<pooler-host>:6543/postgres?sslmode=require&pgbouncer=true&connection_limit=1"
-AUTH_SECRET="troque-por-um-segredo-forte-com-32-chars"
+AUTH_SECRET="<gere-com: openssl rand -base64 32>"
 AUTH_TRUST_HOST="true"
 ```
 
